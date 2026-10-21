@@ -1,0 +1,44 @@
+<!-- @dsCard group="Vitrin" height=420 subtitle="Alıcı vitrininde ürün" -->
+<!doctype html>
+<html lang="tr">
+<head><meta charset="utf-8"><title>ProductItem</title>
+<style>
+  .wrap { padding: 24px; display: grid; grid-template-columns: repeat(2, 200px); gap: 24px; }
+  .ph { width: 100%; height: 100%; display: block; }
+  .ph .bg { fill: var(--kraft); }
+  .ph .a { fill: var(--peony); }
+  .ph .b { fill: var(--stem); }
+  .ph .c { fill: var(--pollen); }
+  .ph .d { fill: var(--paper); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="tm-product" href="#">
+    <div class="tm-product__photo">
+      <svg class="ph" viewBox="0 0 200 250" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+        <rect class="bg" width="200" height="250"/>
+        <rect class="b" x="96" y="120" width="8" height="130"/>
+        <circle class="a" cx="100" cy="100" r="44"/>
+        <circle class="d" cx="100" cy="100" r="14"/>
+      </svg>
+    </div>
+    <h3 class="tm-product__name">Mevsim buketi</h3>
+    <div class="tm-product__meta"><span>Aynı gün teslim</span><span class="tm-product__price">850 TL'den</span></div>
+  </a>
+  <a class="tm-product" href="#">
+    <div class="tm-product__photo">
+      <svg class="ph" viewBox="0 0 200 250" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+        <rect class="bg" width="200" height="250"/>
+        <rect class="b" x="60" y="110" width="6" height="140"/>
+        <rect class="b" x="134" y="130" width="6" height="120"/>
+        <circle class="c" cx="63" cy="96" r="28"/>
+        <circle class="a" cx="137" cy="118" r="34"/>
+      </svg>
+    </div>
+    <h3 class="tm-product__name">Beyaz güller</h3>
+    <div class="tm-product__meta"><span>12 dal</span><span class="tm-product__price">980 TL</span></div>
+  </a>
+</div>
+</body>
+</html>

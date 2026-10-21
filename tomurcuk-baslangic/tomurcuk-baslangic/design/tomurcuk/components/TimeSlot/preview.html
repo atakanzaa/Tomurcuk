@@ -1,0 +1,20 @@
+<!-- @dsCard group="Form" height=136 subtitle="Teslim saati seçimi" -->
+<!doctype html>
+<html lang="tr">
+<head><meta charset="utf-8"><title>TimeSlot</title>
+<style>
+  .wrap { padding: 24px; display: grid; gap: 10px; }
+  .lbl { font: 500 13px/18px var(--font-sans); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <span class="lbl" id="slot-label">Teslim saati, 14 Şubat Cumartesi</span>
+  <div class="tm-slots" role="radiogroup" aria-labelledby="slot-label">
+    <div class="tm-slot" role="radio" aria-checked="false" aria-disabled="true" tabindex="-1">10:00–13:00<small>Dolu</small></div>
+    <div class="tm-slot" role="radio" aria-checked="true" tabindex="0">13:00–16:00<small>3 yer kaldı</small></div>
+    <div class="tm-slot" role="radio" aria-checked="false" tabindex="-1">16:00–19:00<small>Müsait</small></div>
+  </div>
+</div>
+</body>
+</html>

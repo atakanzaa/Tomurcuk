@@ -1,0 +1,15 @@
+/* Tomurcuk — generated from tokens.json */
+:root, [data-theme="light"] { --paper: #f6f0e6; --paper-raised: #fbf8f2; --kraft: #e6d7bf; --kraft-deep: #c9b391; --line: #ddd2c0; --line-strong: #8c8170; --ink: #23261f; --ink-muted: #57594f; --stem: #2e4a35; --stem-hover: #243b2a; --on-stem: #f6f0e6; --stem-soft: #dce6d8; --stem-ink: #24402c; --peony: #b0365e; --on-peony: #ffffff; --peony-soft: #f3dce2; --peony-ink: #8f2a4c; --pollen: #d9a33a; --pollen-soft: #f5e6c4; --pollen-ink: #6e4600; --sky: #2f5f7e; --sky-soft: #dce8ef; --sky-ink: #24506b; --danger: #a33a24; --on-danger: #ffffff; --danger-soft: #f6ded6; --danger-ink: #8a2e1c; --focus: var(--sky); --shadow-lift: 0 1px 0 rgba(35,38,31,0.06), 0 16px 40px -16px rgba(35,38,31,0.32); }
+[data-theme="dark"] { --paper: #1b1d18; --paper-raised: #23261f; --kraft: #3a3427; --kraft-deep: #5a4f3b; --line: #3a3d34; --line-strong: #7f8576; --ink: #eee8dc; --ink-muted: #b3afa3; --stem: #9cc2a2; --stem-hover: #b2d3b7; --on-stem: #14201a; --stem-soft: #2a3a2d; --stem-ink: #b5d6ba; --peony: #e58aa6; --on-peony: #2a0e18; --peony-soft: #4a2532; --peony-ink: #f2b3c6; --pollen: #e2b65a; --pollen-soft: #463717; --pollen-ink: #ebcb86; --sky: #8fbcd9; --sky-soft: #1f3340; --sky-ink: #a9cde4; --danger: #f09a84; --on-danger: #2b0f08; --danger-soft: #4a2219; --danger-ink: #f4b19f; --focus: var(--sky); --shadow-lift: 0 1px 0 rgba(0,0,0,0.4), 0 16px 40px -16px rgba(0,0,0,0.7); }
+:root { --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px; --space-5: 24px; --space-6: 32px; --space-7: 48px; --space-8: 72px; --radius-s: 6px; --radius-m: 10px; --radius-l: 20px; --radius-pill: 999px; --font-display: "Young Serif", Georgia, serif; --font-sans: "Schibsted Grotesk", system-ui, sans-serif; }
+.display-xl { font-family: var(--font-display); font-size: 56px; line-height: 60px; font-weight: 400; letter-spacing: -0.5px; }
+.display-l { font-family: var(--font-display); font-size: 40px; line-height: 46px; font-weight: 400; letter-spacing: -0.25px; }
+.display-m { font-family: var(--font-display); font-size: 30px; line-height: 36px; font-weight: 400; }
+.display-s { font-family: var(--font-display); font-size: 23px; line-height: 28px; font-weight: 400; }
+.title { font-family: var(--font-sans); font-size: 18px; line-height: 24px; font-weight: 600; }
+.body { font-family: var(--font-sans); font-size: 16px; line-height: 24px; font-weight: 400; }
+.body-strong { font-family: var(--font-sans); font-size: 16px; line-height: 22px; font-weight: 600; }
+.body-s { font-family: var(--font-sans); font-size: 14px; line-height: 20px; font-weight: 400; }
+.label { font-family: var(--font-sans); font-size: 13px; line-height: 18px; font-weight: 500; }
+.caption { font-family: var(--font-sans); font-size: 12px; line-height: 16px; font-weight: 400; }
+.numeric { font-family: var(--font-sans); font-size: 20px; line-height: 24px; font-weight: 500; }

@@ -1,0 +1,25 @@
+<!-- @dsCard group="Eylemler" height=176 subtitle="Birincil, ikincil, sessiz, tehlikeli" -->
+<!doctype html>
+<html lang="tr">
+<head><meta charset="utf-8"><title>Button</title>
+<style>
+  .wrap { padding: 24px; display: grid; gap: 16px; }
+  .row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="row">
+    <button class="tm-btn tm-btn--primary">Siparişi tamamla</button>
+    <button class="tm-btn tm-btn--secondary">Kart notunu düzenle</button>
+    <button class="tm-btn tm-btn--quiet">Sepete geri dön</button>
+  </div>
+  <div class="row">
+    <button class="tm-btn tm-btn--primary tm-btn--s">Yola çıktı</button>
+    <button class="tm-btn tm-btn--secondary tm-btn--s">Fişi yazdır</button>
+    <button class="tm-btn tm-btn--danger tm-btn--s">Siparişi iptal et</button>
+    <button class="tm-btn tm-btn--primary tm-btn--s" disabled>Ödeme bekleniyor</button>
+  </div>
+</div>
+</body>
+</html>

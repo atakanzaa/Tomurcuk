@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Özel gün hatırlatmaları</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/tomurcuk/tokens.css">
+<link rel="stylesheet" href="ds/tomurcuk/components/bundle.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&amp;family=Young+Serif&amp;display=swap">
+<style>
+body{margin:0}
+a{color:var(--stem)}a:hover{color:var(--stem-hover)}
+.day{margin:0;padding:20px 0 6px;font-size:13px;line-height:18px;font-weight:500;color:var(--ink-muted)}
+.rem{display:grid;gap:10px;padding:14px 0;border-top:1px solid var(--line)}
+.rem-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.rem-who{font-size:16px;line-height:22px;font-weight:600}
+.rem-what{font-size:14px;line-height:20px;color:var(--ink)}
+.rem-last{font-size:13px;line-height:18px;color:var(--ink-muted)}
+</style>
+</helmet>
+<div data-theme="{{theme}}" style="position: relative; width: 390px; height: 1240px; box-sizing: border-box; background: var(--paper); color: var(--ink); font-family: var(--font-sans); overflow: hidden;">
+
+  <header style="padding: 20px 16px 0; display: grid; gap: 2px;">
+    <span style="font-size: 14px; line-height: 20px; color: var(--ink-muted);">Müşteriler</span>
+    <h1 style="margin: 0; font-family: var(--font-display); font-weight: 400; font-size: 32px; line-height: 38px;">Özel günler</h1>
+  </header>
+
+  <nav aria-label="Müşteri görünümü" style="display: flex; gap: 24px; padding: 16px 16px 0; border-bottom: 1px solid var(--line);">
+    <a href="#" style="padding: 10px 0; color: var(--ink-muted); font-size: 15px; font-weight: 500; text-decoration: none;">Tüm müşteriler <span style="font-weight: 400;">312</span></a>
+    <a href="#" aria-current="page" style="padding: 10px 0; border-bottom: 2px solid var(--ink); margin-bottom: -1px; color: var(--ink); font-size: 15px; font-weight: 600; text-decoration: none;">Özel günler <span style="font-weight: 400; color: var(--ink-muted);">7 gün</span></a>
+  </nav>
+
+  <div style="padding: 16px 16px 0;">
+    <div class="tm-band tm-band--peony" style="padding: 12px 16px;">
+      <span class="tm-band__text" style="font-size: 15px; line-height: 22px;">Bu hafta <strong>5 müşterinizin</strong> özel günü var. Geçen yıl bu günlerde 4.380 TL sipariş gelmişti.</span>
+    </div>
+  </div>
+
+  <section style="padding: 0 16px;">
+    <h2 class="day">Cuma, 24 Ekim</h2>
+
+    <div class="rem">
+      <div class="rem-top">
+        <div style="display: grid; gap: 2px;">
+          <span class="rem-who">Ayşe Demir</span>
+          <span class="rem-what">Annesi Gül Hanım'ın doğum günü</span>
+          <span class="rem-last">Geçen yıl: Mevsim buketi, 850 TL</span>
+        </div>
+      </div>
+      <div style="padding: 14px 16px; background: var(--kraft); border-radius: var(--radius-m); display: grid; gap: 12px;">
+        <p style="margin: 0; font-size: 15px; line-height: 22px;">Merhaba Ayşe Hanım, geçen yıl annenizin doğum gününde ona mevsim buketi göndermiştiniz. Bu yıl da 24 Ekim'e hazırlayalım mı? Nergis Çiçek Atölyesi</p>
+        <div style="display: flex; gap: 8px;">
+          <a class="tm-btn tm-btn--primary tm-btn--s" href="https://wa.me/905332074165" style="flex: 1;">WhatsApp'ta gönder</a>
+          <button type="button" class="tm-btn tm-btn--secondary tm-btn--s">Düzenle</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="rem">
+      <div class="rem-top">
+        <div style="display: grid; gap: 2px;">
+          <span class="rem-who">Burak Çelik</span>
+          <span class="rem-what">Evlilik yıl dönümü</span>
+          <span class="rem-last">Geçen yıl: Kırmızı güller, 1.400 TL</span>
+        </div>
+        <button type="button" class="tm-btn tm-btn--secondary tm-btn--s">Mesaj hazırla</button>
+      </div>
+    </div>
+
+    <h2 class="day">Pazar, 26 Ekim</h2>
+
+    <div class="rem">
+      <div class="rem-top">
+        <div style="display: grid; gap: 2px;">
+          <span class="rem-who">Zeynep Aksoy</span>
+          <span class="rem-what">Ablası Derya'nın doğum günü</span>
+          <span class="rem-last">Geçen yıl: Pembe şakayık, 1.350 TL</span>
+        </div>
+        <button type="button" class="tm-btn tm-btn--secondary tm-btn--s">Mesaj hazırla</button>
+      </div>
+    </div>
+
+    <div class="rem">
+      <div class="rem-top">
+        <div style="display: grid; gap: 2px;">
+          <span class="rem-who">Okan Yıldız</span>
+          <span class="rem-what">Ofis açılış yıl dönümü</span>
+          <span class="rem-last">Geçen yıl: Ayaklı çelenk, 2.400 TL</span>
+        </div>
+        <button type="button" class="tm-btn tm-btn--secondary tm-btn--s">Mesaj hazırla</button>
+      </div>
+    </div>
+
+    <h2 class="day">Salı, 28 Ekim</h2>
+
+    <div class="rem" style="border-bottom: 1px solid var(--line);">
+      <div class="rem-top">
+        <div style="display: grid; gap: 2px;">
+          <span class="rem-who">Nilay Koç</span>
+          <span class="rem-what">Kızının doğum günü</span>
+          <span class="rem-last">Mesaj izni yok. Ararsanız hatırlatabilirsiniz.</span>
+        </div>
+        <a class="tm-btn tm-btn--secondary tm-btn--s" href="tel:+905321112233">Ara</a>
+      </div>
+    </div>
+  </section>
+
+  <nav aria-label="Ana menü" style="position: absolute; left: 0; right: 0; bottom: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); padding: 8px 8px 24px; background: var(--paper-raised); border-top: 1px solid var(--line);">
+    <a href="Main.dc.html" style="display: grid; justify-items: center; gap: 4px; padding: 6px 0; color: var(--ink-muted); font-size: 12px; font-weight: 500; text-decoration: none;">
+      <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" style="fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round;"><rect x="4" y="5" width="16" height="15" rx="2"></rect><path d="M4 10h16M9 3v4M15 3v4"></path></svg>
+      Bugün
+    </a>
+    <a href="#" style="display: grid; justify-items: center; gap: 4px; padding: 6px 0; color: var(--ink-muted); font-size: 12px; font-weight: 500; text-decoration: none;">
+      <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" style="fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round;"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"></path></svg>
+      Siparişler
+    </a>
+    <a href="Hatirlatmalar.dc.html" aria-current="page" style="display: grid; justify-items: center; gap: 4px; padding: 6px 0; color: var(--stem); font-size: 12px; font-weight: 600; text-decoration: none;">
+      <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" style="fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round;"><circle cx="12" cy="8" r="4"></circle><path d="M4 20c1.5-4 4.5-6 8-6s6.5 2 8 6"></path></svg>
+      Müşteriler
+    </a>
+    <a href="#" style="display: grid; justify-items: center; gap: 4px; padding: 6px 0; color: var(--ink-muted); font-size: 12px; font-weight: 500; text-decoration: none;">
+      <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" style="fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round;"><circle cx="5" cy="12" r="1.2"></circle><circle cx="12" cy="12" r="1.2"></circle><circle cx="19" cy="12" r="1.2"></circle></svg>
+      Diğer
+    </a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":390,"height":1240}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { theme: this.props.theme ?? 'light' };
+  }
+}
+</script>
+</body>
+</html>

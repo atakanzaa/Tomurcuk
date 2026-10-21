@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Manuel sipariş</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/tomurcuk/tokens.css">
+<link rel="stylesheet" href="ds/tomurcuk/components/bundle.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&amp;family=Young+Serif&amp;display=swap">
+<style>
+body{margin:0}
+a{color:var(--stem)}a:hover{color:var(--stem-hover)}
+.chip{flex:none;display:inline-flex;align-items:center;height:36px;padding:0 14px;border-radius:var(--radius-pill);border:1px solid var(--line-strong);background:transparent;color:var(--ink);font:500 14px/1 var(--font-sans);cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--stem);border-color:var(--stem);color:var(--on-stem)}
+.sec{margin:0 16px;padding:18px 0;border-top:1px solid var(--line);display:grid;gap:12px}
+.sec-h{margin:0;font-size:13px;line-height:18px;font-weight:500;color:var(--ink-muted)}
+</style>
+</helmet>
+<div data-theme="{{theme}}" style="position: relative; width: 390px; height: 1180px; box-sizing: border-box; background: var(--paper); color: var(--ink); font-family: var(--font-sans); overflow: hidden;">
+
+  <header style="display: flex; align-items: center; gap: 4px; padding: 10px 8px;">
+    <a href="Main.dc.html" aria-label="Kapat" style="width: 44px; height: 44px; display: grid; place-items: center; color: var(--ink);">
+      <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" style="fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round;"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+    </a>
+    <h1 style="margin: 0; font-family: var(--font-display); font-weight: 400; font-size: 24px; line-height: 30px;">Yeni sipariş</h1>
+  </header>
+
+  <section class="sec" style="border-top: 0; padding-top: 8px;">
+    <h2 class="sec-h">Nereden geldi?</h2>
+    <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+      <button type="button" class="chip" aria-pressed="true">Telefon</button>
+      <button type="button" class="chip" aria-pressed="false">WhatsApp</button>
+      <button type="button" class="chip" aria-pressed="false">Instagram</button>
+      <button type="button" class="chip" aria-pressed="false">Dükkân</button>
+      <button type="button" class="chip" aria-pressed="false">ÇiçekSepeti</button>
+    </div>
+  </section>
+
+  <section class="sec">
+    <label class="tm-field">
+      <span class="tm-field__label">Sipariş verenin telefonu</span>
+      <input class="tm-field__control" value="0533 207 41 65" inputmode="tel">
+    </label>
+    <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 14px; background: var(--kraft); border-radius: var(--radius-m);">
+      <div style="display: grid; gap: 2px;">
+        <span style="font-size: 15px; line-height: 22px; font-weight: 600;">Ayşe Demir</span>
+        <span style="font-size: 13px; line-height: 18px; color: var(--ink-muted);">6 sipariş, en son dün</span>
+      </div>
+      <button type="button" class="tm-btn tm-btn--secondary tm-btn--s">Son siparişi kopyala</button>
+    </div>
+  </section>
+
+  <section class="sec">
+    <h2 class="sec-h">Ürün</h2>
+    <div style="display: flex; gap: 8px; align-items: flex-end;">
+      <label class="tm-field" style="flex: 1;">
+        <span class="tm-field__label" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0);">Ürün</span>
+        <select class="tm-field__control">
+          <option>Mevsim buketi, orta</option>
+          <option>Beyaz güller, 12 dal</option>
+          <option>Mor orkide</option>
+        </select>
+      </label>
+      <div style="display: flex; align-items: center; border: 1px solid var(--line-strong); border-radius: var(--radius-m); height: 44px; background: var(--paper-raised);">
+        <button type="button" aria-label="Azalt" style="width: 40px; height: 42px; background: none; border: 0; font-size: 20px; color: var(--ink); cursor: pointer;">−</button>
+        <span style="min-width: 20px; text-align: center; font-size: 16px; font-weight: 500;">1</span>
+        <button type="button" aria-label="Arttır" style="width: 40px; height: 42px; background: none; border: 0; font-size: 20px; color: var(--ink); cursor: pointer;">+</button>
+      </div>
+    </div>
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <button type="button" class="tm-btn tm-btn--quiet tm-btn--s" style="padding: 0;">Ürün ekle</button>
+      <span style="font-size: 15px; font-weight: 500;">950 TL</span>
+    </div>
+  </section>
+
+  <section class="sec">
+    <h2 class="sec-h">Teslim</h2>
+    <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+      <button type="button" class="chip" aria-pressed="true">Bugün</button>
+      <button type="button" class="chip" aria-pressed="false">Yarın</button>
+      <button type="button" class="chip" aria-pressed="false">Tarih seç</button>
+    </div>
+    <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+      <button type="button" class="chip" aria-pressed="false" disabled style="opacity: .45; border-style: dashed;">10–13</button>
+      <button type="button" class="chip" aria-pressed="false">13–16</button>
+      <button type="button" class="chip" aria-pressed="true">16–19</button>
+      <button type="button" class="chip" aria-pressed="false">Kesin saat</button>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px;">
+      <label class="tm-field"><span class="tm-field__label">Alıcı</span><input class="tm-field__control" value="Hande Demir"></label>
+      <label class="tm-field"><span class="tm-field__label">Alıcının telefonu</span><input class="tm-field__control" value="0542 118 30 77" inputmode="tel"></label>
+    </div>
+    <label class="tm-field">
+      <span class="tm-field__label">Adres</span>
+      <input class="tm-field__control" value="Bağdat Cad. 214/6, Göztepe">
+      <span class="tm-field__meta">Göztepe teslim bölgenizde. Teslimat 90 TL.</span>
+    </label>
+    <label class="tm-field">
+      <span class="tm-field__label">Kart notu <span style="font-weight: 400; color: var(--ink-muted);">(isteğe bağlı)</span></span>
+      <input class="tm-field__control" value="İyi ki doğdun ablacım">
+    </label>
+  </section>
+
+  <section class="sec">
+    <h2 class="sec-h">Ödeme</h2>
+    <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border: 1px solid var(--line-strong); border-radius: var(--radius-m); overflow: hidden;" role="radiogroup" aria-label="Ödeme durumu">
+      <button type="button" role="radio" aria-checked="false" style="height: 44px; border: 0; border-right: 1px solid var(--line-strong); background: transparent; color: var(--ink); font: 500 14px/1 var(--font-sans); cursor: pointer;">Ödendi</button>
+      <button type="button" role="radio" aria-checked="true" style="height: 44px; border: 0; border-right: 1px solid var(--line-strong); background: var(--stem); color: var(--on-stem); font: 600 14px/1 var(--font-sans); cursor: pointer;">Kapıda</button>
+      <button type="button" role="radio" aria-checked="false" style="height: 44px; border: 0; background: transparent; color: var(--ink); font: 500 14px/1 var(--font-sans); cursor: pointer;">Havale</button>
+    </div>
+  </section>
+
+  <div style="position: absolute; left: 0; right: 0; bottom: 0; display: flex; align-items: center; gap: 16px; padding: 12px 16px 28px; background: var(--paper-raised); border-top: 1px solid var(--line); box-shadow: var(--shadow-lift);">
+    <div style="display: grid;">
+      <span style="font-size: 12px; line-height: 16px; color: var(--ink-muted);">Toplam</span>
+      <span style="font-size: 20px; line-height: 24px; font-weight: 600;">1.040 TL</span>
+    </div>
+    <a class="tm-btn tm-btn--primary" href="Main.dc.html" style="flex: 1;">Siparişi kaydet</a>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":390,"height":1180}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { theme: this.props.theme ?? 'light' };
+  }
+}
+</script>
+</body>
+</html>

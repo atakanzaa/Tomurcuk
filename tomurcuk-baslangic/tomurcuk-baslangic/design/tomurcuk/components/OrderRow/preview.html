@@ -1,0 +1,30 @@
+<!-- @dsCard group="Sipariş" height=360 subtitle="Satıcı panelinde sipariş satırları" -->
+<!doctype html>
+<html lang="tr">
+<head><meta charset="utf-8"><title>OrderRow</title>
+<style>
+  .wrap { padding: 8px 24px 24px; max-width: 560px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <ul class="tm-orders">
+    <li class="tm-order tm-order--late">
+      <div><span class="tm-order__time">11:40</span><span class="tm-order__slot">10–13, 20 dk gecikti</span></div>
+      <div><div class="tm-order__who">Zeynep Aksoy</div><div class="tm-order__where">Kadıköy, Moda Mah.</div><div class="tm-order__items">Mevsim buketi (M), vazo</div></div>
+      <div class="tm-order__side"><span class="tm-status tm-status--preparing">Hazırlanıyor</span><span class="tm-order__amount">1.250 TL</span></div>
+    </li>
+    <li class="tm-order tm-order--selected">
+      <div><span class="tm-order__time">13:00</span><span class="tm-order__slot">13–16</span></div>
+      <div><div class="tm-order__who">Mert Kaya</div><div class="tm-order__where">Üsküdar, Kuzguncuk</div><div class="tm-order__items">Beyaz güller (12 dal)</div></div>
+      <div class="tm-order__side"><span class="tm-status tm-status--new">Yeni</span><span class="tm-order__amount">980 TL</span></div>
+    </li>
+    <li class="tm-order">
+      <div><span class="tm-order__time">16:00</span><span class="tm-order__slot">16–19</span></div>
+      <div><div class="tm-order__who">Ayşe Demir</div><div class="tm-order__where">Kadıköy, Fenerbahçe</div><div class="tm-order__items">Orkide, iki dal</div></div>
+      <div class="tm-order__side"><span class="tm-status tm-status--onway">Yolda</span><span class="tm-order__amount">1.600 TL</span></div>
+    </li>
+  </ul>
+</div>
+</body>
+</html>

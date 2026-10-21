@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Talep kuyruğu</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/tomurcuk/tokens.css">
+<link rel="stylesheet" href="ds/tomurcuk/components/bundle.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&amp;family=Young+Serif&amp;display=swap">
+<style>
+body{margin:0}
+a{color:var(--stem)}a:hover{color:var(--stem-hover)}
+.nav-a{display:flex;align-items:center;justify-content:space-between;height:36px;padding:0 12px;border-radius:var(--radius-m);color:var(--ink);font-size:14px;font-weight:500;text-decoration:none}
+.nav-a[aria-current="page"]{background:var(--kraft);font-weight:600}
+.tab{padding:10px 0;color:var(--ink-muted);font-size:14px;font-weight:500;text-decoration:none;white-space:nowrap}
+.tab[aria-current="page"]{color:var(--ink);font-weight:600;border-bottom:2px solid var(--ink);margin-bottom:-1px}
+.tq{width:100%;border-collapse:collapse;font-size:14px;line-height:20px}
+.tq th{text-align:left;font-weight:500;font-size:12px;line-height:16px;color:var(--ink-muted);padding:10px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+.tq td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+.tq tr.urgent td:first-child{color:var(--danger);font-weight:600}
+.subj{color:var(--ink);font-weight:600;text-decoration:none}
+.subj:hover{text-decoration:underline}
+.shop{display:block;color:var(--ink-muted);font-size:13px}
+.muted{color:var(--ink-muted)}
+.nowrap{white-space:nowrap}
+</style>
+</helmet>
+<div data-theme="{{theme}}" style="min-height: 100vh; background: var(--paper); color: var(--ink); font-family: var(--font-sans);">
+
+  <header style="display: flex; flex-wrap: wrap; align-items: center; gap: 16px 32px; padding: 12px 24px; border-bottom: 1px solid var(--line);">
+    <span style="font-family: var(--font-display); font-size: 19px; line-height: 24px;">Tomurcuk <span style="font-family: var(--font-sans); font-size: 14px; color: var(--ink-muted);">Destek</span></span>
+    <label style="flex: 1 1 320px; max-width: 560px;">
+      <span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0);">Ara</span>
+      <input class="tm-field__control" placeholder="Sipariş no, telefon, dükkân veya alıcı adı" style="height: 38px; font-size: 14px;">
+    </label>
+    <div style="margin-left: auto; display: flex; align-items: center; gap: 10px;">
+      <div style="display: grid; text-align: right;">
+        <span style="font-size: 14px; font-weight: 600;">Selin Karaca</span>
+        <span style="font-size: 12px; color: var(--ink-muted);">Destek temsilcisi</span>
+      </div>
+      <span aria-hidden="true" style="width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: var(--stem-soft); color: var(--stem-ink); font-size: 14px; font-weight: 600;">SK</span>
+    </div>
+  </header>
+
+  <div style="display: flex; flex-wrap: wrap;">
+    <nav aria-label="Destek menüsü" style="flex: 1 1 200px; max-width: 100%; box-sizing: border-box; padding: 20px 12px; display: grid; gap: 2px; align-content: start; border-right: 1px solid var(--line);">
+      <a class="nav-a" href="Main.dc.html" aria-current="page"><span>Talepler</span><span style="font-weight: 400; color: var(--ink-muted);">23</span></a>
+      <a class="nav-a" href="DukkanOzeti.dc.html"><span>Dükkânlar</span><span style="font-weight: 400; color: var(--ink-muted);">148</span></a>
+      <a class="nav-a" href="#"><span>Siparişler</span></a>
+      <a class="nav-a" href="#"><span>Denetim kaydı</span></a>
+      <a class="nav-a" href="#"><span>Hazır cevaplar</span></a>
+    </nav>
+
+    <main style="flex: 999 1 720px; min-width: 0; box-sizing: border-box; padding: 24px 32px 40px; display: grid; gap: 20px; align-content: start;">
+      <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px;">
+        <h1 style="margin: 0; font-family: var(--font-display); font-weight: 400; font-size: 32px; line-height: 38px;">Talepler</h1>
+        <span style="font-size: 14px; color: var(--ink-muted);">Acil taleplerde ilk yanıt hedefi 15 dk, diğerlerinde 4 saat.</span>
+      </div>
+
+      <div class="tm-band" style="padding: 12px 18px;">
+        <span class="tm-band__text" style="font-size: 15px;"><strong>2 acil talep</strong> bugün teslim edilecek siparişlerle ilgili. Biri henüz kimseye atanmadı.</span>
+        <a href="TalepDetay.dc.html" class="tm-btn tm-btn--primary tm-btn--s">İlk acil talebi aç</a>
+      </div>
+
+      <nav aria-label="Talep görünümü" style="display: flex; flex-wrap: wrap; gap: 24px; border-bottom: 1px solid var(--line);">
+        <a class="tab" href="#" aria-current="page">Hepsi <span style="font-weight: 400; color: var(--ink-muted);">29</span></a>
+        <a class="tab" href="#">Bana atanan <span style="font-weight: 400;">6</span></a>
+        <a class="tab" href="#">Acil <span style="font-weight: 400;">2</span></a>
+                <a class="tab" href="#">Dükkân bekleniyor <span style="font-weight: 400;">5</span></a>
+        <a class="tab" href="#">Çözülenler</a>
+      </nav>
+
+      <div style="overflow-x: auto; margin-top: -20px;">
+        <table class="tq">
+          <thead>
+            <tr><th>Öncelik</th><th>Talep</th><th>Kategori</th><th>Sipariş</th><th>Durum</th><th>Atanan</th><th>Bekliyor</th></tr>
+          </thead>
+          <tbody>
+            <tr class="urgent">
+              <td class="nowrap">Acil</td>
+              <td><a class="subj" href="TalepDetay.dc.html">Kurye adresi bulamıyor, alıcı telefonu açmıyor</a><span class="shop">Nergis Çiçek Atölyesi, Kadıköy</span></td>
+              <td>Teslimat</td>
+              <td class="nowrap">T-4821<span class="shop">bugün 13–16</span></td>
+              <td><span class="tm-status tm-status--new">Açık</span></td>
+              <td class="nowrap">Selin K.</td>
+              <td class="nowrap" style="color: var(--danger); font-weight: 600;">6 dk</td>
+            </tr>
+            <tr class="urgent">
+              <td class="nowrap">Acil</td>
+              <td><a class="subj" href="TalepDetay.dc.html">Ödeme alındı ama sipariş panelde görünmüyor</a><span class="shop">Lale Bahçesi, Beşiktaş</span></td>
+              <td>Ödeme</td>
+              <td class="nowrap">T-5102<span class="shop">bugün 16–19</span></td>
+              <td><span class="tm-status tm-status--new">Açık</span></td>
+              <td class="nowrap muted">Atanmadı</td>
+              <td class="nowrap" style="color: var(--danger); font-weight: 600;">12 dk</td>
+            </tr>
+            <tr>
+              <td class="nowrap muted">Normal</td>
+              <td><a class="subj" href="TalepDetay.dc.html">Teslimat bölgelerine Maltepe'yi ekleyemiyorum</a><span class="shop">Papatya Çiçekçilik, Kartal</span></td>
+              <td>Hesap</td>
+              <td class="muted">—</td>
+              <td><span class="tm-status tm-status--preparing">Dükkân bekleniyor</span></td>
+              <td class="nowrap">Selin K.</td>
+              <td class="nowrap">1 sa 40 dk</td>
+            </tr>
+            <tr>
+              <td class="nowrap muted">Normal</td>
+              <td><a class="subj" href="TalepDetay.dc.html">Müşterilere SMS gitmiyor</a><span class="shop">Begonvil Atölye, Ataşehir</span></td>
+              <td>Teknik</td>
+              <td class="muted">—</td>
+              <td><span class="tm-status tm-status--new">Açık</span></td>
+              <td class="nowrap">Mert A.</td>
+              <td class="nowrap">2 sa</td>
+            </tr>
+            <tr>
+              <td class="nowrap muted">Normal</td>
+              <td><a class="subj" href="TalepDetay.dc.html">Ürün fotoğrafı yüklenmiyor</a><span class="shop">Orkide Evi, Bakırköy</span></td>
+              <td>Teknik</td>
+              <td class="muted">—</td>
+              <td><span class="tm-status tm-status--new">Açık</span></td>
+              <td class="nowrap">Mert A.</td>
+              <td class="nowrap">3 sa</td>
+            </tr>
+            <tr>
+              <td class="nowrap muted">Normal</td>
+              <td><a class="subj" href="TalepDetay.dc.html">Kısmi iade nasıl yapılır?</a><span class="shop">Nergis Çiçek Atölyesi, Kadıköy</span></td>
+              <td>Ödeme</td>
+              <td class="nowrap">T-4790</td>
+              <td><span class="tm-status tm-status--delivered">Çözüldü</span></td>
+              <td class="nowrap">Selin K.</td>
+              <td class="nowrap muted">dün</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":1440,"height":720}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { theme: this.props.theme ?? 'light' };
+  }
+}
+</script>
+</body>
+</html>

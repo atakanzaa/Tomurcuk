@@ -1,0 +1,59 @@
+<!-- @dsCard height=288 -->
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Tomurcuk</title>
+<style>
+  html, body { margin: 0; height: 100%; }
+  body { background: var(--paper); color: var(--ink); font-family: var(--font-sans); overflow: hidden; }
+  .cover { position: relative; width: 960px; height: 288px; overflow: hidden; }
+  .art { position: absolute; top: 0; left: 480px; width: 480px; height: 288px; overflow: hidden; }
+  .art svg { display: block; width: 480px; height: 288px; }
+  .kraft { fill: var(--kraft); }
+  .stem { fill: var(--stem); }
+  .peony { fill: var(--peony); }
+  .pollen { fill: var(--pollen); }
+  .bud { fill: var(--peony); }
+  .bud-light { fill: var(--paper); }
+  .stalk { fill: var(--stem); }
+  .words { position: absolute; left: var(--space-6); bottom: var(--space-6); max-width: 440px; }
+  .name { margin: 0; font-family: var(--font-display); font-weight: 400; font-size: 96px; line-height: .92; letter-spacing: -1px; color: var(--ink); }
+  .tag { margin: var(--space-3) 0 0 4px; font-size: 14px; line-height: 20px; color: var(--ink-muted); }
+</style>
+</head>
+<body>
+<div class="cover">
+  <div class="art" aria-hidden="true">
+    <svg viewBox="0 0 480 288" width="480" height="288">
+      <!--
+        blocks      kraft 200×232 bled off the bottom (the wrapping paper, largest) · stem 120×264 bled off the top (the brand) · peony 112×176 bled off the right and bottom (the accent) · pollen 56×24 pill once (a mark, never text) — about a third of 960×288
+        arrangement a tall stem slab between the kraft sheet and the peony block, staggered tops, space-4 gutters, like stems standing in a bucket
+        pattern     buds: the name means "bud", so pills cut from radius-m (rx = half of a 24 wide pill) on space-1 stalks, five over the kraft sheet, two cut out of the stem slab in paper
+        scales      gutters space-4; bud 24×40 rx 12; stalks 4 wide (space-1); block corners radius-l; pollen pill rx 12
+      -->
+      <rect class="kraft" x="16" y="72" width="200" height="232" rx="20"/>
+      <rect class="stem" x="232" y="-24" width="120" height="264" rx="20"/>
+      <rect class="peony" x="368" y="128" width="128" height="176" rx="20"/>
+      <rect class="pollen" x="232" y="256" width="56" height="24" rx="12"/>
+
+      <rect class="stalk" x="54" y="168" width="4" height="136"/>
+      <rect class="bud" x="44" y="128" width="24" height="40" rx="12"/>
+      <rect class="stalk" x="94" y="140" width="4" height="164"/>
+      <rect class="bud" x="84" y="100" width="24" height="40" rx="12"/>
+      <rect class="stalk" x="134" y="188" width="4" height="116"/>
+      <rect class="bud" x="124" y="148" width="24" height="40" rx="12"/>
+      <rect class="stalk" x="174" y="156" width="4" height="148"/>
+      <rect class="bud" x="164" y="116" width="24" height="40" rx="12"/>
+
+      <rect class="bud-light" x="260" y="64" width="24" height="40" rx="12"/>
+      <rect class="bud-light" x="300" y="112" width="24" height="40" rx="12"/>
+    </svg>
+  </div>
+  <div class="words">
+    <h1 class="name">Tomurcuk</h1>
+    <p class="tag">Küçük çiçekçilerin sipariş sayfası, paneli ve müşteri defteri.</p>
+  </div>
+</div>
+</body>
+</html>

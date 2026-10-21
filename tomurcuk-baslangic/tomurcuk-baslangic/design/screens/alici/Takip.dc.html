@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Onay ve takip</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/tomurcuk/tokens.css">
+<link rel="stylesheet" href="ds/tomurcuk/components/bundle.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&amp;family=Young+Serif&amp;display=swap">
+<style>
+body{margin:0}
+a{color:var(--stem)}a:hover{color:var(--stem-hover)}
+</style>
+</helmet>
+<div data-theme="{{theme}}" style="width: 390px; height: 1360px; box-sizing: border-box; background: var(--paper); color: var(--ink); font-family: var(--font-sans); overflow: hidden;">
+
+  <header style="display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; border-bottom: 1px solid var(--line);">
+    <a href="Main.dc.html" style="font-family: var(--font-display); font-size: 17px; line-height: 22px; color: var(--ink); text-decoration: none;">Nergis</a>
+    <span style="font-size: 14px; line-height: 20px; color: var(--ink-muted);">Sipariş T-4821</span>
+  </header>
+
+  <section style="padding: 32px 16px 0; display: grid; gap: 10px;">
+    <h1 style="margin: 0; font-family: var(--font-display); font-weight: 400; font-size: 34px; line-height: 40px;">{{title}}</h1>
+    <p style="margin: 0; font-size: 16px; line-height: 24px; color: var(--ink-muted);">{{sub}}</p>
+  </section>
+
+  <sc-if value="{{delivered}}" hint-placeholder-val="{{false}}">
+    <figure style="margin: 24px 16px 0; display: grid; gap: 8px;">
+      <div style="height: 300px; border-radius: var(--radius-l); overflow: hidden; background: var(--kraft);">
+        <svg viewBox="0 0 358 300" width="358" height="300" aria-hidden="true" style="display: block;">
+          <rect x="0" y="210" width="358" height="90" style="fill: var(--kraft-deep);"></rect>
+          <rect x="139" y="150" width="80" height="80" rx="10" style="fill: var(--paper-raised); opacity: 0.85;"></rect>
+          <rect x="150" y="96" width="4" height="70" style="fill: var(--stem);"></rect>
+          <rect x="178" y="70" width="4" height="96" style="fill: var(--stem);"></rect>
+          <rect x="206" y="100" width="4" height="66" style="fill: var(--stem);"></rect>
+          <rect x="138" y="60" width="28" height="46" rx="14" style="fill: var(--peony);"></rect>
+          <rect x="166" y="32" width="28" height="46" rx="14" style="fill: var(--pollen);"></rect>
+          <rect x="194" y="66" width="28" height="46" rx="14" style="fill: var(--peony);"></rect>
+        </svg>
+      </div>
+      <figcaption style="font-size: 14px; line-height: 20px; color: var(--ink-muted);">Teslim fotoğrafı, Murat çekti. 22 Ekim, 14:20</figcaption>
+    </figure>
+  </sc-if>
+
+  <ol aria-label="Sipariş durumu" style="list-style: none; margin: 28px 16px 0; padding: 0;">
+    <sc-for list="{{steps}}" as="st" hint-placeholder-count="4">
+      <li style="display: grid; grid-template-columns: 14px minmax(0, 1fr); column-gap: 16px;">
+        <div style="display: flex; flex-direction: column; align-items: center; padding-top: 4px;">
+          <span style="width: 14px; height: 14px; border-radius: 50%; box-sizing: border-box; background: {{st.dotBg}}; border: 2px solid {{st.dotBorder}};"></span>
+          <sc-if value="{{st.notLast}}" hint-placeholder-val="{{true}}">
+            <span style="width: 2px; flex: 1; min-height: 30px; background: {{st.lineBg}};"></span>
+          </sc-if>
+        </div>
+        <div style="padding-bottom: 22px; display: grid; gap: 2px;">
+          <span style="font-size: 16px; line-height: 22px; color: {{st.textColor}}; font-weight: {{st.weight}};">{{st.label}}</span>
+          <span style="font-size: 14px; line-height: 20px; color: var(--ink-muted);">{{st.timeText}}</span>
+        </div>
+      </li>
+    </sc-for>
+  </ol>
+
+  <div style="padding: 4px 16px 0;">
+    <figure class="tm-gifttag" style="margin: 0; width: 330px;">
+      <p class="tm-gifttag__text" style="font-size: 19px; line-height: 26px;">Yeni evin hayırlı olsun, ilk çiçekler bizden.</p>
+      <figcaption class="tm-gifttag__from">Ayşe ve Can</figcaption>
+    </figure>
+  </div>
+
+  <section style="margin: 32px 16px 0; padding-top: 20px; border-top: 1px solid var(--line); display: grid; gap: 12px;">
+    <span style="font-size: 16px; line-height: 22px;">Bir sorun mu var? Nergis'e doğrudan ulaşın.</span>
+    <div style="display: flex; gap: 8px;">
+      <a class="tm-btn tm-btn--secondary" href="tel:+902163380000" style="flex: 1;">
+        <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" style="fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round;"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"></path></svg>
+        Ara
+      </a>
+      <a class="tm-btn tm-btn--secondary" href="https://wa.me/902163380000" style="flex: 1;">WhatsApp'tan yaz</a>
+    </div>
+    <span style="font-size: 12px; line-height: 16px; color: var(--ink-muted);">Bu sayfanın linki 0533 207 41 65 numarasına SMS ile gönderildi.</span>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"durum":{"editor":"enum","options":["alındı","yolda","teslim edildi"],"default":"alındı"},"$preview":{"width":390,"height":1360}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const durum = this.props.durum ?? 'alındı';
+    const s = durum === 'teslim edildi' ? 3 : durum === 'yolda' ? 2 : 0;
+    const base = [
+      { label: 'Sipariş alındı', done: '21 Ekim, 13:52', eta: '' },
+      { label: 'Hazırlanıyor', done: '22 Ekim, 10:15', eta: 'Yarın sabah başlar' },
+      { label: 'Yolda', done: 'Kurye Murat, 13:40', eta: 'Yola çıkınca SMS gelir' },
+      { label: 'Teslim edildi', done: '22 Ekim, 14:20', eta: '22 Ekim, 13:00–16:00 arası' }
+    ];
+    const steps = base.map((st, i) => ({
+      label: st.label,
+      timeText: i <= s ? st.done : st.eta,
+      dotBg: i <= s ? 'var(--stem)' : 'var(--paper)',
+      dotBorder: i <= s ? 'var(--stem)' : 'var(--line-strong)',
+      lineBg: i < s ? 'var(--stem)' : 'var(--line)',
+      textColor: i <= s ? 'var(--ink)' : 'var(--ink-muted)',
+      weight: i === s ? 600 : 400,
+      notLast: i !== base.length - 1
+    }));
+    const titles = ['Siparişiniz alındı', 'Siparişiniz alındı', 'Siparişiniz yolda', 'Teslim edildi'];
+    const subs = [
+      'Nergis Çiçek Atölyesi buketi yarın 13:00–16:00 arasında Elif Yılmaz\'a teslim edecek.',
+      'Nergis Çiçek Atölyesi buketi yarın 13:00–16:00 arasında Elif Yılmaz\'a teslim edecek.',
+      'Kurye Murat yolda. Buket 14:30 civarında Elif Yılmaz\'a ulaşır.',
+      'Buket 14:20\'de Elif Yılmaz\'a teslim edildi.'
+    ];
+    return {
+      theme: this.props.theme ?? 'light',
+      steps,
+      title: titles[s],
+      sub: subs[s],
+      delivered: s === 3
+    };
+  }
+}
+</script>
+</body>
+</html>

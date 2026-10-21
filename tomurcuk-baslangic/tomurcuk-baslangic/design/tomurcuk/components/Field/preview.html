@@ -1,0 +1,27 @@
+<!-- @dsCard group="Form" height=360 subtitle="Metin, çok satırlı, hata" -->
+<!doctype html>
+<html lang="tr">
+<head><meta charset="utf-8"><title>Field</title>
+<style>
+  .wrap { padding: 24px; display: grid; gap: 20px; max-width: 420px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <label class="tm-field">
+    <span class="tm-field__label">Alıcının adı</span>
+    <input class="tm-field__control" value="Elif Yılmaz">
+  </label>
+  <label class="tm-field tm-field--error">
+    <span class="tm-field__label">Alıcının telefonu</span>
+    <input class="tm-field__control" value="0532 412 88" inputmode="tel" aria-invalid="true">
+    <span class="tm-field__meta">Numara eksik görünüyor. 10 hane olmalı, ör. 0532 412 88 19.</span>
+  </label>
+  <label class="tm-field">
+    <span class="tm-field__label">Kart notu</span>
+    <textarea class="tm-field__control" placeholder="Karta yazılacak mesaj">Yeni evin hayırlı olsun, ilk çiçekler bizden.</textarea>
+    <span class="tm-field__meta"><span>İsterseniz boş bırakabilirsiniz.</span><span class="tm-field__count">46 / 250</span></span>
+  </label>
+</div>
+</body>
+</html>

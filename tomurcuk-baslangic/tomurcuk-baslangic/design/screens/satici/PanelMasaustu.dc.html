@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Panel, masaüstü</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/tomurcuk/tokens.css">
+<link rel="stylesheet" href="ds/tomurcuk/components/bundle.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&amp;family=Young+Serif&amp;display=swap">
+<style>
+body{margin:0}
+a{color:var(--stem)}a:hover{color:var(--stem-hover)}
+.nav-a{display:flex;align-items:center;justify-content:space-between;height:40px;padding:0 12px;border-radius:var(--radius-m);color:var(--ink);font-size:15px;font-weight:500;text-decoration:none}
+.nav-a[aria-current="page"]{background:var(--kraft);font-weight:600}
+.grp{margin:0;padding:18px 0 4px;display:flex;justify-content:space-between;font-size:13px;line-height:18px;font-weight:500;color:var(--ink-muted)}
+.dl{display:grid;gap:2px}
+.dl-k{font-size:13px;line-height:18px;color:var(--ink-muted)}
+</style>
+</helmet>
+<div data-theme="{{theme}}" style="min-height: 100vh; background: var(--paper); color: var(--ink); font-family: var(--font-sans); display: flex; flex-wrap: wrap;">
+
+  <aside style="flex: 1 1 200px; max-width: 100%; box-sizing: border-box; padding: 24px 16px; border-right: 1px solid var(--line); display: flex; flex-direction: column; gap: 24px;">
+    <div style="display: grid; gap: 2px; padding: 0 12px;">
+      <span style="font-family: var(--font-display); font-size: 22px; line-height: 28px;">Nergis</span>
+      <span style="font-size: 13px; color: var(--ink-muted);">Çiçek Atölyesi</span>
+    </div>
+    <nav aria-label="Ana menü" style="display: grid; gap: 2px;">
+      <a class="nav-a" href="#" aria-current="page"><span>Bugün</span><span style="font-weight: 400; color: var(--ink-muted);">14</span></a>
+      <a class="nav-a" href="#"><span>Siparişler</span></a>
+      <a class="nav-a" href="#"><span>Müşteriler</span><span style="font-size: 13px; font-weight: 500; color: var(--peony-ink);">5 özel gün</span></a>
+      <a class="nav-a" href="#"><span>Ürünler</span></a>
+      <a class="nav-a" href="#"><span>Teslimat ayarları</span></a>
+      <a class="nav-a" href="#"><span>Dükkân sayfası</span></a>
+    </nav>
+    <a class="tm-btn tm-btn--primary" href="#" style="margin: 0 4px;">Sipariş ekle</a>
+    <a class="nav-a" href="#" style="color: var(--ink-muted); font-weight: 400;"><span>Yardım ve destek</span></a>
+  </aside>
+
+  <main style="flex: 999 1 640px; min-width: 0; box-sizing: border-box; padding: 28px 32px 40px; display: flex; flex-direction: column; gap: 20px;">
+    <header style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px;">
+      <div style="display: grid; gap: 2px;">
+        <span style="font-size: 14px; color: var(--ink-muted);">22 Ekim Çarşamba</span>
+        <h1 style="margin: 0; font-family: var(--font-display); font-weight: 400; font-size: 36px; line-height: 42px;">Bugün</h1>
+      </div>
+      <div style="display: flex; flex-wrap: wrap; gap: 8px; flex: 0 1 560px; justify-content: flex-end;">
+        <label style="position: relative; flex: 1 1 220px;">
+          <span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0);">Sipariş ara</span>
+          <input class="tm-field__control" placeholder="İsim, telefon veya sipariş no" style="width: 100%; height: 40px; font-size: 15px;">
+        </label>
+        <button type="button" class="tm-btn tm-btn--secondary" style="height: 40px;">Bugünün fişlerini yazdır</button>
+      </div>
+    </header>
+
+    <div class="tm-band">
+      <span class="tm-band__text"><strong>14 teslimat</strong>, toplam 11.420 TL. 3 yeni sipariş onayınızı bekliyor, 1 sipariş gecikti.</span>
+    </div>
+
+    <div style="display: flex; flex-wrap: wrap; gap: 32px; align-items: flex-start;">
+      <section aria-label="Bugünün siparişleri" style="flex: 1 1 420px; min-width: 0;">
+        <nav aria-label="Gün" style="display: flex; gap: 24px; border-bottom: 1px solid var(--line);">
+          <a href="#" aria-current="page" style="padding: 10px 0; border-bottom: 2px solid var(--ink); margin-bottom: -1px; color: var(--ink); font-size: 15px; font-weight: 600; text-decoration: none;">Bugün <span style="font-weight: 400; color: var(--ink-muted);">14</span></a>
+          <a href="#" style="padding: 10px 0; color: var(--ink-muted); font-size: 15px; font-weight: 500; text-decoration: none;">Yarın <span style="font-weight: 400;">9</span></a>
+          <a href="#" style="padding: 10px 0; color: var(--ink-muted); font-size: 15px; font-weight: 500; text-decoration: none;">Bu hafta <span style="font-weight: 400;">31</span></a>
+        </nav>
+        <h2 class="grp"><span>Öğleden önce</span><span>3</span></h2>
+        <ul class="tm-orders">
+          <li class="tm-order tm-order--late">
+            <div><span class="tm-order__time">11:40</span><span class="tm-order__slot">20 dk gecikti</span></div>
+            <div><div class="tm-order__who">Zeynep Aksoy</div><div class="tm-order__where">Moda, Kadıköy</div><div class="tm-order__items">Mevsim buketi (O), vazo</div></div>
+            <div class="tm-order__side"><span class="tm-status tm-status--preparing">Hazırlanıyor</span><span class="tm-order__amount">1.250 TL</span></div>
+          </li>
+          <li class="tm-order">
+            <div><span class="tm-order__time">12:00</span><span class="tm-order__slot">10–13</span></div>
+            <div><div class="tm-order__who">Can Öztürk</div><div class="tm-order__where">Acıbadem, Üsküdar</div><div class="tm-order__items">Mor orkide</div></div>
+            <div class="tm-order__side"><span class="tm-status tm-status--onway">Yolda</span><span class="tm-order__amount">1.690 TL</span></div>
+          </li>
+          <li class="tm-order">
+            <div><span class="tm-order__time">12:30</span><span class="tm-order__slot">10–13</span></div>
+            <div><div class="tm-order__who">Selin Arslan</div><div class="tm-order__where">Fenerbahçe, Kadıköy</div><div class="tm-order__items">Kır buketi</div></div>
+            <div class="tm-order__side"><span class="tm-status tm-status--delivered">Teslim edildi</span><span class="tm-order__amount">740 TL</span></div>
+          </li>
+        </ul>
+        <h2 class="grp"><span>Öğleden sonra</span><span>8</span></h2>
+        <ul class="tm-orders">
+          <li class="tm-order tm-order--selected" style="margin: 0 -12px; padding-left: 12px; padding-right: 12px;">
+            <div><span class="tm-order__time">13–16</span></div>
+            <div><div class="tm-order__who">Elif Yılmaz</div><div class="tm-order__where">Caferağa, Kadıköy</div><div class="tm-order__items">Bu haftanın lalesi (O), vazo</div></div>
+            <div class="tm-order__side"><span class="tm-status tm-status--new">Yeni</span><span class="tm-order__amount">1.320 TL</span></div>
+          </li>
+          <li class="tm-order">
+            <div><span class="tm-order__time">14:00</span><span class="tm-order__slot">Kesin saat</span></div>
+            <div><div class="tm-order__who">Mert Kaya</div><div class="tm-order__where">Kuzguncuk, Üsküdar</div><div class="tm-order__items">Beyaz güller (12 dal)</div></div>
+            <div class="tm-order__side"><span class="tm-status tm-status--new">Yeni</span><span class="tm-order__amount">1.070 TL</span></div>
+          </li>
+          <li class="tm-order">
+            <div><span class="tm-order__time">13–16</span></div>
+            <div><div class="tm-order__who">Duygu Şahin</div><div class="tm-order__where">Ataşehir merkez</div><div class="tm-order__items">Ayaklı çelenk</div></div>
+            <div class="tm-order__side"><span class="tm-status tm-status--muted">Ödenmedi</span><span class="tm-order__amount">2.520 TL</span></div>
+          </li>
+        </ul>
+      </section>
+
+      <aside aria-label="Sipariş detayı" style="flex: 0 1 360px; min-width: 0; box-sizing: border-box; padding: 24px; background: var(--paper-raised); border: 1px solid var(--line); border-radius: var(--radius-l); display: grid; gap: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <span class="tm-status tm-status--new">Yeni</span>
+          <span style="font-size: 13px; color: var(--ink-muted);">T-4821, linkten</span>
+        </div>
+        <h2 style="margin: -8px 0 0; font-family: var(--font-display); font-weight: 400; font-size: 26px; line-height: 32px;">Bugün, 13:00–16:00</h2>
+        <div class="dl"><span class="dl-k">Alıcı</span><span style="font-size: 16px; font-weight: 600;">Elif Yılmaz</span><span style="font-size: 15px;">0532 412 88 19</span><span style="font-size: 14px; line-height: 20px; color: var(--ink-muted);">Moda Cad. Şair Nefi Sok. No: 12, Daire 4, Caferağa, Kadıköy</span></div>
+        <div style="padding: 10px 12px; background: var(--pollen-soft); color: var(--pollen-ink); border-radius: var(--radius-m); font-size: 14px; line-height: 20px;">Kurye notu: zil çalışmıyor, arayın.</div>
+        <div class="dl"><span class="dl-k">Ürünler</span><span style="font-size: 15px; line-height: 22px;">Bu haftanın lalesi, orta, 25 dal</span><span style="font-size: 15px; line-height: 22px;">Cam vazo</span><span style="font-size: 15px; line-height: 22px; font-weight: 600; margin-top: 4px;">1.320 TL, kartla ödendi</span></div>
+        <figure class="tm-gifttag" style="margin: 0; max-width: 100%;">
+          <p class="tm-gifttag__text" style="font-size: 18px; line-height: 25px;">Yeni evin hayırlı olsun, ilk çiçekler bizden.</p>
+          <figcaption class="tm-gifttag__from">Ayşe ve Can</figcaption>
+        </figure>
+        <div class="dl"><span class="dl-k">Gönderen</span><span style="font-size: 15px;">Ayşe Demir, 6. siparişi</span></div>
+        <div style="display: flex; gap: 8px;">
+          <button type="button" class="tm-btn tm-btn--primary" style="flex: 1;">Hazırlamaya başla</button>
+          <button type="button" class="tm-btn tm-btn--secondary" aria-label="Fişi yazdır" style="width: 48px; padding: 0;">
+            <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" style="fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linejoin: round;"><path d="M7 9V4h10v5M7 17H5a1 1 0 0 1-1-1v-6a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1h-2M7 14h10v6H7z"></path></svg>
+          </button>
+        </div>
+      </aside>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":1280,"height":960}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { theme: this.props.theme ?? 'light' };
+  }
+}
+</script>
+</body>
+</html>

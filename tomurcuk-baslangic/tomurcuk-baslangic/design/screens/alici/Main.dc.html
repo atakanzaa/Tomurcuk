@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Vitrin</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/tomurcuk/tokens.css">
+<link rel="stylesheet" href="ds/tomurcuk/components/bundle.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&amp;family=Young+Serif&amp;display=swap">
+<style>
+body{margin:0}
+a{color:var(--stem)}a:hover{color:var(--stem-hover)}
+</style>
+</helmet>
+<div data-theme="{{theme}}" style="width: 390px; height: 1820px; box-sizing: border-box; background: var(--paper); color: var(--ink); font-family: var(--font-sans);">
+
+  <header style="display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; border-bottom: 1px solid var(--line);">
+    <span style="font-family: var(--font-display); font-size: 17px; line-height: 22px;">Nergis</span>
+    <a href="Takip.dc.html" style="font-size: 14px; line-height: 20px; font-weight: 500; text-decoration: underline; text-underline-offset: 3px;">Siparişim nerede?</a>
+  </header>
+
+  <section style="padding: 32px 16px 24px; display: flex; flex-direction: column; gap: 12px;">
+    <h1 style="margin: 0; font-family: var(--font-display); font-weight: 400; font-size: 44px; line-height: 46px; letter-spacing: -0.5px;">Nergis Çiçek Atölyesi</h1>
+    <p style="margin: 0; font-size: 16px; line-height: 24px; color: var(--ink-muted); max-width: 320px;">Moda'da 2009'dan beri. Kadıköy, Üsküdar ve Ataşehir'e aynı gün teslim ediyoruz.</p>
+  </section>
+
+  <div style="padding: 0 16px;">
+    <div class="tm-band" style="padding: 14px 18px;">
+      <span class="tm-band__text" style="font-size: 15px; line-height: 22px;"><strong>Bugün teslim</strong> için 15:00'e kadar sipariş verin.</span>
+      <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" style="flex: none; fill: none; stroke: var(--ink); stroke-width: 1.6; stroke-linecap: round;"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>
+    </div>
+  </div>
+
+  <a href="Urun.dc.html" style="display: grid; gap: 12px; padding: 32px 16px 0; color: var(--ink); text-decoration: none;">
+    <div style="height: 420px; border-radius: var(--radius-l); overflow: hidden; background: var(--kraft);">
+      <svg viewBox="0 0 358 420" width="358" height="420" aria-hidden="true" style="display: block;">
+        <rect x="128" y="168" width="5" height="252" style="fill: var(--stem);"></rect>
+        <rect x="176" y="120" width="5" height="300" style="fill: var(--stem);"></rect>
+        <rect x="224" y="188" width="5" height="232" style="fill: var(--stem);"></rect>
+        <rect x="80" y="224" width="5" height="196" style="fill: var(--stem);"></rect>
+        <rect x="270" y="236" width="5" height="184" style="fill: var(--stem);"></rect>
+        <rect x="110" y="104" width="42" height="72" rx="21" style="fill: var(--peony);"></rect>
+        <rect x="158" y="56" width="42" height="72" rx="21" style="fill: var(--peony);"></rect>
+        <rect x="206" y="124" width="42" height="72" rx="21" style="fill: var(--pollen);"></rect>
+        <rect x="62" y="160" width="42" height="72" rx="21" style="fill: var(--pollen);"></rect>
+        <rect x="252" y="172" width="42" height="72" rx="21" style="fill: var(--peony);"></rect>
+        <path d="M0 340 C 90 300, 140 380, 358 330 L 358 420 L 0 420 Z" style="fill: var(--kraft-deep);"></path>
+      </svg>
+    </div>
+    <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px;">
+      <h2 style="margin: 0; font-family: var(--font-display); font-weight: 400; font-size: 26px; line-height: 32px;">Bu haftanın lalesi</h2>
+      <span style="font-size: 16px; line-height: 20px; font-weight: 500;">720 TL</span>
+    </div>
+    <p style="margin: -4px 0 0; font-size: 14px; line-height: 20px; color: var(--ink-muted);">Hollanda lalesi, 15 dal, kraft sarımlı. Haftada bir değişir.</p>
+  </a>
+
+  <nav aria-label="Kategoriler" style="display: flex; gap: 8px; padding: 40px 16px 20px; overflow-x: auto;">
+    <a href="#" aria-current="true" style="flex: none; display: inline-flex; align-items: center; height: 36px; padding: 0 16px; border-radius: var(--radius-pill); background: var(--stem); color: var(--on-stem); font-size: 14px; font-weight: 500; text-decoration: none;">Hepsi</a>
+    <a href="#" style="flex: none; display: inline-flex; align-items: center; height: 36px; padding: 0 16px; border-radius: var(--radius-pill); border: 1px solid var(--line-strong); color: var(--ink); font-size: 14px; font-weight: 500; text-decoration: none;">Buketler</a>
+    <a href="#" style="flex: none; display: inline-flex; align-items: center; height: 36px; padding: 0 16px; border-radius: var(--radius-pill); border: 1px solid var(--line-strong); color: var(--ink); font-size: 14px; font-weight: 500; text-decoration: none;">Orkideler</a>
+    <a href="#" style="flex: none; display: inline-flex; align-items: center; height: 36px; padding: 0 16px; border-radius: var(--radius-pill); border: 1px solid var(--line-strong); color: var(--ink); font-size: 14px; font-weight: 500; text-decoration: none;">Saksı çiçekleri</a>
+    <a href="#" style="flex: none; display: inline-flex; align-items: center; height: 36px; padding: 0 16px; border-radius: var(--radius-pill); border: 1px solid var(--line-strong); color: var(--ink); font-size: 14px; font-weight: 500; text-decoration: none;">Çelenkler</a>
+  </nav>
+
+  <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 16px; row-gap: 28px; padding: 0 16px;">
+    <a class="tm-product" href="Urun.dc.html">
+      <div class="tm-product__photo">
+        <svg viewBox="0 0 171 214" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" aria-hidden="true" style="display: block;">
+          <rect x="83" y="104" width="4" height="110" style="fill: var(--stem);"></rect>
+          <circle cx="70" cy="92" r="30" style="fill: var(--peony);"></circle>
+          <circle cx="110" cy="80" r="22" style="fill: var(--pollen);"></circle>
+          <circle cx="98" cy="122" r="18" style="fill: var(--paper);"></circle>
+          <circle cx="70" cy="92" r="9" style="fill: var(--paper);"></circle>
+        </svg>
+      </div>
+      <h3 class="tm-product__name" style="font-size: 20px; line-height: 24px;">Mevsim buketi</h3>
+      <div class="tm-product__meta" style="margin-top: -6px;"><span>Aynı gün</span><span class="tm-product__price" style="white-space: nowrap;">850 TL'den</span></div>
+    </a>
+    <a class="tm-product" href="Urun.dc.html">
+      <div class="tm-product__photo">
+        <svg viewBox="0 0 171 214" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" aria-hidden="true" style="display: block;">
+          <rect x="54" y="110" width="4" height="104" style="fill: var(--stem);"></rect>
+          <rect x="84" y="96" width="4" height="118" style="fill: var(--stem);"></rect>
+          <rect x="114" y="116" width="4" height="98" style="fill: var(--stem);"></rect>
+          <circle cx="56" cy="100" r="20" style="fill: var(--paper-raised); stroke: var(--kraft-deep); stroke-width: 2;"></circle>
+          <circle cx="86" cy="80" r="22" style="fill: var(--paper-raised); stroke: var(--kraft-deep); stroke-width: 2;"></circle>
+          <circle cx="116" cy="104" r="20" style="fill: var(--paper-raised); stroke: var(--kraft-deep); stroke-width: 2;"></circle>
+        </svg>
+      </div>
+      <h3 class="tm-product__name" style="font-size: 20px; line-height: 24px;">Beyaz güller</h3>
+      <div class="tm-product__meta" style="margin-top: -6px;"><span>12 dal</span><span class="tm-product__price" style="white-space: nowrap;">980 TL</span></div>
+    </a>
+    <a class="tm-product" href="Urun.dc.html">
+      <div class="tm-product__photo">
+        <svg viewBox="0 0 171 214" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" aria-hidden="true" style="display: block;">
+          <path d="M60 214 C 58 150, 70 100, 112 60" style="fill: none; stroke: var(--stem); stroke-width: 4;"></path>
+          <ellipse cx="80" cy="104" rx="16" ry="11" style="fill: var(--peony);"></ellipse>
+          <ellipse cx="96" cy="82" rx="15" ry="10" style="fill: var(--peony);"></ellipse>
+          <ellipse cx="114" cy="64" rx="13" ry="9" style="fill: var(--peony);"></ellipse>
+          <circle cx="80" cy="104" r="4" style="fill: var(--pollen);"></circle>
+          <rect x="34" y="168" width="60" height="46" rx="8" style="fill: var(--kraft-deep);"></rect>
+        </svg>
+      </div>
+      <h3 class="tm-product__name" style="font-size: 20px; line-height: 24px;">Mor orkide</h3>
+      <div class="tm-product__meta" style="margin-top: -6px;"><span>Saksıda</span><span class="tm-product__price" style="white-space: nowrap;">1.600 TL</span></div>
+    </a>
+    <a class="tm-product" href="Urun.dc.html">
+      <div class="tm-product__photo">
+        <svg viewBox="0 0 171 214" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" aria-hidden="true" style="display: block;">
+          <rect x="48" y="96" width="3" height="118" style="fill: var(--stem);"></rect>
+          <rect x="72" y="76" width="3" height="138" style="fill: var(--stem);"></rect>
+          <rect x="96" y="90" width="3" height="124" style="fill: var(--stem);"></rect>
+          <rect x="120" y="104" width="3" height="110" style="fill: var(--stem);"></rect>
+          <rect x="40" y="70" width="19" height="32" rx="9.5" style="fill: var(--pollen);"></rect>
+          <rect x="64" y="50" width="19" height="32" rx="9.5" style="fill: var(--peony);"></rect>
+          <rect x="88" y="64" width="19" height="32" rx="9.5" style="fill: var(--pollen);"></rect>
+          <rect x="112" y="78" width="19" height="32" rx="9.5" style="fill: var(--peony);"></rect>
+        </svg>
+      </div>
+      <h3 class="tm-product__name" style="font-size: 20px; line-height: 24px;">Kır buketi</h3>
+      <div class="tm-product__meta" style="margin-top: -6px;"><span>Aynı gün</span><span class="tm-product__price" style="white-space: nowrap;">650 TL'den</span></div>
+    </a>
+  </div>
+
+  <footer style="margin-top: 48px; padding: 32px 16px 28px; border-top: 1px solid var(--line); display: grid; gap: 16px;">
+    <div style="display: grid; gap: 4px;">
+      <span style="font-family: var(--font-display); font-size: 20px; line-height: 26px;">Nergis Çiçek Atölyesi</span>
+      <span style="font-size: 14px; line-height: 20px; color: var(--ink-muted);">Caferağa Mah. Moda Cad. No: 41, Kadıköy</span>
+      <span style="font-size: 14px; line-height: 20px; color: var(--ink-muted);">Her gün 09:00–20:00</span>
+    </div>
+    <div style="display: flex; gap: 8px;">
+      <a class="tm-btn tm-btn--secondary tm-btn--s" href="tel:+902163380000">Ara</a>
+      <a class="tm-btn tm-btn--secondary tm-btn--s" href="https://wa.me/902163380000">WhatsApp'tan yaz</a>
+    </div>
+    <span style="font-size: 12px; line-height: 16px; color: var(--ink-muted);">Tomurcuk ile hazırlandı</span>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":390,"height":1820}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { theme: this.props.theme ?? 'light' };
+  }
+}
+</script>
+</body>
+</html>

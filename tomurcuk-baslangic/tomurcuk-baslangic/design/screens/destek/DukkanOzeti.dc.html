@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Dükkân özeti</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/tomurcuk/tokens.css">
+<link rel="stylesheet" href="ds/tomurcuk/components/bundle.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&amp;family=Young+Serif&amp;display=swap">
+<style>
+body{margin:0}
+a{color:var(--stem)}a:hover{color:var(--stem-hover)}
+.h2{margin:0 0 4px;font-size:16px;line-height:22px;font-weight:600}
+.t{width:100%;border-collapse:collapse;font-size:14px;line-height:20px}
+.t th{text-align:left;font-weight:500;font-size:12px;line-height:16px;color:var(--ink-muted);padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+.t td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.nowrap{white-space:nowrap}
+.muted{color:var(--ink-muted)}
+.fact{display:grid;gap:2px;padding:0 24px;border-left:1px solid var(--line)}
+.fact:first-child{padding-left:0;border-left:0}
+.fact-k{font-size:12px;line-height:16px;color:var(--ink-muted)}
+.fact-v{font-size:15px;line-height:22px;font-weight:600}
+.note{display:grid;gap:4px;padding:12px 0;border-bottom:1px solid var(--line);font-size:14px;line-height:20px}
+.note-h{font-size:12px;line-height:16px;color:var(--ink-muted)}
+</style>
+</helmet>
+<div data-theme="{{theme}}" style="position: relative; min-height: 100vh; background: var(--paper); color: var(--ink); font-family: var(--font-sans);">
+
+  <header style="display: flex; flex-wrap: wrap; align-items: center; gap: 16px 32px; padding: 12px 24px; border-bottom: 1px solid var(--line);">
+    <span style="font-family: var(--font-display); font-size: 19px; line-height: 24px;">Tomurcuk <span style="font-family: var(--font-sans); font-size: 14px; color: var(--ink-muted);">Destek</span></span>
+    <label style="flex: 1 1 320px; max-width: 560px;">
+      <span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0);">Ara</span>
+      <input class="tm-field__control" placeholder="Sipariş no, telefon, dükkân veya alıcı adı" style="height: 38px; font-size: 14px;">
+    </label>
+    <div style="margin-left: auto; display: flex; align-items: center; gap: 10px;">
+      <div style="display: grid; text-align: right;">
+        <span style="font-size: 14px; font-weight: 600;">Selin Karaca</span>
+        <span style="font-size: 12px; color: var(--ink-muted);">Destek temsilcisi</span>
+      </div>
+      <span aria-hidden="true" style="width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: var(--stem-soft); color: var(--stem-ink); font-size: 14px; font-weight: 600;">SK</span>
+    </div>
+  </header>
+
+  <div style="max-width: 1360px; margin: 0 auto; padding: 20px 32px 48px; box-sizing: border-box; display: grid; gap: 24px;">
+    <a href="Main.dc.html" style="display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 500; color: var(--ink); text-decoration: none; justify-self: start;">
+      <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" style="fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round;"><path d="M15 5l-7 7 7 7"></path></svg>
+      Dükkânlar
+    </a>
+
+    <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px;">
+      <div style="display: grid; gap: 6px;">
+        <h1 style="margin: 0; font-family: var(--font-display); font-weight: 400; font-size: 34px; line-height: 40px;">Nergis Çiçek Atölyesi</h1>
+        <span style="font-size: 14px; color: var(--ink-muted);">Kadıköy, Pro paket, Ağustos 2025'ten beri</span>
+      </div>
+      <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+        <button type="button" class="tm-btn tm-btn--secondary">Not ekle</button>
+        <button type="button" class="tm-btn tm-btn--primary">Dükkân adına gir</button>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-wrap: wrap; row-gap: 16px; padding: 16px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);">
+      <div class="fact"><span class="fact-k">Durum</span><span class="fact-v" style="color: var(--stem);">Aktif</span></div>
+      <div class="fact"><span class="fact-k">Bu ay sipariş</span><span class="fact-v">312</span></div>
+      <div class="fact"><span class="fact-k">Açık talep</span><span class="fact-v">2</span></div>
+      <div class="fact"><span class="fact-k">Ödeme hesabı</span><span class="fact-v">iyzico, onaylı</span></div>
+      <div class="fact"><span class="fact-k">Son giriş</span><span class="fact-v">Bugün 14:05, Ayla Er</span></div>
+    </div>
+
+    <div style="display: flex; flex-wrap: wrap; gap: 40px; align-items: flex-start;">
+      <div style="flex: 999 1 600px; min-width: 0; display: grid; gap: 32px;">
+        <section>
+          <h2 class="h2">Son siparişler</h2>
+          <div style="overflow-x: auto;">
+            <table class="t">
+              <thead><tr><th>Sipariş</th><th>Teslim</th><th>Alıcı</th><th>Tutar</th><th>Durum</th></tr></thead>
+              <tbody>
+                <tr><td class="nowrap"><a href="TalepDetay.dc.html">T-4821</a></td><td class="nowrap">Bugün 13–16</td><td>Elif Y., Caferağa</td><td class="nowrap">1.320 TL</td><td><span class="tm-status tm-status--onway">Yolda</span></td></tr>
+                <tr><td class="nowrap"><a href="#">T-4820</a></td><td class="nowrap">Bugün 11:40</td><td>Zeynep A., Moda</td><td class="nowrap">1.250 TL</td><td><span class="tm-status tm-status--preparing">Hazırlanıyor</span></td></tr>
+                <tr><td class="nowrap"><a href="#">T-4818</a></td><td class="nowrap">Bugün 12:00</td><td>Can Ö., Acıbadem</td><td class="nowrap">1.690 TL</td><td><span class="tm-status tm-status--onway">Yolda</span></td></tr>
+                <tr><td class="nowrap"><a href="#">T-4815</a></td><td class="nowrap">Bugün 12:30</td><td>Selin A., Fenerbahçe</td><td class="nowrap">740 TL</td><td><span class="tm-status tm-status--delivered">Teslim edildi</span></td></tr>
+                <tr><td class="nowrap"><a href="#">T-4809</a></td><td class="nowrap">Dün 16–19</td><td>Okan Y., Ataşehir</td><td class="nowrap">2.400 TL</td><td><span class="tm-status tm-status--failed">Teslim edilemedi</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section>
+          <h2 class="h2">Son bildirimler</h2>
+          <div style="overflow-x: auto;">
+            <table class="t">
+              <thead><tr><th>Saat</th><th>Kanal</th><th>Mesaj</th><th>Kime</th><th>Sonuç</th></tr></thead>
+              <tbody>
+                <tr><td class="nowrap">13:41</td><td>SMS</td><td>Sipariş yolda, T-4821</td><td class="nowrap">0532 *** ** 19</td><td style="color: var(--danger); font-weight: 600;">İletilemedi</td></tr>
+                <tr><td class="nowrap">13:40</td><td>SMS</td><td>Sipariş yolda, T-4818</td><td class="nowrap">0541 *** ** 03</td><td>İletildi</td></tr>
+                <tr><td class="nowrap">12:52</td><td>SMS</td><td>Teslim edildi, T-4815</td><td class="nowrap">0505 *** ** 47</td><td>İletildi</td></tr>
+                <tr><td class="nowrap">09:00</td><td>E-posta</td><td>Günün siparişleri özeti</td><td>dükkân sahibi</td><td>İletildi</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <span style="display: block; margin-top: 8px; font-size: 13px; color: var(--ink-muted);">Bu ay 286 SMS gönderildi, paket sınırı 500.</span>
+        </section>
+      </div>
+
+      <aside style="flex: 1 1 340px; min-width: 0; display: grid; gap: 28px;">
+        <section>
+          <h2 class="h2">Ekip notları <span style="font-weight: 400; font-size: 13px; color: var(--ink-muted);">dükkân görmez</span></h2>
+          <div style="border-top: 1px solid var(--line);">
+            <div class="note"><span class="note-h">Selin K., 3 Ekim</span><span>14 Şubat için kapasiteyi aralık başına 25'e çıkarmak istiyorlar. Ocak'ta hatırlat.</span></div>
+            <div class="note"><span class="note-h">Mert A., 12 Eylül</span><span>Instagram linkini bio'ya biz ekledik. Sahibi teknik konularda telefonla konuşmayı tercih ediyor.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <h2 class="h2">Kullanıcılar</h2>
+          <div style="border-top: 1px solid var(--line);">
+            <div class="note" style="grid-template-columns: 1fr auto;"><span><b style="font-weight: 600;">Ayla Er</b><br><span class="muted">Dükkân sahibi</span></span><span class="muted" style="align-self: center;">Bugün</span></div>
+            <div class="note" style="grid-template-columns: 1fr auto;"><span><b style="font-weight: 600;">Kemal Er</b><br><span class="muted">Çalışan</span></span><span class="muted" style="align-self: center;">Dün</span></div>
+          </div>
+        </section>
+
+        <section>
+          <h2 class="h2">Açık talepler</h2>
+          <div style="border-top: 1px solid var(--line);">
+            <div class="note"><a href="TalepDetay.dc.html" style="font-weight: 600;">Kurye adresi bulamıyor</a><span class="note-h">Acil, Selin K., 6 dk</span></div>
+            <div class="note"><a href="#" style="font-weight: 600;">Çikolata seçeneği fiyatı güncellenmiyor</a><span class="note-h">Normal, Mert A., dün</span></div>
+          </div>
+        </section>
+      </aside>
+    </div>
+  </div>
+
+  <sc-if value="{{showDialog}}" hint-placeholder-val="{{false}}">
+    <div style="position: absolute; inset: 0; background: rgba(35, 38, 31, 0.45); display: grid; place-items: start center; padding-top: 140px;">
+      <div role="dialog" aria-modal="true" aria-labelledby="imp-title" style="width: min(480px, calc(100% - 32px)); box-sizing: border-box; padding: 24px; background: var(--paper-raised); border-radius: var(--radius-l); box-shadow: var(--shadow-lift); display: grid; gap: 16px;">
+        <h2 id="imp-title" style="margin: 0; font-family: var(--font-display); font-weight: 400; font-size: 24px; line-height: 30px;">Nergis adına gir</h2>
+        <p style="margin: 0; font-size: 15px; line-height: 22px; color: var(--ink-muted);">30 dakika boyunca dükkânın panelini onun gördüğü gibi görürsünüz. Yaptığınız her işlem denetim kaydına yazılır ve Ayla Er'e bildirim gider. Ödeme hesabını değiştiremezsiniz.</p>
+        <label class="tm-field">
+          <span class="tm-field__label">Gerekçe</span>
+          <select class="tm-field__control">
+            <option>Talep T-1187: teslimat adresi sorunu</option>
+            <option>Dükkân telefonda yardım istedi</option>
+            <option>Diğer, açıklama yazacağım</option>
+          </select>
+        </label>
+        <div style="display: flex; justify-content: flex-end; gap: 8px;">
+          <button type="button" class="tm-btn tm-btn--secondary">Vazgeç</button>
+          <button type="button" class="tm-btn tm-btn--primary">30 dakikalığına gir</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"showDialog":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":960}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { theme: this.props.theme ?? 'light', showDialog: this.props.showDialog ?? false };
+  }
+}
+</script>
+</body>
+</html>
