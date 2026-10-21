@@ -1,0 +1,122 @@
+/* Mobil: kategori çipleri yatay kayar, kenardan kenara. */
+.categoryChips {
+  display: flex;
+  gap: var(--space-2);
+  overflow-x: auto;
+  margin-inline: calc(-1 * var(--space-4));
+  padding: var(--space-7) var(--space-4) var(--space-5);
+  scrollbar-width: none;
+}
+
+.categoryChips::-webkit-scrollbar {
+  display: none;
+}
+
+/* Bölüm başlığı mobilde yalnızca ekran okuyuculara. */
+.heading {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.filters {
+  display: none;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: var(--space-4);
+  row-gap: var(--space-6);
+}
+
+.grid :global(.tm-product__name) {
+  font-size: 20px;
+  line-height: 24px;
+}
+
+.grid :global(.tm-product__meta) {
+  margin-top: calc(-1 * var(--space-1));
+}
+
+.grid :global(.tm-product__price) {
+  white-space: nowrap;
+}
+
+.empty {
+  margin: 0;
+  padding-block: var(--space-7);
+  color: var(--ink-muted);
+  text-align: center;
+}
+
+@media (min-width: 640px) {
+  .categoryChips {
+    margin-inline: calc(-1 * var(--space-6));
+    padding-inline: var(--space-6);
+  }
+
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    column-gap: var(--space-5);
+  }
+}
+
+@media (min-width: 1024px) {
+  .catalog {
+    padding-top: var(--space-8);
+  }
+
+  .categoryChips {
+    display: none;
+  }
+
+  .headingRow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding-bottom: var(--space-5);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .heading {
+    position: static;
+    width: auto;
+    height: auto;
+    margin: 0;
+    overflow: visible;
+    clip-path: none;
+    white-space: normal;
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 32px;
+    line-height: 38px;
+  }
+
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    row-gap: var(--space-7);
+    padding-top: var(--space-6);
+  }
+
+  .grid :global(.tm-product__name) {
+    font-size: 23px;
+    line-height: 28px;
+  }
+
+  .grid :global(.tm-product__meta) {
+    margin-top: 0;
+  }
+}

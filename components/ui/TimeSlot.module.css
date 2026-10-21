@@ -1,0 +1,20 @@
+/* "Bugün için kapandı": tüm aralıklar tek satırda, dolu aralıkla aynı kesik kenar. */
+.closed {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: var(--space-3);
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius-m);
+  color: var(--ink-muted);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 20px;
+  font-weight: 500;
+}
+
+.closed small {
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 400;
+}

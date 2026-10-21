@@ -1,0 +1,5 @@
+/* Dükkân verisi gelene kadar gösterilen boş kabuk; yalnızca listelenmemiş dükkânlarda görünür. */
+.shell {
+  min-height: 100vh;
+  background: var(--paper);
+}

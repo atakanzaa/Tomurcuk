@@ -1,0 +1,10 @@
+/* tm-btn--s ve sessiz buton görünüşte 36px; dokunma alanı 44px'e tamamlanır. */
+.hitArea {
+  position: relative;
+}
+
+.hitArea::after {
+  content: "";
+  position: absolute;
+  inset: -4px 0;
+}
