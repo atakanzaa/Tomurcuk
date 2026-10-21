@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import { getDeliveryDays, getDeliveryZones, getTimeSlots } from "@/lib/api";
 import { BOOKING_WINDOW_DAYS } from "@/lib/checkout/limits";
 import { productPath, shopPath } from "@/lib/routes";
-import { FlowHeader } from "../../_components/flow/FlowHeader";
+import { FlowHeader } from "@/components/flow/FlowHeader";
 import { FlowNotice } from "../FlowNotice";
 import { loadCheckout } from "../_load";
 import { DeliveryForm } from "./DeliveryForm";

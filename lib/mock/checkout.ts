@@ -22,7 +22,8 @@ import { formatTimeRange, zonedNow } from "@/lib/format";
 import { BOOKING_WINDOW_DAYS } from "@/lib/checkout/limits";
 import { formatPhone, normalizePhone } from "@/lib/phone";
 import { deliveryZones, products, remainingBySlot, shops, timeSlots } from "./data";
-import { randomToken, store, type StoredDraft } from "./store";
+import { upsertCustomer } from "./panel";
+import { appendNotification, getStore, randomToken, type StoredDraft } from "./store";
 
 const DRAFT_TTL_MS = 2 * 60 * 60 * 1000;
 const RESERVATION_MS = 10 * 60 * 1000;
@@ -33,10 +34,10 @@ const shopById = (id: string): Shop | undefined => shops.find((s) => s.id === id
 const nowIn = (shop: Shop) => zonedNow(new Date(), shop.timeZone);
 
 function liveDraft(shopId: string, draftId: string): StoredDraft | null {
-  const draft = store.drafts.get(draftId);
+  const draft = getStore().drafts.get(draftId);
   if (!draft || draft.shopId !== shopId) return null;
   if (draft.expiresAt < Date.now()) {
-    store.drafts.delete(draftId);
+    getStore().drafts.delete(draftId);
     return null;
   }
   return draft;
@@ -75,9 +76,9 @@ function remaining(date: string, slotId: string, exceptDraftId?: string): number
   const slot = timeSlots.find((s) => s.id === slotId);
   if (!slot) return 0;
   const base = remainingBySlot[slotId] ?? slot.capacity;
-  const used = store.slotUsage.get(slotKey(date, slotId)) ?? 0;
+  const used = getStore().slotUsage.get(slotKey(date, slotId)) ?? 0;
   const now = Date.now();
-  const reserved = [...store.drafts.values()].filter(
+  const reserved = [...getStore().drafts.values()].filter(
     (d) =>
       d.id !== exceptDraftId &&
       d.delivery?.date === date &&
@@ -170,7 +171,7 @@ export const mockCheckoutApi: CheckoutApi = {
       ...totals({ item, delivery: null }),
       expiresAt: Date.now() + DRAFT_TTL_MS,
     };
-    store.drafts.set(draft.id, draft);
+    getStore().drafts.set(draft.id, draft);
     return { ok: true, value: copy(draft) };
   },
 
@@ -243,7 +244,7 @@ export const mockCheckoutApi: CheckoutApi = {
 
   async placeOrder(shopId, draftId, input) {
     // Aynı anahtarla ikinci gönderim yeni sipariş açmaz, ilkini döner.
-    const existing = store.idempotency.get(input.idempotencyKey);
+    const existing = getStore().idempotency.get(input.idempotencyKey);
     if (existing) return { ok: true, value: { trackingToken: existing } };
 
     const shop = shopById(shopId);
@@ -277,12 +278,12 @@ export const mockCheckoutApi: CheckoutApi = {
     }
 
     const now = new Date().toISOString();
-    const serial = store.nextNumber++;
+    const serial = getStore().nextNumber++;
     const order: Order = {
       id: `o_${serial}`,
       number: `T-${serial}`,
       shopId,
-      customerId: `cu_${normalizePhone(draft.card.senderPhone)}`,
+      customerId: upsertCustomer(shopId, draft.card.senderPhone, draft.card.signature).id,
       source: OrderSource.Link,
       status: OrderStatus.New,
       paymentStatus: method === PaymentMethod.Card ? PaymentStatus.Paid : PaymentStatus.Pending,
@@ -323,16 +324,25 @@ export const mockCheckoutApi: CheckoutApi = {
       courierName: null,
       events: [{ status: OrderStatus.New, at: now }],
     };
-    store.orders.push(order);
+    getStore().orders.push(order);
     const key = slotKey(delivery.date, delivery.slotId);
-    store.slotUsage.set(key, (store.slotUsage.get(key) ?? 0) + 1);
-    store.idempotency.set(input.idempotencyKey, order.trackingToken);
-    store.drafts.delete(draftId);
+    getStore().slotUsage.set(key, (getStore().slotUsage.get(key) ?? 0) + 1);
+    getStore().idempotency.set(input.idempotencyKey, order.trackingToken);
+    appendNotification({
+      shopId,
+      orderNumber: order.number,
+      channel: "sms",
+      text: `Sipariş onayı, ${order.number}`,
+      recipient: order.senderPhone,
+      delivered: true,
+      providerResponse: null,
+    });
+    getStore().drafts.delete(draftId);
     return { ok: true, value: { trackingToken: order.trackingToken } };
   },
 
   async getOrderTracking(shopId, token) {
-    const order = store.orders.find((o) => o.shopId === shopId && o.trackingToken === token);
+    const order = getStore().orders.find((o) => o.shopId === shopId && o.trackingToken === token);
     if (!order) return null;
     return copy({
       token: order.trackingToken,
@@ -361,7 +371,7 @@ export const mockCheckoutApi: CheckoutApi = {
     const wanted = number.trim().toUpperCase().replace(/^(T-?)?/, "T-");
     const normalized = normalizePhone(phoneInput);
     if (!normalized) return null;
-    const order = store.orders.find(
+    const order = getStore().orders.find(
       (o) => o.shopId === shopId && o.number === wanted && normalizePhone(o.senderPhone) === normalized,
     );
     return order?.trackingToken ?? null;

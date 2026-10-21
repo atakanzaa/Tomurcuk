@@ -10,11 +10,13 @@ interface ActionBarProps {
   /** Butonun altındaki kısa not. */
   caption?: ReactNode;
   inlineOnDesktop?: boolean;
+  /** Satıcı panelinde telefonun alt menüsünün üstünde durur. */
+  aboveTabBar?: boolean;
 }
 
-export function ActionBar({ total, action, caption, inlineOnDesktop }: ActionBarProps) {
+export function ActionBar({ total, action, caption, inlineOnDesktop, aboveTabBar }: ActionBarProps) {
   return (
-    <div className={cx(styles.bar, inlineOnDesktop && styles.inlineOnDesktop)}>
+    <div className={cx(styles.bar, inlineOnDesktop && styles.inlineOnDesktop, aboveTabBar && styles.aboveTabBar)}>
       <div className={cx(styles.inner, caption ? styles.stacked : undefined)}>
         {total && (
           <div className={styles.total} aria-live="polite">

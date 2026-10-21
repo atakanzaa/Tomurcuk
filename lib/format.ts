@@ -114,3 +114,28 @@ export function withDativeSuffix(name: string): string {
 export function joinWithAnd(items: string[]): string {
   return items.length < 2 ? (items[0] ?? "") : `${items.slice(0, -1).join(", ")} ve ${items.at(-1)}`;
 }
+
+/** Özel ada bulunma eki: "24 Ekim'de", "Ağustos'ta". */
+export function withLocativeSuffix(name: string): string {
+  const word = (name.trim().split(/\s+/).at(-1) ?? "").toLocaleLowerCase("tr");
+  const lastVowel = [...word].reverse().find((ch) => VOWELS.includes(ch)) ?? "e";
+  const consonant = VOICELESS.includes(word.at(-1) ?? "") ? "t" : "d";
+  return `${name.trim()}'${consonant}${BACK_VOWELS.includes(lastVowel) ? "a" : "e"}`;
+}
+
+/** Sayının okunuşundaki son kelime: 2025 → "beş", 2020 → "yirmi", 2000 → "bin". */
+function spokenLastWord(word: string): string {
+  if (!/^\d+$/.test(word)) return word;
+  const n = Number(word);
+  if (n === 0) return "sıfır";
+  if (n % 100 === 0) return n % 1000 === 0 ? "bin" : "yüz";
+  return lastSpokenWord(n % 100);
+}
+
+/** Ayrılma eki: "Ağustos 2025'ten", "Ekim'den", "2026'dan". */
+export function withAblativeSuffix(name: string): string {
+  const word = spokenLastWord((name.trim().split(/\s+/).at(-1) ?? "").toLocaleLowerCase("tr"));
+  const lastVowel = [...word].reverse().find((ch) => VOWELS.includes(ch)) ?? "e";
+  const consonant = VOICELESS.includes(word.at(-1) ?? "") ? "t" : "d";
+  return `${name.trim()}'${consonant}${BACK_VOWELS.includes(lastVowel) ? "an" : "en"}`;
+}

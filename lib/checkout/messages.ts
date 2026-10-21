@@ -12,7 +12,15 @@ const requiredMessages: Record<string, string> = {
   slotId: "Bir saat aralığı seçin.",
   senderPhone: "Telefonunuzu yazın. Sipariş yola çıkınca ve teslim edilince SMS göndeririz.",
   number: "Sipariş numarasını yazın, ör. T-4821.",
-  phone: "Siparişi verirken yazdığınız telefonu girin.",
+  customerPhone: "Sipariş verenin telefonunu yazın.",
+  source: "Siparişin nereden geldiğini seçin.",
+  exactTime: "Kesin saati 14:30 biçiminde yazın.",
+  shopName: "Dükkânınızın adını yazın.",
+  district: "Dükkânın ilçesini yazın.",
+  text: "Mesajı yazın.",
+  subject: "Konuyu birkaç kelimeyle yazın.",
+  category: "Bir konu seçin.",
+  phone: "Telefon numaranızı yazın.",
 };
 
 export function checkoutErrorMessage(
@@ -31,7 +39,10 @@ export function checkoutErrorMessage(
     case CheckoutError.SizeRequired:
       return "Bir boy seçin.";
     case CheckoutError.OptionInvalid:
-      return "Seçtiğiniz ekleme artık yok. Sayfayı yenileyip yeniden seçin.";
+      if (field === "orderNumber") return "Bu numarayla bir siparişiniz yok. Numarayı kontrol edin ya da boş bırakın.";
+      return field === "items"
+        ? "En az bir ürün seçin; adet 1 ile 20 arasında olmalı."
+        : "Seçtiğiniz ekleme artık yok. Sayfayı yenileyip yeniden seçin.";
     case CheckoutError.ProductUnavailable:
       return "Bu ürün şu an satışta değil. Vitrinden başka bir ürün seçebilirsiniz.";
     case CheckoutError.DayClosed:
@@ -41,15 +52,18 @@ export function checkoutErrorMessage(
     case CheckoutError.DateOutOfRange:
       return "Bu tarih için sipariş alamıyoruz. Önümüzdeki iki hafta içinden bir gün seçin.";
     case CheckoutError.SlotFull:
-      return meta.alternative
-        ? `Bu saat aralığı doldu. ${meta.alternative} arası hâlâ müsait.`
+      if (meta.alternative) return `Bu saat aralığı doldu. ${meta.alternative} arası hâlâ müsait.`;
+      return meta.single
+        ? "Bu saat aralığı doldu. Başka bir aralık ya da kesin saat seçin."
         : "Bu günün saat aralıkları doldu. Başka bir gün seçin.";
     case CheckoutError.ZoneInvalid:
-      return "Bu bölgeye teslimat yapmıyoruz. Listeden bir mahalle seçin.";
+      return field === "address"
+        ? "Adreste teslim bölgelerinizden bir mahalle geçmiyor. Mahalle adını adrese ekleyin."
+        : "Bu bölgeye teslimat yapmıyoruz. Listeden bir mahalle seçin.";
     case CheckoutError.ConsentRequired:
       return "Devam etmek için ön bilgilendirme formunu ve mesafeli satış sözleşmesini onaylayın.";
     case CheckoutError.PaymentMethodInvalid:
-      return "Bir ödeme yöntemi seçin.";
+      return field === "payment" ? "Ödeme durumunu seçin." : "Bir ödeme yöntemi seçin.";
     case CheckoutError.PriceChanged:
       return `Ürünün fiyatı değişti. Yeni toplam ${formatPrice(Number(meta.total))}; kontrol edip yeniden onaylayın.`;
     case CheckoutError.ReservationExpired:

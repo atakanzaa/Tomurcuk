@@ -6,10 +6,10 @@ import { PaymentMethod } from "@/lib/api/types";
 import { submitPayment } from "@/lib/checkout/actions";
 import { initialFormState, type FormState } from "@/lib/checkout/form-state";
 import { formatPrice } from "@/lib/format";
-import { ActionBar } from "../../_components/flow/ActionBar";
-import { ChoiceGroup, ChoiceRow } from "../../_components/flow/Choice";
-import { SubmitButton } from "../../_components/flow/SubmitButton";
-import flow from "../../_components/flow/flow.module.css";
+import { ActionBar } from "@/components/flow/ActionBar";
+import { ChoiceGroup, ChoiceRow } from "@/components/flow/Choice";
+import { SubmitButton } from "@/components/flow/SubmitButton";
+import flow from "@/components/flow/flow.module.css";
 import styles from "./payment.module.css";
 
 interface PaymentFormProps {

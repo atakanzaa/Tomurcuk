@@ -12,7 +12,7 @@ import { ShopLookupKind } from "@/lib/api/types";
 import { phoneHref, whatsappHref, withDativeSuffix } from "@/lib/format";
 import { shopPath } from "@/lib/routes";
 import { buildTrackingView } from "@/lib/tracking";
-import { renderPhoto } from "../../_components/ProductPhoto";
+import { renderPhoto } from "@/components/ProductPhoto";
 import styles from "./tracking.module.css";
 
 // Takip linki kişiye özeldir; arama motorlarına kapalı.

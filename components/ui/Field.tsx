@@ -42,8 +42,14 @@ type Control = HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
  * tıklanınca giriş odaklanır. Çok satırlı alanda `maxLength` verilirse sayaç görünür.
  */
 export function Field(props: FieldProps) {
-  const { label, hint, error, optional, className } = props;
+  const { label, hint, optional, className } = props;
   const metaId = useId();
+  // Kullanıcı alanı düzeltmeye başlayınca eski hata gizlenir, yardım metni geri gelir;
+  // form yeniden gönderilince sunucu yeniden doğrular.
+  const [editedSinceError, setEditedSinceError] = useState(false);
+  const [valueAtError] = useState(props.value);
+  const changedElsewhere = props.value !== undefined && props.value !== valueAtError;
+  const error = editedSinceError || changedElsewhere ? undefined : props.error;
   const [length, setLength] = useState(() => String(props.value ?? props.defaultValue ?? "").length);
 
   const showCount = props.as === "textarea" && props.maxLength !== undefined;
@@ -57,6 +63,7 @@ export function Field(props: FieldProps) {
     "aria-describedby": message ? metaId : undefined,
     onChange: (event: ChangeEvent<Control>) => {
       setLength(event.target.value.length);
+      if (props.error) setEditedSinceError(true);
       (props.onChange as ((event: ChangeEvent<Control>) => void) | undefined)?.(event);
     },
   };

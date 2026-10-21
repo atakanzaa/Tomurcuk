@@ -1,15 +1,17 @@
 import type { TomurcukApi } from "@/lib/api/contract";
 import { ShopLookupKind } from "@/lib/api/types";
 import { mockCheckoutApi } from "./checkout";
+import { mockPanelApi } from "./panel";
+import { mockSupportApi } from "./support";
 import { categories, deliveryZones, products, shops, timeSlots } from "./data";
-import { store } from "./store";
+import { getStore } from "./store";
 
 // Çağıranın sabit veriyi değiştirememesi için her yanıt kopyalanır, tıpkı ağdan gelmiş gibi.
 const copy = <T>(value: T): T => structuredClone(value);
 
 export const mockApi: TomurcukApi = {
   async listFeaturedShopSlugs() {
-    return shops.filter((shop) => shop.active).map((shop) => shop.slug);
+    return shops.filter((shop) => shop.active && shop.featuredProductId).map((shop) => shop.slug);
   },
 
   async findShop(slug) {
@@ -43,9 +45,18 @@ export const mockApi: TomurcukApi = {
 
   async getOrders(shopId, filter) {
     return copy(
-      store.orders.filter((o) => o.shopId === shopId && (!filter?.date || o.deliveryDate === filter.date)),
+      getStore()
+        .orders.filter(
+          (o) =>
+            o.shopId === shopId &&
+            (!filter?.from || o.deliveryDate >= filter.from) &&
+            (!filter?.to || o.deliveryDate <= filter.to),
+        )
+        .sort((a, b) => a.deliveryDate.localeCompare(b.deliveryDate) || a.slotStart.localeCompare(b.slotStart)),
     );
   },
 
   ...mockCheckoutApi,
+  ...mockPanelApi,
+  ...mockSupportApi,
 };

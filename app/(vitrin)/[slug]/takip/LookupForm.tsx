@@ -6,8 +6,8 @@ import { Field } from "@/components/ui/Field";
 import { lookupOrder } from "@/lib/checkout/actions";
 import { initialFormState } from "@/lib/checkout/form-state";
 import { phoneHref } from "@/lib/format";
-import { SubmitButton } from "../_components/flow/SubmitButton";
-import flow from "../_components/flow/flow.module.css";
+import { SubmitButton } from "@/components/flow/SubmitButton";
+import flow from "@/components/flow/flow.module.css";
 
 export function LookupForm({ slug, phone }: { slug: string; phone: string }) {
   const [state, action] = useActionState(lookupOrder.bind(null, slug), initialFormState);

@@ -10,7 +10,7 @@ import { OrderList, OrderRow } from "@/components/ui/OrderRow";
 import { ProductItem } from "@/components/ui/ProductItem";
 import { StatusTag } from "@/components/ui/StatusTag";
 import { TimeSlot, type TimeSlotOption } from "@/components/ui/TimeSlot";
-import { renderProductPhoto } from "@/app/(vitrin)/[slug]/_components/ProductPhoto";
+import { renderProductPhoto } from "@/components/ProductPhoto";
 import { findShop, getDeliveryDays, getOrders, getProducts, getTimeSlots } from "@/lib/api";
 import { ShopLookupKind, type Shop } from "@/lib/api/types";
 import { productPriceLabel } from "@/lib/catalog";

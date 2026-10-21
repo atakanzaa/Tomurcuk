@@ -12,7 +12,7 @@ import {
 import { cx } from "@/lib/cx";
 import { productPath, shopPath } from "@/lib/routes";
 import { Chip } from "./Chip";
-import { renderProductPhoto } from "./ProductPhoto";
+import { renderProductPhoto } from "@/components/ProductPhoto";
 import container from "./container.module.css";
 import styles from "./Catalog.module.css";
 

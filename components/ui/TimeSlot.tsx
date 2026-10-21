@@ -29,6 +29,8 @@ interface SlotGroupProps {
   stretch?: boolean;
   /** Hata mesajının id'si. */
   describedBy?: string;
+  /** "slot": tm-slot kutuları; "chip": hap biçimli seçim; "segment": yan yana bitişik butonlar. */
+  variant?: "slot" | "chip" | "segment";
 }
 
 /**
@@ -44,6 +46,7 @@ export function SlotGroup({
   name,
   stretch,
   describedBy,
+  variant = "slot",
 }: SlotGroupProps) {
   const [internal, setInternal] = useState<string | null>(defaultValue);
   const selected = value !== undefined ? value : internal;
@@ -77,7 +80,12 @@ export function SlotGroup({
 
   return (
     <div
-      className={cx("tm-slots", stretch && styles.stretch)}
+      className={cx(
+        variant === "slot" && "tm-slots",
+        variant === "chip" && styles.chips,
+        variant === "segment" && styles.segments,
+        stretch && styles.stretch,
+      )}
       role="radiogroup"
       aria-labelledby={labelledBy}
       aria-describedby={describedBy}
@@ -91,7 +99,7 @@ export function SlotGroup({
           }}
           type="button"
           role="radio"
-          className="tm-slot"
+          className={variant === "slot" ? "tm-slot" : variant === "chip" ? styles.chip : styles.segment}
           aria-checked={option.id === selected}
           aria-disabled={option.disabled || undefined}
           aria-label={option.ariaLabel}
@@ -100,7 +108,7 @@ export function SlotGroup({
           onKeyDown={option.disabled ? undefined : (event) => onKeyDown(event, option.id)}
         >
           {option.label}
-          <small>{option.hint}</small>
+          {variant === "slot" && <small>{option.hint}</small>}
         </button>
       ))}
       {name && <input type="hidden" name={name} value={selected ?? ""} />}

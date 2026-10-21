@@ -5,8 +5,8 @@ import { findShop, getDeliveryZones, getProduct, getProducts, listFeaturedShopSl
 import { ShopLookupKind, type Product } from "@/lib/api/types";
 import { joinWithAnd, withDativeSuffix, withTimeSuffix } from "@/lib/format";
 import { shopPath } from "@/lib/routes";
-import { FlowHeader } from "../../_components/flow/FlowHeader";
-import { renderProductPhoto } from "../../_components/ProductPhoto";
+import { FlowHeader } from "@/components/flow/FlowHeader";
+import { renderProductPhoto } from "@/components/ProductPhoto";
 import { ProductOrderForm } from "./ProductOrderForm";
 import { ShareButton } from "./ShareButton";
 import styles from "./product.module.css";

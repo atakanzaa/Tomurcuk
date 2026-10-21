@@ -5,10 +5,10 @@ import { OptionKind, type Product } from "@/lib/api/types";
 import { startOrder } from "@/lib/checkout/actions";
 import { initialFormState } from "@/lib/checkout/form-state";
 import { formatPrice } from "@/lib/format";
-import { ActionBar } from "../../_components/flow/ActionBar";
-import { ChoiceGroup, ChoiceRow } from "../../_components/flow/Choice";
-import { SubmitButton } from "../../_components/flow/SubmitButton";
-import flow from "../../_components/flow/flow.module.css";
+import { ActionBar } from "@/components/flow/ActionBar";
+import { ChoiceGroup, ChoiceRow } from "@/components/flow/Choice";
+import { SubmitButton } from "@/components/flow/SubmitButton";
+import flow from "@/components/flow/flow.module.css";
 import { cx } from "@/lib/cx";
 import styles from "./product.module.css";
 

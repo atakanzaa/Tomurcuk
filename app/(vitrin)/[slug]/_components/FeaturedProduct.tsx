@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Product } from "@/lib/api/types";
 import { productPriceLabel } from "@/lib/catalog";
 import { productPath } from "@/lib/routes";
-import { renderProductPhoto } from "./ProductPhoto";
+import { renderProductPhoto } from "@/components/ProductPhoto";
 import styles from "./FeaturedProduct.module.css";
 
 export function FeaturedProduct({ shopSlug, product }: { shopSlug: string; product: Product }) {

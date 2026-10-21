@@ -1,0 +1,168 @@
+.header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-2);
+}
+
+.close {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-m);
+  color: var(--ink);
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 24px;
+  line-height: 30px;
+}
+
+.form {
+  max-width: 640px;
+}
+
+.sec {
+  display: grid;
+  gap: var(--space-3);
+  margin: 0 var(--space-4);
+  padding: var(--space-4) 0;
+  border-top: 1px solid var(--line);
+}
+
+.sec:first-of-type {
+  padding-top: var(--space-2);
+  border-top: 0;
+}
+
+.secTitle {
+  margin: 0;
+  color: var(--ink-muted);
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 500;
+}
+
+.customerCard {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) 14px;
+  border-radius: var(--radius-m);
+  background: var(--kraft);
+}
+
+.customerText {
+  display: grid;
+  gap: 2px;
+}
+
+.customerName {
+  font-size: 15px;
+  line-height: 22px;
+  font-weight: 600;
+}
+
+.muted {
+  color: var(--ink-muted);
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.itemRow {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-2);
+}
+
+.itemRow > :first-child {
+  flex: 1;
+  min-width: 0;
+}
+
+.stepper {
+  display: flex;
+  align-items: center;
+  flex: none;
+  height: 44px;
+  box-sizing: border-box;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-m);
+  background: var(--paper-raised);
+}
+
+.stepButton {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 42px;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.stepButton:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.qty {
+  min-width: 20px;
+  font-size: 16px;
+  font-weight: 500;
+  text-align: center;
+}
+
+.remove {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: var(--radius-m);
+  background: none;
+  color: var(--ink-muted);
+  cursor: pointer;
+}
+
+.itemsFoot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.subtotal {
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.error {
+  margin: 0;
+  color: var(--danger);
+  font-size: 12px;
+  line-height: 16px;
+}
+
+@media (min-width: 1024px) {
+  .header {
+    padding: var(--space-5) var(--space-5) var(--space-2);
+  }
+
+  .sec {
+    margin-inline: var(--space-6);
+  }
+}

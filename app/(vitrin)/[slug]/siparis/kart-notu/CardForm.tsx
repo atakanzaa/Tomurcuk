@@ -8,9 +8,9 @@ import { submitCard } from "@/lib/checkout/actions";
 import { initialFormState, type FormState } from "@/lib/checkout/form-state";
 import { cx } from "@/lib/cx";
 import { formatPrice } from "@/lib/format";
-import { ActionBar } from "../../_components/flow/ActionBar";
-import { SubmitButton } from "../../_components/flow/SubmitButton";
-import flow from "../../_components/flow/flow.module.css";
+import { ActionBar } from "@/components/flow/ActionBar";
+import { SubmitButton } from "@/components/flow/SubmitButton";
+import flow from "@/components/flow/flow.module.css";
 import styles from "./card.module.css";
 
 const QUICK_MESSAGES = ["İyi ki doğdun", "Geçmiş olsun", "Nice yıllara"];

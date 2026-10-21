@@ -31,6 +31,7 @@ export function relativeDayName(date: IsoDate, today: IsoDate): string {
   const diff = daysBetween(today, date);
   if (diff === 0) return "Bugün";
   if (diff === 1) return "Yarın";
+  if (diff === -1) return "Dün";
   return formatWeekday(date);
 }
 

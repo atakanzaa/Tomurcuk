@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/Button";
-import flow from "../_components/flow/flow.module.css";
+import flow from "@/components/flow/flow.module.css";
 
 /** Adımın ön koşulu eksikse: ne olduğunu söyler ve tek bir eylem sunar. */
 export function FlowNotice({ message, href, action }: { message: string; href: string; action: string }) {

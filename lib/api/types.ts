@@ -35,6 +35,8 @@ export const OrderSource = {
   Phone: "phone",
   WhatsApp: "whatsapp",
   Instagram: "instagram",
+  /** Dükkâna gelip verilen sipariş. Veri modeline ek. */
+  Store: "store",
   CicekSepeti: "ciceksepeti",
 } as const;
 export type OrderSource = ValueOf<typeof OrderSource>;
@@ -145,7 +147,7 @@ export interface TimeSlot {
   capacity: number;
 }
 
-/** customer */
+/** customer. `marketingConsent` İYS izni; yoksa hatırlatma mesajı gönderilmez. */
 export interface Customer {
   id: string;
   shopId: string;
@@ -153,6 +155,7 @@ export interface Customer {
   phone: string;
   email: string | null;
   note: string | null;
+  marketingConsent: boolean;
 }
 
 /** order_item; ürün adı, fiyat ve seçenekler sipariş anında kopyalanır. */
@@ -349,4 +352,253 @@ export interface OrderTracking {
   senderPhone: string;
   /** Durum değişiklikleri, eskiden yeniye. `at` ISO zaman damgası (UTC). */
   events: { status: OrderStatus; at: string }[];
+}
+
+// ---------------------------------------------------------------------------
+// Satıcı paneli
+
+export const ShopRole = { Owner: "owner", Staff: "staff" } as const;
+export type ShopRole = ValueOf<typeof ShopRole>;
+
+/** shop_user */
+export interface ShopUser {
+  id: string;
+  shopId: string;
+  name: string;
+  email: string;
+  role: ShopRole;
+  lastSeenAt: string | null;
+}
+
+/** Destek ekibinin dükkân adına açtığı süreli oturum (impersonation_session). */
+export interface Impersonation {
+  id: string;
+  supportUserName: string;
+  shopId: string;
+  reason: string;
+  startedAt: string;
+  endsAt: string;
+}
+
+export interface PanelSession {
+  shop: Shop;
+  user: ShopUser;
+  impersonation: Impersonation | null;
+}
+
+/** special_day; yıl tutulmaz, her yıl tekrar eder. */
+export interface SpecialDay {
+  id: string;
+  customerId: string;
+  title: string;
+  day: number;
+  month: number;
+  recipientName: string | null;
+}
+
+export interface CustomerSummary extends Customer {
+  orderCount: number;
+  totalSpent: Kurus;
+  lastOrderAt: string | null;
+}
+
+export interface CustomerDetail {
+  customer: CustomerSummary;
+  orders: Order[];
+  specialDays: SpecialDay[];
+}
+
+/** Önümüzdeki günlerdeki bir özel gün ve geçen yılki siparişi. */
+export interface Reminder {
+  specialDay: SpecialDay;
+  customer: CustomerSummary;
+  /** Bu yılki tarih; 29 Şubat artık yıl olmayan yılda 28 Şubat'tır. */
+  date: IsoDate;
+  lastYear: { productName: string; total: Kurus } | null;
+}
+
+export interface ManualOrderInput {
+  source: string;
+  customerPhone: string;
+  customerName: string;
+  items: { productId: string; optionId: string | null; quantity: number }[];
+  date: string;
+  slotId: string;
+  exactTime: string;
+  recipientName: string;
+  recipientPhone: string;
+  address: string;
+  cardNote: string;
+  payment: string;
+}
+
+// ---------------------------------------------------------------------------
+// Müşteri hizmetleri paneli
+
+export const SupportRole = { Owner: "owner", Lead: "lead", Agent: "agent" } as const;
+export type SupportRole = ValueOf<typeof SupportRole>;
+
+/** platform_user */
+export interface SupportUser {
+  id: string;
+  name: string;
+  role: SupportRole;
+}
+
+export const TicketCategory = {
+  Payment: "payment",
+  Delivery: "delivery",
+  Technical: "technical",
+  Account: "account",
+} as const;
+export type TicketCategory = ValueOf<typeof TicketCategory>;
+
+export const TicketPriority = { Urgent: "urgent", Normal: "normal" } as const;
+export type TicketPriority = ValueOf<typeof TicketPriority>;
+
+export const TicketStatus = { Open: "open", WaitingShop: "waiting_shop", Resolved: "resolved" } as const;
+export type TicketStatus = ValueOf<typeof TicketStatus>;
+
+/** support_ticket, listede gereken alanlarla. */
+export interface TicketSummary {
+  id: string;
+  subject: string;
+  shopId: string;
+  shopName: string;
+  shopDistrict: string;
+  orderId: string | null;
+  orderNumber: string | null;
+  orderDate: IsoDate | null;
+  orderSlot: { start: ClockTime; end: ClockTime } | null;
+  category: TicketCategory;
+  priority: TicketPriority;
+  status: TicketStatus;
+  assigneeId: string | null;
+  assigneeName: string | null;
+  createdAt: string;
+  /** Son durum değişikliğinden beri bekleme; çözülende kapanış zamanı. */
+  waitingSince: string;
+  firstResponseAt: string | null;
+}
+
+/** ticket_message; dahili notlar dükkâna görünmez. */
+export interface TicketMessage {
+  id: string;
+  authorName: string;
+  authorOrg: string;
+  internal: boolean;
+  text: string;
+  at: string;
+}
+
+export interface TimelineEvent {
+  at: string;
+  text: string;
+  actor: string;
+  failed: boolean;
+}
+
+/** Destek ekibinin gördüğü sipariş: kişisel veri maskeli. */
+export interface SupportOrderView {
+  id: string;
+  number: string;
+  status: OrderStatus;
+  paymentStatus: PaymentStatus;
+  paymentMethod: PaymentMethod;
+  deliveryDate: IsoDate;
+  slotStart: ClockTime;
+  slotEnd: ClockTime;
+  recipientName: string;
+  recipientPhone: string;
+  address: string;
+  senderName: string;
+  senderPhone: string;
+  total: Kurus;
+  timeline: TimelineEvent[];
+}
+
+export interface TicketDetail extends TicketSummary {
+  messages: TicketMessage[];
+  order: SupportOrderView | null;
+}
+
+/** notification_log */
+export interface NotificationLog {
+  id: string;
+  shopId: string;
+  orderNumber: string | null;
+  channel: "sms" | "email";
+  text: string;
+  recipient: string;
+  delivered: boolean;
+  providerResponse: string | null;
+  at: string;
+}
+
+export interface SupportNote {
+  id: string;
+  shopId: string;
+  authorName: string;
+  text: string;
+  at: string;
+}
+
+export interface ShopSummary {
+  shop: Shop;
+  district: string;
+  since: IsoDate;
+  monthlyOrders: number;
+  openTickets: number;
+  lastActivityAt: string | null;
+}
+
+export interface ShopOverview extends ShopSummary {
+  paymentAccount: string;
+  lastLogin: { at: string; userName: string } | null;
+  recentOrders: SupportOrderView[];
+  notifications: NotificationLog[];
+  smsUsed: number;
+  smsLimit: number;
+  notes: SupportNote[];
+  users: ShopUser[];
+  tickets: TicketSummary[];
+}
+
+/** audit_log; yalnızca eklenir. */
+export interface AuditEntry {
+  id: string;
+  actorName: string;
+  shopName: string | null;
+  action: string;
+  record: string;
+  reason: string | null;
+  at: string;
+}
+
+export interface CannedReply {
+  id: string;
+  title: string;
+  text: string;
+  category: TicketCategory;
+}
+
+export interface SupportSearchResult {
+  orders: (SupportOrderView & { shopName: string })[];
+  shops: ShopSummary[];
+  tickets: TicketSummary[];
+}
+
+/** Panelden açılan talep. */
+export interface TicketInput {
+  subject: string;
+  category: string;
+  orderNumber: string;
+  text: string;
+}
+
+export interface PilotApplicationInput {
+  shopName: string;
+  phone: string;
+  district: string;
+  instagram: string;
 }

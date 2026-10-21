@@ -1,5 +1,5 @@
 import { formatShortTimeRange } from "@/lib/format";
-import { OptionKind, OrderStatus, PaymentStatus, type Order } from "@/lib/api/types";
+import { OptionKind, OrderSource, OrderStatus, PaymentMethod, PaymentStatus, type Order } from "@/lib/api/types";
 import type { StatusTone } from "@/components/ui/StatusTag";
 
 // Durum adları ve renkleri sabittir (design/tomurcuk/README.md "Renk").
@@ -12,7 +12,7 @@ export const orderStatusLabel: Record<OrderStatus, string> = {
   [OrderStatus.Cancelled]: "İptal",
 };
 
-const orderStatusTone: Record<OrderStatus, StatusTone> = {
+export const orderStatusTone: Record<OrderStatus, StatusTone> = {
   [OrderStatus.New]: "new",
   [OrderStatus.Preparing]: "preparing",
   [OrderStatus.OnWay]: "onway",
@@ -21,10 +21,13 @@ const orderStatusTone: Record<OrderStatus, StatusTone> = {
   [OrderStatus.Cancelled]: "failed",
 };
 
-/** Ödemesi alınmamış yeni sipariş, akış dışı hal olarak "Ödenmedi" gösterilir. */
+/**
+ * Ödemesi alınmamış yeni sipariş akış dışı hal olarak gösterilir: kartla ödemede
+ * sağlayıcıdan onay gelmediyse "Ödeme bekleniyor", havale ve kapıda ödemede "Ödenmedi".
+ */
 export function orderStatusTag(order: Order): { tone: StatusTone; label: string } {
-  if (order.status === OrderStatus.New && order.paymentStatus === PaymentStatus.Unpaid) {
-    return { tone: "muted", label: "Ödenmedi" };
+  if (order.status === OrderStatus.New && order.paymentStatus !== PaymentStatus.Paid) {
+    return { tone: "muted", label: order.paymentMethod === PaymentMethod.Card ? "Ödeme bekleniyor" : "Ödenmedi" };
   }
   return { tone: orderStatusTone[order.status], label: orderStatusLabel[order.status] };
 }
@@ -46,7 +49,7 @@ export function orderItemsSummary(order: Order): string {
  */
 export function orderTimeColumn(order: Order, delayMinutes = 0): { time: string; slot: string | null } {
   const range = formatShortTimeRange(order.slotStart, order.slotEnd);
-  if (delayMinutes > 0) return { time: order.deliveryTime ?? range, slot: `${delayMinutes} dk gecikti` };
+  if (delayMinutes > 0) return { time: order.deliveryTime ?? range, slot: delayText(delayMinutes) };
   if (!order.deliveryTime) return { time: range, slot: null };
   return { time: order.deliveryTime, slot: order.exactTime ? "Kesin saat" : range };
 }
@@ -60,3 +63,38 @@ export function orderDelayMinutes(order: Order, now: string): number {
   const due = order.deliveryTime ?? order.slotEnd;
   return Math.max(0, minutesOf(now) - minutesOf(due));
 }
+
+/** Gecikme metni: "20 dk gecikti", "3 sa 15 dk gecikti". */
+export function delayText(minutes: number): string {
+  if (minutes < 60) return `${minutes} dk gecikti`;
+  const hours = Math.floor(minutes / 60);
+  const rest = minutes % 60;
+  return rest ? `${hours} sa ${rest} dk gecikti` : `${hours} sa gecikti`;
+}
+
+export const orderSourceLabel: Record<OrderSource, string> = {
+  [OrderSource.Link]: "Sipariş linkinden",
+  [OrderSource.Phone]: "Telefondan",
+  [OrderSource.WhatsApp]: "WhatsApp'tan",
+  [OrderSource.Instagram]: "Instagram'dan",
+  [OrderSource.Store]: "Dükkândan",
+  [OrderSource.CicekSepeti]: "ÇiçekSepeti'nden",
+};
+
+/** Kaynak seçimindeki kısa ad. */
+export const orderSourceName: Record<OrderSource, string> = {
+  [OrderSource.Link]: "Link",
+  [OrderSource.Phone]: "Telefon",
+  [OrderSource.WhatsApp]: "WhatsApp",
+  [OrderSource.Instagram]: "Instagram",
+  [OrderSource.Store]: "Dükkân",
+  [OrderSource.CicekSepeti]: "ÇiçekSepeti",
+};
+
+export const paymentLabel = (order: Order): string => {
+  if (order.paymentStatus === PaymentStatus.Paid) {
+    return order.paymentMethod === PaymentMethod.Card ? "Kartla ödendi" : order.paymentMethod === PaymentMethod.Transfer ? "Havaleyle ödendi" : "Ödendi";
+  }
+  if (order.paymentMethod === PaymentMethod.Card) return "Ödeme bekleniyor";
+  return order.paymentMethod === PaymentMethod.Transfer ? "Havale bekleniyor" : "Kapıda ödenecek";
+};

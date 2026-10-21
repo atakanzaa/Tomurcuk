@@ -1,0 +1,84 @@
+.page {
+  display: grid;
+  gap: var(--space-5);
+  max-width: 720px;
+  margin-inline: auto;
+  padding: var(--space-5) var(--space-4) var(--space-7);
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 30px;
+  line-height: 36px;
+}
+
+/* Fiş: kesik çizgiyle ayrılmış kâğıt; yazdırırken her fiş ayrı sayfada. */
+.receipt {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius-m);
+  break-inside: avoid;
+}
+
+.receiptHead {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  font-size: 14px;
+  color: var(--ink-muted);
+}
+
+.when {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 23px;
+  line-height: 28px;
+}
+
+.dl {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  gap: var(--space-1) var(--space-3);
+  margin: 0;
+  font-size: 15px;
+  line-height: 22px;
+}
+
+.dl dt {
+  color: var(--ink-muted);
+}
+
+.dl dd {
+  margin: 0;
+}
+
+.tag {
+  max-width: 100%;
+}
+
+@media print {
+  .toolbar {
+    display: none;
+  }
+
+  .page {
+    padding: 0;
+  }
+
+  .receipt {
+    break-after: page;
+  }
+}

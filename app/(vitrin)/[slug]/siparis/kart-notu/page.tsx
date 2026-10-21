@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { CheckoutStep, checkoutPath, shopPath } from "@/lib/routes";
-import { FlowHeader } from "../../_components/flow/FlowHeader";
+import { FlowHeader } from "@/components/flow/FlowHeader";
 import { FlowNotice } from "../FlowNotice";
 import { loadCheckout } from "../_load";
 import { CardForm } from "./CardForm";

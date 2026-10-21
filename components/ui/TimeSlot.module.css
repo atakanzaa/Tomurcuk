@@ -27,3 +27,77 @@
   min-height: 60px;
   padding: var(--space-2) var(--space-1);
 }
+
+/* Hap biçimli seçim (kaynak, gün): seçili olan sap yeşili; dolu olan kesik kenarlı. */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.chip {
+  position: relative;
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  height: 36px;
+  padding: 0 14px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--ink);
+  font: 500 14px/1 var(--font-sans);
+  cursor: pointer;
+}
+
+.chip::after {
+  content: "";
+  position: absolute;
+  inset: -4px 0;
+}
+
+.chip[aria-checked="true"] {
+  border-color: var(--stem);
+  background: var(--stem);
+  color: var(--on-stem);
+}
+
+.chip[aria-disabled="true"] {
+  border-style: dashed;
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* Yan yana bitişik seçim (ödeme durumu). */
+.segments {
+  display: grid;
+  grid-auto-columns: minmax(0, 1fr);
+  grid-auto-flow: column;
+  overflow: hidden;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-m);
+}
+
+.segment {
+  height: 44px;
+  border: 0;
+  border-right: 1px solid var(--line-strong);
+  background: transparent;
+  color: var(--ink);
+  font: 500 14px/1 var(--font-sans);
+  cursor: pointer;
+}
+
+.segment:last-of-type {
+  border-right: 0;
+}
+
+.segment[aria-checked="true"] {
+  background: var(--stem);
+  color: var(--on-stem);
+  font-weight: 600;
+}
+
+.segment:focus-visible {
+  outline-offset: -4px;
+}

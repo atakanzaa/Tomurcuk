@@ -51,6 +51,16 @@
   text-align: center;
 }
 
+@media (max-width: 1023.98px) {
+  .aboveTabBar {
+    bottom: calc(72px + env(safe-area-inset-bottom));
+  }
+
+  .aboveTabBar .inner {
+    padding-bottom: var(--space-3);
+  }
+}
+
 /* Masaüstü ürün sayfasında sütunun içinde, sayfanın bir parçası olarak durur. */
 @media (min-width: 1024px) {
   .inlineOnDesktop {
