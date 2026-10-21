@@ -115,6 +115,20 @@ const illustrations: Record<string, () => ReactNode> = {
     ),
 };
 
+// Takip sayfasındaki teslim fotoğrafı.
+illustrations.delivery = () => (
+  <svg viewBox="0 0 358 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
+    <rect x="0" y="210" width="358" height="90" style={fill("kraft-deep")} />
+    <rect x="139" y="150" width="80" height="80" rx="10" style={{ fill: "var(--paper-raised)", opacity: 0.85 }} />
+    <rect x="150" y="96" width="4" height="70" style={fill("stem")} />
+    <rect x="178" y="70" width="4" height="96" style={fill("stem")} />
+    <rect x="206" y="100" width="4" height="66" style={fill("stem")} />
+    <rect x="138" y="60" width="28" height="46" rx="14" style={fill("peony")} />
+    <rect x="166" y="32" width="28" height="46" rx="14" style={fill("pollen")} />
+    <rect x="194" y="66" width="28" height="46" rx="14" style={fill("peony")} />
+  </svg>
+);
+
 export const MOCK_PHOTO_PREFIX = "mock:";
 
 /** `mock:p_lale` gibi bir adres için çizimi döner; tanınmayan adreste null. */

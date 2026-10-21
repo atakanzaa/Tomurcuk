@@ -98,3 +98,19 @@ export function withTimeSuffix(time: ClockTime, grammaticalCase: "dative" | "loc
   const consonant = VOICELESS.includes(lastChar) ? "t" : "d";
   return `${time}'${consonant}${back ? "a" : "e"}`;
 }
+
+/**
+ * Özel ada yönelme eki: "Nergis'e", "Elif Yılmaz'a", "Ayşe'ye", "Ataşehir'e".
+ * Ek son kelimenin son ünlüsüne uyar; ünlüyle biten kelimede "y" kaynaştırması gelir.
+ */
+export function withDativeSuffix(name: string): string {
+  const word = (name.trim().split(/\s+/).at(-1) ?? "").toLocaleLowerCase("tr");
+  const lastVowel = [...word].reverse().find((ch) => VOWELS.includes(ch)) ?? "e";
+  const buffer = VOWELS.includes(word.at(-1) ?? "") ? "y" : "";
+  return `${name.trim()}'${buffer}${BACK_VOWELS.includes(lastVowel) ? "a" : "e"}`;
+}
+
+/** ["Kadıköy", "Üsküdar", "Ataşehir"] → "Kadıköy, Üsküdar ve Ataşehir" */
+export function joinWithAnd(items: string[]): string {
+  return items.length < 2 ? (items[0] ?? "") : `${items.slice(0, -1).join(", ")} ve ${items.at(-1)}`;
+}

@@ -1,0 +1,24 @@
+/* Seçim kutusu: tarayıcı oku yerine tasarımdaki ince ok, ink-muted renginde. */
+.control.select {
+  appearance: none;
+  padding-right: var(--space-6);
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--ink-muted) 50%),
+    linear-gradient(135deg, var(--ink-muted) 50%, transparent 50%);
+  background-position:
+    calc(100% - 18px) 50%,
+    calc(100% - 13px) 50%;
+  background-size: 5px 5px;
+  background-repeat: no-repeat;
+}
+
+.select:disabled,
+.control:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.optional {
+  font-weight: 400;
+  color: var(--ink-muted);
+}

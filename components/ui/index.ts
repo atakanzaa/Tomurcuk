@@ -5,4 +5,4 @@ export { KraftBand } from "./KraftBand";
 export { OrderList, OrderRow } from "./OrderRow";
 export { ProductItem } from "./ProductItem";
 export { StatusTag, type StatusTone } from "./StatusTag";
-export { TimeSlot, slotAvailabilityText, type TimeSlotOption } from "./TimeSlot";
+export { SlotGroup, TimeSlot, slotAvailabilityText, type SlotOption, type TimeSlotOption } from "./TimeSlot";

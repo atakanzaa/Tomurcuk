@@ -10,6 +10,7 @@ import {
   type TextareaHTMLAttributes,
 } from "react";
 import { cx } from "@/lib/cx";
+import styles from "./Field.module.css";
 
 interface FieldOwnProps {
   label: string;
@@ -51,7 +52,7 @@ export function Field(props: FieldProps) {
   const hasMeta = Boolean(message) || showCount;
 
   const controlProps = {
-    className: "tm-field__control",
+    className: cx("tm-field__control", styles.control, props.as === "select" && styles.select),
     "aria-invalid": error ? true : undefined,
     "aria-describedby": message ? metaId : undefined,
     onChange: (event: ChangeEvent<Control>) => {
@@ -64,7 +65,7 @@ export function Field(props: FieldProps) {
     <label className={cx("tm-field", error && "tm-field--error", className)}>
       <span className="tm-field__label">
         {label}
-        {optional && " (isteğe bağlı)"}
+        {optional && <span className={styles.optional}> (isteğe bağlı)</span>}
       </span>
       {renderControl(props, controlProps)}
       {hasMeta && (

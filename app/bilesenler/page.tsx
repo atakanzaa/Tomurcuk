@@ -11,9 +11,10 @@ import { ProductItem } from "@/components/ui/ProductItem";
 import { StatusTag } from "@/components/ui/StatusTag";
 import { TimeSlot, type TimeSlotOption } from "@/components/ui/TimeSlot";
 import { renderProductPhoto } from "@/app/(vitrin)/[slug]/_components/ProductPhoto";
-import { findShop, getOrders, getProducts, getSlotAvailability, getTimeSlots } from "@/lib/api";
+import { findShop, getDeliveryDays, getOrders, getProducts, getTimeSlots } from "@/lib/api";
 import { ShopLookupKind, type Shop } from "@/lib/api/types";
 import { productPriceLabel } from "@/lib/catalog";
+import { formatLongDate } from "@/lib/dates";
 import { formatPrice, formatTimeRange } from "@/lib/format";
 import { orderDelayMinutes, orderItemsSummary, orderStatusTag, orderTimeColumn } from "@/lib/order";
 import { productPath } from "@/lib/routes";
@@ -211,19 +212,20 @@ function Case({ label, children }: { label: string; children: ReactNode }) {
 }
 
 async function TimeSlotCases({ shop }: { shop: Shop }) {
-  const date = "2026-10-22";
-  const [slots, availability] = await Promise.all([getTimeSlots(shop.id), getSlotAvailability(shop.id, date)]);
+  // Yarının kapasitesi; bugünün aralıkları saate göre kapanmış olabilir.
+  const [slots, days] = await Promise.all([getTimeSlots(shop.id), getDeliveryDays(shop.id, 2)]);
+  const tomorrow = days[1];
   const options: TimeSlotOption[] = slots.map((slot) => ({
     id: slot.id,
     label: formatTimeRange(slot.start, slot.end),
-    remaining: availability.find((a) => a.slotId === slot.id)?.remaining ?? slot.capacity,
+    remaining: tomorrow?.slots.find((s) => s.slotId === slot.id)?.remaining ?? slot.capacity,
   }));
 
   return (
     <>
       <Case label="Dolu, az yer kalmış ve müsait aralıklar">
         <span id="slot-yarin" className={styles.slotLabel}>
-          Teslim saati, 22 Ekim Perşembe
+          Teslim saati, {tomorrow ? formatLongDate(tomorrow.date) : "yarın"}
         </span>
         <TimeSlot labelledBy="slot-yarin" options={options} defaultValue="s_ogle" name="saat" />
       </Case>

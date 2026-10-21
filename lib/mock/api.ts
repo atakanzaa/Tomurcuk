@@ -1,6 +1,8 @@
 import type { TomurcukApi } from "@/lib/api/contract";
 import { ShopLookupKind } from "@/lib/api/types";
-import { categories, deliveryZones, orders, products, remainingBySlot, shops, timeSlots } from "./data";
+import { mockCheckoutApi } from "./checkout";
+import { categories, deliveryZones, products, shops, timeSlots } from "./data";
+import { store } from "./store";
 
 // Çağıranın sabit veriyi değiştirememesi için her yanıt kopyalanır, tıpkı ağdan gelmiş gibi.
 const copy = <T>(value: T): T => structuredClone(value);
@@ -39,15 +41,11 @@ export const mockApi: TomurcukApi = {
     return copy(timeSlots.filter((s) => s.shopId === shopId));
   },
 
-  async getSlotAvailability(shopId, date) {
-    return timeSlots
-      .filter((s) => s.shopId === shopId)
-      .map((s) => ({ slotId: s.id, date, remaining: remainingBySlot[s.id] ?? s.capacity }));
-  },
-
   async getOrders(shopId, filter) {
     return copy(
-      orders.filter((o) => o.shopId === shopId && (!filter?.date || o.deliveryDate === filter.date)),
+      store.orders.filter((o) => o.shopId === shopId && (!filter?.date || o.deliveryDate === filter.date)),
     );
   },
+
+  ...mockCheckoutApi,
 };

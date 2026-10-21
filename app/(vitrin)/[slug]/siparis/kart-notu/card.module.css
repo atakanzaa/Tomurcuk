@@ -1,0 +1,82 @@
+/* Etiket, buketin ipine asılı gibi hafif eğik durur. */
+.preview {
+  position: relative;
+  min-height: 236px;
+  margin-top: calc(-1 * var(--space-4));
+}
+
+.thread {
+  position: absolute;
+  inset: 0 auto auto 0;
+  width: 100%;
+  height: 236px;
+  pointer-events: none;
+}
+
+.preview :global(.tm-gifttag) {
+  position: relative;
+  width: min(300px, calc(100% - 30px));
+  margin: 66px 0 0 30px;
+  transform: rotate(-3deg);
+  transform-origin: 24px 50%;
+}
+
+.placeholder :global(.tm-gifttag__text) {
+  color: var(--ink-muted);
+}
+
+.messages {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.messageChip {
+  position: relative;
+  height: 36px;
+  padding: 0 14px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--ink);
+  font: 500 14px/1 var(--font-sans);
+  cursor: pointer;
+}
+
+.messageChip::after {
+  content: "";
+  position: absolute;
+  inset: -4px 0;
+}
+
+.messageChip:hover {
+  background: var(--kraft);
+}
+
+.check {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  cursor: pointer;
+}
+
+.check input {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  margin: 2px 0 0;
+  accent-color: var(--stem);
+}
+
+.checkText {
+  display: grid;
+  gap: 2px;
+  font-size: 16px;
+  line-height: 22px;
+}
+
+.checkHint {
+  color: var(--ink-muted);
+  font-size: 14px;
+  line-height: 20px;
+}

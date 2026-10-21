@@ -26,7 +26,9 @@ a:hover {
 /* Odak halkası: 2px düz çizgi, 2px boşluk; yalnızca klavyede görünür. */
 a:focus-visible,
 button:focus-visible,
-summary:focus-visible {
+summary:focus-visible,
+input[type="radio"]:focus-visible,
+input[type="checkbox"]:focus-visible {
   outline: 2px solid var(--focus);
   outline-offset: 2px;
 }

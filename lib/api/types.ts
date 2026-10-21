@@ -145,13 +145,6 @@ export interface TimeSlot {
   capacity: number;
 }
 
-/** Bir günün saat aralığı için kalan kapasite. */
-export interface SlotAvailability {
-  slotId: string;
-  date: IsoDate;
-  remaining: number;
-}
-
 /** customer */
 export interface Customer {
   id: string;
@@ -206,6 +199,13 @@ export interface Order {
   total: Kurus;
   deliveryPhotoUrl: string | null;
   createdAt: string;
+  /** Takip linkindeki tahmin edilemez anahtar; sipariş numarası URL'de kullanılmaz. */
+  trackingToken: string;
+  /** Bildirimlerin gittiği gönderen telefonu. */
+  senderPhone: string;
+  courierName: string | null;
+  /** order_event: durum geçmişi, eskiden yeniye. */
+  events: { status: OrderStatus; at: string }[];
 }
 
 export const ShopLookupKind = {
@@ -220,3 +220,133 @@ export type ShopLookup =
   | { kind: typeof ShopLookupKind.Found; shop: Shop }
   | { kind: typeof ShopLookupKind.Moved; slug: string }
   | { kind: typeof ShopLookupKind.Missing };
+
+// ---------------------------------------------------------------------------
+// Alıcı sipariş akışı. Taslak backend'de tutulur; tarayıcı yalnızca kimliğini bilir.
+// Hata metinleri arayüzün işidir: API kod döner, arayüz Türkçe mesaja çevirir.
+
+/** Teslimat takvimindeki bir gün. Kapalı günde aralıklar gösterilmez. */
+export interface DeliveryDay {
+  date: IsoDate;
+  closed: boolean;
+  /** Aynı gün son saati geçtiyse true; o günün aralıkları kapanmıştır. */
+  sameDayClosed: boolean;
+  /** Bugün için başlama saati geçmiş aralıklar listede yoktur. */
+  slots: { slotId: string; remaining: number }[];
+}
+
+/** Taslaktaki ürün satırı; fiyat ve ad seçildiği andaki değerdir. */
+export interface DraftItem {
+  productId: string;
+  productName: string;
+  unitPrice: Kurus;
+  options: Pick<ProductOption, "id" | "name" | "detail" | "kind" | "extraPrice">[];
+  lineTotal: Kurus;
+}
+
+export interface DraftDelivery {
+  date: IsoDate;
+  slotId: string;
+  slotStart: ClockTime;
+  slotEnd: ClockTime;
+  zoneId: string;
+  district: string;
+  neighborhood: string;
+  fee: Kurus;
+  recipientName: string;
+  recipientPhone: string;
+  address: string;
+  courierNote: string;
+  /** Saat aralığı bu ana kadar alıcı için ayrılmıştır. */
+  reservedUntil: string;
+}
+
+export interface DraftCard {
+  message: string;
+  signature: string;
+  anonymous: boolean;
+  senderPhone: string;
+}
+
+export interface OrderDraft {
+  id: string;
+  shopId: string;
+  item: DraftItem;
+  delivery: DraftDelivery | null;
+  card: DraftCard | null;
+  subtotal: Kurus;
+  deliveryFee: Kurus;
+  total: Kurus;
+}
+
+export interface DeliveryInput {
+  date: string;
+  slotId: string;
+  recipientName: string;
+  recipientPhone: string;
+  zoneId: string;
+  neighborhood: string;
+  address: string;
+  courierNote: string;
+}
+
+export type CardInput = DraftCard;
+
+export interface PlaceOrderInput {
+  paymentMethod: string;
+  consent: boolean;
+  /** Formla birlikte üretilen tek kullanımlık anahtar; ikinci gönderim aynı siparişi döner. */
+  idempotencyKey: string;
+}
+
+export const CheckoutError = {
+  Required: "required",
+  TooLong: "too_long",
+  PhoneInvalid: "phone_invalid",
+  ProductUnavailable: "product_unavailable",
+  OptionInvalid: "option_invalid",
+  SizeRequired: "size_required",
+  DayClosed: "day_closed",
+  SameDayClosed: "same_day_closed",
+  DateOutOfRange: "date_out_of_range",
+  SlotFull: "slot_full",
+  ZoneInvalid: "zone_invalid",
+  ConsentRequired: "consent_required",
+  PaymentMethodInvalid: "payment_method_invalid",
+  PriceChanged: "price_changed",
+  ReservationExpired: "reservation_expired",
+  DraftIncomplete: "draft_incomplete",
+} as const;
+export type CheckoutError = ValueOf<typeof CheckoutError>;
+
+/** Alan adı → hata kodu. Bazı kodlar mesaj için ek bilgi taşır (ör. dolu aralığın alternatifi). */
+export type FieldErrors<F extends string = string> = Partial<
+  Record<F, { code: CheckoutError; meta?: Record<string, string | number> }>
+>;
+
+export type Result<T, F extends string = string> = { ok: true; value: T } | { ok: false; errors: FieldErrors<F> };
+
+/** Alıcıya gösterilen takip görünümü. İsimsiz gönderimde imza hiç gelmez. */
+export interface OrderTracking {
+  token: string;
+  number: string;
+  shopId: string;
+  status: OrderStatus;
+  paymentStatus: PaymentStatus;
+  paymentMethod: PaymentMethod;
+  deliveryDate: IsoDate;
+  slotStart: ClockTime;
+  slotEnd: ClockTime;
+  /** Yoldayken tahmini varış, teslimde gerçek saat. */
+  deliveryTime: ClockTime | null;
+  recipientName: string;
+  cardNote: string | null;
+  signature: string | null;
+  anonymous: boolean;
+  courierName: string | null;
+  deliveryPhotoUrl: string | null;
+  /** Bildirimlerin gittiği gönderen telefonu. */
+  senderPhone: string;
+  /** Durum değişiklikleri, eskiden yeniye. `at` ISO zaman damgası (UTC). */
+  events: { status: OrderStatus; at: string }[];
+}

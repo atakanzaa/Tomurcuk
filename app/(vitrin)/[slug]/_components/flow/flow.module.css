@@ -1,0 +1,70 @@
+/* Sipariş akışı sayfaları: tek sütun, mobilde tam genişlik, geniş ekranda 560px. */
+.body {
+  display: grid;
+  gap: var(--space-6);
+  max-width: 560px;
+  margin-inline: auto;
+  padding: var(--space-6) var(--space-4) 0;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 30px;
+  line-height: 36px;
+}
+
+.section {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.sectionLoose {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.sectionTitle {
+  margin: 0;
+  font-size: 18px;
+  line-height: 24px;
+  font-weight: 600;
+}
+
+.note {
+  margin: 0;
+  color: var(--ink-muted);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.groupError {
+  margin: 0;
+  color: var(--danger);
+  font-size: 12px;
+  line-height: 16px;
+}
+
+/* Taslağa bağlı hata: alanlardan önce, tek cümle. */
+.formError {
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-m);
+  background: var(--danger-soft);
+  color: var(--danger-ink);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.notice {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-3);
+}

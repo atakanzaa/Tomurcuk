@@ -1,11 +1,17 @@
 import type {
+  CardInput,
   Category,
+  DeliveryDay,
+  DeliveryInput,
   DeliveryZone,
   IsoDate,
   Order,
+  OrderDraft,
+  OrderTracking,
+  PlaceOrderInput,
   Product,
+  Result,
   ShopLookup,
-  SlotAvailability,
   TimeSlot,
 } from "./types";
 
@@ -25,6 +31,34 @@ export interface TomurcukApi {
   /** Yalnızca aktif bölgeler. */
   getDeliveryZones(shopId: string): Promise<DeliveryZone[]>;
   getTimeSlots(shopId: string): Promise<TimeSlot[]>;
-  getSlotAvailability(shopId: string, date: IsoDate): Promise<SlotAvailability[]>;
+  /** Bugünden (dükkânın saat dilimine göre) başlayarak `days` günün takvimi ve kapasitesi. */
+  getDeliveryDays(shopId: string, days: number): Promise<DeliveryDay[]>;
   getOrders(shopId: string, filter?: { date?: IsoDate }): Promise<Order[]>;
+
+  // Alıcı sipariş akışı. Her adım backend'de, backend'in saatiyle doğrulanır;
+  // "bugün" ve son sipariş saati hiçbir zaman çağırandan alınmaz.
+  createDraft(
+    shopId: string,
+    input: { productId: string; optionIds: string[] },
+  ): Promise<Result<OrderDraft, "product" | "size" | "options">>;
+  getDraft(shopId: string, draftId: string): Promise<OrderDraft | null>;
+  /** Doğrularsa seçilen aralığı 10 dakikalığına ayırır. */
+  saveDelivery(
+    shopId: string,
+    draftId: string,
+    input: DeliveryInput,
+  ): Promise<Result<OrderDraft, keyof DeliveryInput>>;
+  saveCard(shopId: string, draftId: string, input: CardInput): Promise<Result<OrderDraft, keyof CardInput>>;
+  /**
+   * Ürünü, fiyatı, son saati ve aralık rezervasyonunu yeniden doğrular, siparişi oluşturur.
+   * Kartla ödemede gerçek uygulama sağlayıcının sayfasına yönlendirir; mock ödemeyi başarılı sayar.
+   */
+  placeOrder(
+    shopId: string,
+    draftId: string,
+    input: PlaceOrderInput,
+  ): Promise<Result<{ trackingToken: string }, keyof PlaceOrderInput | "draft">>;
+  getOrderTracking(shopId: string, token: string): Promise<OrderTracking | null>;
+  /** Sipariş numarası ve gönderen telefonu eşleşirse takip token'ı. */
+  findTrackingToken(shopId: string, input: { number: string; phone: string }): Promise<string | null>;
 }
