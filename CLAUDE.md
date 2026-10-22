@@ -5,15 +5,18 @@ Küçük çiçekçiler için sipariş sayfası, sipariş paneli ve müşteri def
 ## Belgeler (gerektiğinde oku)
 
 - `docs/mvp.md`: kapsam, özellikler, roller ve yetki matrisi, edge case'ler, veri modeli, ortamlar ve CI/CD, yol haritası. Bir özelliğe başlamadan önce ilgili bölümünü oku.
+- `docs/backend.md`: backend planı; modüller, API kuralları, aşamalar ve hangi aşamada hangi mock'un kalktığı. Backend'de iş yapmadan önce oku.
 - `design/tomurcuk/`: design system. `tokens.json` tek doğru kaynak; `tokens.css` ondan üretilmiş CSS değişkenleri; `components/bundle.css` bileşen stilleri; her bileşenin `README.md` dosyası kullanım kuralları.
 - `design/screens/`: onaylanmış ekran tasarımları (alıcı, satıcı, destek, tanıtım). Bunlar referans mockup'lardır; `<x-dc>`, `{{...}}` ve `data-props` gibi canvas işaretlemeleri içerir. Ekranı React'te yeniden kur, dosyayı olduğu gibi kopyalama. Düzen, metinler, boşluklar ve renk tokenları birebir korunur.
 
 ## Güncel kararlar (`docs/mvp.md` ile çelişirse bunlar geçerli)
 
+- **Repo:** tek repo. `web/` Next.js frontend, `api/` Spring Boot backend; `design/` ve `docs/` ortak.
 - **Frontend:** Next.js (React, TypeScript, App Router). Alıcı vitrini sunucu tarafında render edilir. Satıcı ve destek panelleri aynı projede ayrı route grupları: `(vitrin)`, `(panel)`, `(destek)`. Thymeleaf/HTMX kullanılmıyor.
-- **Backend:** Java 21, Spring Boot 3, modüler monolit (Spring Modulith), PostgreSQL + Flyway. Frontend'e REST API sunar.
+- **Backend:** Java 21, Spring Boot 4, Maven, modüler monolit (Spring Modulith), PostgreSQL + Flyway. Frontend'e REST API sunar; tarayıcı API'yi doğrudan çağırmaz.
+- **Ödeme:** iyzico (pazaryeri, Checkout Form).
 - **CI/CD:** GitHub Actions. Ortama göre dal yok: sadece `main` ve kısa ömürlü feature dalları. PR açılınca önizleme ortamı, `main`'e merge sonrası staging, prod'a tag ve onayla çıkılır. Image bir kez build edilir.
-- **Testler:** Henüz karar verilmedi. Önerilen asgari set: ödeme callback'inin iki kez gelmesi, aynı saat aralığına eşzamanlı sipariş, başka dükkânın verisine erişim denemesi, sipariş durum geçişleri, "bugün" hesabında saat dilimi.
+- **Testler:** dar kapsam, geliştirme hızı önce gelir. Modül sınırı testi ve şu beş senaryo: ödeme callback'inin iki kez gelmesi, aynı saat aralığına eşzamanlı sipariş, başka dükkânın verisine erişim denemesi, sipariş durum geçişleri, "bugün" hesabında saat dilimi. Testcontainers ile gerçek Postgres.
 
 ## Tasarım kuralları
 

@@ -1,15 +1,35 @@
 # Tomurcuk
 
-Küçük çiçekçiler için sipariş sayfası, sipariş paneli ve müşteri defteri. Proje kuralları `CLAUDE.md`'de.
+Küçük çiçekçiler için sipariş sayfası, sipariş paneli ve müşteri defteri. Proje kuralları `CLAUDE.md`'de, backend planı `docs/backend.md`'de.
+
+| Klasör | İçerik |
+| --- | --- |
+| `web/` | Next.js frontend (vitrin, satıcı paneli, destek paneli, tanıtım sitesi) |
+| `api/` | Spring Boot REST API |
+| `design/` | Design system ve onaylı ekran tasarımları |
+| `docs/` | MVP dokümanı ve backend planı |
 
 ## Çalıştırma
 
+Gerekenler: Node.js 22+ ve pnpm 10; backend için JDK 21 ve Docker.
+
 ```bash
+cd web
 pnpm install
 pnpm dev     # http://localhost:3000
 pnpm lint
 pnpm build
 ```
+
+```bash
+cd api
+./mvnw spring-boot:run   # compose.yaml'daki Postgres'i kendisi kaldırır; http://localhost:8080
+./mvnw verify            # testler Testcontainers ile gerçek Postgres'e karşı çalışır
+```
+
+Windows'ta `./mvnw` yerine `.\mvnw.cmd` yazın.
+
+## Ekranlar
 
 **Tanıtım sitesi**
 - `/`: tanıtım ve pilot başvuru formu
@@ -35,4 +55,4 @@ pnpm build
 
 Mock backend bütün değişiklikleri bellekte tutar; sunucu yeniden başlayınca sıfırlanır. Tasarımlardaki örnek tarihler (22 Ekim) ilk istekte bugüne kaydırılır.
 
-Backend henüz yok. Veri `lib/api` arayüzünden gelir ve şimdilik `lib/mock` ile çalışır; Spring Boot API'ye geçerken yalnızca `lib/api/impl.ts` değişir.
+Frontend veriyi `web/lib/api` arayüzünden alır; şimdilik `web/lib/mock` ile çalışır. Backend aşamaları ilerledikçe `web/lib/api/impl.ts` modül modül API'ye geçer (`docs/backend.md`).

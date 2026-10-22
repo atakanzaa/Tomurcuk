@@ -24,10 +24,10 @@ hs_err_pid*
 replay_pid*
 
 # Node / Next.js
-/node_modules
-/.next/
-/out/
-/coverage
+node_modules/
+.next/
+/web/out/
+/web/coverage
 .DS_Store
 *.pem
 npm-debug.log*
@@ -35,3 +35,11 @@ npm-debug.log*
 .env*
 *.tsbuildinfo
 next-env.d.ts
+
+# Maven
+/api/target/
+
+# IDE
+.idea/
+.vscode/
+*.iml

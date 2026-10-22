@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Schibsted_Grotesk, Young_Serif } from "next/font/google";
 import { Theme, themeInitScript } from "@/lib/theme";
-import "@/design/tomurcuk/tokens.css";
-import "@/design/tomurcuk/components/bundle.css";
+import "@design/tomurcuk/tokens.css";
+import "@design/tomurcuk/components/bundle.css";
 import "./globals.css";
 
 // Değişken adları tokens.css ile aynıdır; <body> üzerinde tanımlandıkları için
