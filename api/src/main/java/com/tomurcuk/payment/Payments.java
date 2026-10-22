@@ -194,7 +194,20 @@ public class Payments {
 		return new Outcome(payment.orderId(), succeeded);
 	}
 
+	/** Siparişin ödeme denemeleri, eskiden yeniye (destek zaman çizelgesi). */
+	public List<Attempt> history(String orderId) {
+		return jdbc.sql("SELECT provider, amount, status, updated_at FROM payment WHERE order_id = :orderId ORDER BY created_at")
+			.param("orderId", orderId)
+			.query((rs, n) -> new Attempt(rs.getString("provider"), rs.getLong("amount"), rs.getString("status"),
+					rs.getTimestamp("updated_at").toInstant()))
+			.list();
+	}
+
 	public record Outcome(String orderId, boolean succeeded) {
+	}
+
+	/** `status`: pending, succeeded, failed, abandoned. */
+	public record Attempt(String provider, long amount, String status, Instant at) {
 	}
 
 	record Pending(String id, String orderId, String shopId, String token, long amount, String status) {

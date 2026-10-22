@@ -14,7 +14,7 @@
 | SMS | Netgsm (REST v2); `SmsSender` arayüzünün arkasında, yerelde log'a yazar |
 | API sözleşmesi | springdoc ile OpenAPI; frontend tipleri `openapi-typescript` ile üretilir |
 | Testler | Az ve kritik: modül sınırı doğrulaması ve CLAUDE.md'deki beş senaryo. Testcontainers ile gerçek Postgres |
-| CI | GitHub Actions: `web` için lint ve build, `api` için `mvnw verify` |
+| CI/CD | GitHub Actions: `web` için lint ve build, `api` için `mvnw verify`; geçince image'lar bir kez build edilip `ghcr.io`'ya `sha-<commit>` etiketiyle gider. PR'da önizleme, main'de staging, `v*` etiketiyle onaylı prod (`deploy/README.md`) |
 
 ## Mimari
 
@@ -26,7 +26,11 @@ tarayıcı ──> Next.js (web) ──REST──> Spring Boot (api) ──> Pos
 - Tarayıcı API'yi hiç çağırmaz. Server Component'ler ve Server Action'lar `web/lib/api` üzerinden çağırır. API iç ağda kalır; dışarı yalnızca `/webhooks/**` açılır (iyzico bildirimleri).
 - Oturum Spring Security ve Spring Session JDBC ile tutulur (30 gün). Girişte API oturumu açar ve kimliğini `TOMURCUK_SESSION` cookie'siyle döner; Next bu değeri tarayıcıda kendi httpOnly cookie'sinde (`tomurcuk_oturum`) saklar ve her panel isteğinde API'ye iletir. Tarayıcı API'yi ve token'ı görmez.
 - Oturum cookie'si yoksa proxy `/panel` isteklerini render başlamadan `/giris`'e yönlendirir; süresi dolmuş oturumda API 401 döner, Next yine girişe yönlendirir. Yetkisiz işlem 403 döner. CSRF koruması Next tarafındadır (Server Action köken kontrolü); API iç ağdadır.
-- Rol ve izin matrisi şimdilik kodda (`ShopRole`): sahip iptal ve iade yapabilir, çalışan yapamaz. Platform rolleri gelince (6. aşama) tablolara taşınır.
+- Rol ve izin matrisi kodda (`ShopRole`, `PlatformRole`): dükkân sahibi iptal ve iade yapabilir, çalışan yapamaz; destek lideri ve platform sahibi her şeyi, temsilci dükkân adına giriş ve katalog düzenlemeyi yapabilir. Kontroller rol değil izin üzerinden (`Permission`). mvp'deki "yeni rol deploy gerektirmez" hedefi için tablolar, ilk yeni rol ihtiyacında eklenir.
+- Destek ekibi ayrı tabloda (`platform_user`) ve ayrı girişte (`/destek/giris`): e-posta, şifre ve TOTP kodu birlikte. Panel ve destek oturumları tarayıcıda ayrı cookie'lerde (`tomurcuk_oturum`, `tomurcuk_destek`).
+- Dükkân adına oturum: temsilci gerekçe yazar, 30 dakikalık oturum açılır, dükkân sahiplerine e-posta gider. Next panel isteklerini temsilcinin oturumu ve `X-Tomurcuk-Impersonation` başlığıyla gönderir; API (`ImpersonationFilter`) oturumu doğrular, istek boyunca kullanıcıyı o dükkânın çalışanı yetkisiyle gösterir (iptal kapalı) ve değiştiren her isteği denetim kaydına yazar. Süresi dolan oturumla panel 403 döner, temsilci destek paneline döner.
+- Kişisel veri destek görünümlerinde her zaman maskeli (ad kısaltılmış, telefon yıldızlı); liderler dahil açmak gerekçe ister ve kayda geçer. Denetim kaydını lider ve platform sahibi bütünüyle, temsilci yalnızca kendi işlemleriyle görür.
+- Denetim kaydı (`audit_log`) yalnızca eklenir: veritabanı tetikleyicisi güncellemeyi ve silmeyi reddeder.
 - Dükkân kullanıcıları ve platform kullanıcıları ayrı tablolar, ayrı giriş uçları. Platform girişinde TOTP zorunlu.
 - Destek temsilcisi dükkân adına oturum açtığında panel uçlarını kendi oturumuyla çağırır. Backend, süresi dolmamış `impersonation_session` kaydından dükkânı çözer ve her işlemi denetim kaydına yazar.
 
@@ -77,7 +81,7 @@ Modüller arası yan etkiler Modulith olaylarıyla taşınır, olay yayınları 
 
 ## Aşamalar ve mock'ların kalkışı
 
-Frontend'de `web/lib/api/impl.ts` geçiş boyunca mock ile HTTP uygulamasını birleştirir. Her aşama bittiğinde o modülün fonksiyonları HTTP'ye geçer, mock karşılığı silinir. Her aşamanın sonunda uygulama uçtan uca çalışır.
+Frontend'deki mock'lar aşama aşama kalktı: her aşamada o modülün fonksiyonları HTTP'ye geçti ve mock karşılığı silindi; 6. aşamayla `web/lib/mock` tamamen kaldırıldı. Her aşamanın sonunda uygulama uçtan uca çalıştı.
 
 | Aşama | Backend | Frontend'de kalkan mock |
 | --- | --- | --- |
@@ -86,8 +90,8 @@ Frontend'de `web/lib/api/impl.ts` geçiş boyunca mock ile HTTP uygulamasını b
 | 3. Sipariş ve ödeme (bitti, iyzico adapter'ı hariç) | kapalı gün, günlük kapasite, taslak, rezervasyon, sipariş, ödeme kaydı, sahte sağlayıcı, ödeme dönüşü, zamanlanmış işler, takip | `getDeliveryDays`, `createDraft`, `getDraft`, `saveDelivery`, `saveCard`, `placeOrder`, `getOrderTracking`, `findTrackingToken`; yeni `completePayment` |
 | 4. Giriş ve panel (bitti) | dükkân girişi ve oturum, siparişler, durum geçişleri, ödendi işareti, elle sipariş, müşteriler, özel günler ve hatırlatmalar | `getPanelSession`, `getOrders`, `getOrder`, `updateOrderStatus`, `markOrderPaid`, `getCustomers`, `getCustomer`, `findCustomerByPhone`, `getReminders`, `createManualOrder`; `/giris` eklendi. Panelden açılan talepler (`getShopTickets`, `createTicket`) destek aşamasında |
 | 5. Bildirim (bitti, gerçek sağlayıcılar hariç) | `notification_log`, `SmsSender` ve `EmailSender` (yerelde log'a yazar), onay ve durum SMS'leri, yeni sipariş e-postası, yeniden deneme | — (arayüzde bildirim yok; destek panelindeki bildirim listesi 6. aşamada API'ye geçer) |
-| 6. Destek | platform girişi ve TOTP, talepler, dükkân adına oturum, telefon açma, denetim kaydı | destek fonksiyonları; giriş ekranı eklenir |
-| 7. Yayın | Dockerfile, compose dosyaları, PR önizleme, staging, onaylı prod | `lib/mock` tamamen silinir |
+| 6. Destek (bitti) | platform girişi ve TOTP, talepler, ekip notları, hazır cevaplar, dükkân adına oturum, gerekçeyle telefon açma, arama, dükkân özeti, denetim kaydı; panelden talepler; pilot başvuruları | kalan bütün fonksiyonlar; `web/lib/mock` silindi, `/destek/giris` eklendi |
+| 7. Yayın (bitti, uçtan uca deneme hariç) | Dockerfile'lar, ortam profilleri (`preview`, `staging`, `prod`), compose dosyaları ve Traefik, deploy/geri dönüş/smoke script'leri, GitHub Actions: PR önizleme, main'den staging, tag ve onayla prod; staging'de SMS yalnızca ekip numaralarına; prod'da gece yedeği. Ayrıntılar `deploy/README.md`. iyzico sandbox ve Netgsm ile uçtan uca deneme sunucular kurulunca | — |
 
 ## Sipariş ve ödeme akışı
 
@@ -106,7 +110,6 @@ Sağlayıcılar:
 - `iyzico` (yazıldı, sandbox'ta henüz denenmedi): Checkout Form. `POST /payment/iyzipos/checkoutform/initialize/auth/ecom` ödeme sayfasını açar, `POST /payment/iyzipos/checkoutform/auth/ecom/detail` token'ın sonucunu döner (`paymentStatus` SUCCESS, FAILURE ya da henüz yok). Kimlik doğrulaması IYZWSv2 (HMAC-SHA256). Sepet tek satır (ürün + teslimat), tek çekim. Alıcı üye olmadan sipariş verdiği için e-posta yerine `tomurcuk.payment.iyzico.buyer-email`, kimlik numarası yerine iyzico'nun misafir değeri yazılır; alıcının IP'sini Next iletir. Pazaryeri modelinde (`marketplace: true`) satıra dükkânın alt üye işyeri anahtarı (`shop_payment_account`) yazılır; anahtarı yalnızca dükkân sahibi değiştirir. Ödeme sayfası açılamazsa sipariş açık kalır ve alıcıya `payment_unavailable` gösterilir.
 - Anahtarlar repoya değil ortamın secret'larına girer: `TOMURCUK_PAYMENT_IYZICO_APIKEY`, `TOMURCUK_PAYMENT_IYZICO_SECRETKEY`. Sandbox denemesi için ortamın ağ ayarlarında `sandbox-api.iyzipay.com` izinli olmalı.
 
-Geçiş notu: destek paneli 6. aşamaya kadar mock'ta. Destekten "Dükkân adına gir" panelde henüz oturum açmaz; panel kendi girişini ister. Destek ekranlarındaki siparişler mock verisidir.
 
 ## Bildirimler
 
@@ -123,13 +126,15 @@ Geçiş notu: destek paneli 6. aşamaya kadar mock'ta. Destekten "Dükkân adın
 - Gönderilemeyen bildirim 1, 5, 30 dakika ve 2 saat arayla yeniden denenir; beşinci denemeden sonra bırakılır ve sağlayıcının yanıtıyla kayıtta kalır.
 - Metinlerde alıcıya ve gönderene dükkân konuşur, dükkân adı başta yazılır; isimsiz gönderimde gönderen hiç geçmez. Bütün mesajlar işlem mesajıdır; pazarlama mesajı (09:00–21:00 kuralı, İYS izni) MVP'de otomatik gönderilmez.
 - SMS sağlayıcısı Netgsm (`tomurcuk.sms.provider=netgsm`): `POST https://api.netgsm.com.tr/sms/rest/v2/send`, Basic auth, `encoding: TR`, `iysfilter: "0"` (bilgilendirme mesajı). Yanıttaki `code` "00" başarılıdır, `jobid` kayda yazılır. Kalıcı hatalar (20 metin, 30 kimlik, 40/41 başlık, 50/51 İYS, 70 parametre) yeniden denenmez; 85 ve 100 denenir. Kullanıcı kodu, şifre ve onaylı mesaj başlığı ortamın secret'larındadır: `TOMURCUK_SMS_NETGSM_USERCODE`, `TOMURCUK_SMS_NETGSM_PASSWORD`, `TOMURCUK_SMS_NETGSM_HEADER`. İstek biçimi Netgsm hesabıyla ilk gönderimde doğrulanmalı.
+- Staging'de Netgsm yalnızca `tomurcuk.sms.allowed-recipients` (`TOMURCUK_SMS_ALLOWED_RECIPIENTS`) numaralarına gönderir; diğerleri kayda "Gönderilmedi: ekip numarası değil" notuyla düşer. Değişken tanımsızsa staging açılmaz.
 - Yerelde ve önizlemede `log`: SMS gönderilmez, log'a yazılır. E-posta sağlayıcısı (SMTP ya da servis) seçilince `EmailSender` adapter'ı eklenir.
 
 ## Örnek veri ve derleme
 
 - Örnek dükkânlar, katalog, teslimat ve müşteriler `api/src/main/resources/db/demo/R__demo_data.sql` içinde, yalnızca `demo` profiliyle yüklenir (yerel, önizleme, staging). Tekrar çalıştırılabilir; kayıt varsa günceller.
 - Örnek siparişler `api/src/main/resources/demo/orders.json` dosyasından her açılışta silinip yeniden yüklenir (`DemoOrders`); tarihler tasarımın taban gününden (22 Ekim) bugüne kaydırılır. Tasarımdaki teslimat ekranının doluluğu (sabah dolu, öğle 3 yer) günün ilk açılışında yazılır.
-- Örnek veri `web/lib/mock/data.ts` ile aynı id'leri kullanır. Geçiş süresince mock'ta kalan akışlar (panel, destek) API'deki ürün, bölge ve aralıklarla bu id'ler üzerinden birleşir.
+- Destek örnekleri (talepler, ekip notları, bildirimler, denetim kayıtları) `api/src/main/resources/demo/support.json`'dan her açılışta yüklenir (`DemoSupport`); zamanlar "şimdiden kaç dakika önce". Denetim kaydı silinemediği için örnekleri yalnızca ilk açılışta eklenir.
+- Örnek veri, silinen frontend mock'unun (eski `web/lib/mock`) id'lerini kullanır; README'deki takip linkleri ve sipariş numaraları geçerlidir.
 - Frontend derlemesi API'ye bağlanmaz. Image bir kez build edilip her ortamda çalıştığı için dükkân verisi derlemede sayfaya gömülmez: vitrin rotaları derlemede yalnızca kabuk (`SHELL_SLUG`) ile doğrulanır, dükkân sayfaları ilk ziyarette üretilip önbelleğe alınır.
 
 ## Testler
@@ -140,7 +145,8 @@ Kapsam bilerek dar tutulur; geliştirme hızı önce gelir.
 - Aşama 3 (`CheckoutTests`, `DeliveryScheduleTests`): ödeme callback'inin iki kez gelmesi, aynı idempotency anahtarı, aynı aralığa 20 eşzamanlı rezervasyon (kapasite 6), süresi dolan rezervasyon, "bugün" ve son sipariş saatinde saat dilimi, başka dükkânın takip kodu.
 - Aşama 4 (`PanelTests`): oturumsuz istek 401, yanlış şifrede hangi alanın yanlış olduğu söylenmez, durum geçişleri (atlanan ve geri giden reddedilir), çalışan iptal edemez (403), başka dükkânın siparişi ve müşterisi bulunamaz.
 
-- Adapter'lar (`NetgsmSmsSenderTests`, `IyzicoPaymentProviderTests`): istek biçimi, imza ve yanıt kodları, sağlayıcıya bağlanmadan.
+- Adapter'lar (`NetgsmSmsSenderTests`, `IyzicoPaymentProviderTests`): istek biçimi, imza ve yanıt kodları, sağlayıcıya bağlanmadan; staging'de SMS'in yalnızca ekip numaralarına gitmesi.
+- Aşama 6 (`SupportTests`): şifre ve TOTP birlikte; dükkân oturumuyla panele destek girişi yok; telefon maskeli, gerekçesiz açılmaz, açılış kayda geçer; dükkân adına oturum çalışan yetkisinde (iptal 403), işlem kayda geçer, 30 dakikada biter; denetim kaydı güncellenemez ve silinemez.
 - Aşama 5 (`NotificationTests`): aynı olay iki kez işlense de tek SMS, isimsiz gönderimde gönderen metinde yok.
 
 Testlerde saat `MutableClock` ile sabitlenir, zamanlanmış işler kapalıdır (`tomurcuk.jobs.enabled=false`).
@@ -156,4 +162,4 @@ cd api && ./mvnw spring-boot:run      # Postgres'i compose.yaml'dan kaldırır, 
 cd web && pnpm dev                    # http://localhost:3000; API adresi TOMURCUK_API_URL (varsayılan localhost:8080)
 ```
 
-Vitrin, sipariş ve panel sayfaları API çalışmadan açılmaz; destek ekranları kendi aşamasına kadar mock'la çalışır. Demo panel kullanıcıları (şifre `tomurcuk-demo`): `ayla@nergiscicek.com` (sahip), `kemal@nergiscicek.com` (çalışan), `leyla@lalebahcesi.com` (başka dükkânın sahibi). Frontend başka bir portta çalışıyorsa API'nin ödeme dönüş adresi `TOMURCUK_WEBURL` ortam değişkeniyle verilir (varsayılan `http://localhost:3000`).
+Frontend'in bütün sayfaları API'den beslenir; API çalışmadan açılmaz. Demo panel kullanıcıları (şifre `tomurcuk-demo`): `ayla@nergiscicek.com` (sahip), `kemal@nergiscicek.com` (çalışan), `leyla@lalebahcesi.com` (başka dükkânın sahibi). Demo destek ekibi (şifre `tomurcuk-demo`, doğrulama anahtarı `JBSWY3DPEHPK3PXP`; Google Authenticator gibi bir uygulamaya "anahtar gir" ile eklenir): `selin@tomurcuk.app` ve `mert@tomurcuk.app` (temsilci), `derya@tomurcuk.app` (lider). Frontend başka bir portta çalışıyorsa API'nin ödeme dönüş adresi `TOMURCUK_WEBURL` ortam değişkeniyle verilir (varsayılan `http://localhost:3000`).

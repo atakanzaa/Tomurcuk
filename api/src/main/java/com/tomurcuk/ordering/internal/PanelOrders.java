@@ -25,6 +25,7 @@ import com.tomurcuk.delivery.SlotInfo;
 import com.tomurcuk.delivery.ZoneInfo;
 import com.tomurcuk.identity.Permission;
 import com.tomurcuk.identity.ShopPrincipal;
+import com.tomurcuk.ordering.Order;
 import com.tomurcuk.ordering.OrderSource;
 import com.tomurcuk.ordering.OrderStatus;
 import com.tomurcuk.ordering.OrderStatusChanged;

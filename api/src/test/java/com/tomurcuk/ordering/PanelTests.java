@@ -5,6 +5,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.jayway.jsonpath.JsonPath;
 import com.tomurcuk.TestcontainersConfiguration;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.Test;
@@ -69,9 +70,17 @@ class PanelTests {
 		mvc.perform(get("/api/panel/orders/o_4815").cookie(session)).andExpect(jsonPath("$.status").value("preparing"));
 	}
 
-	/** Başka dükkânın siparişi ve müşterisi bulunamaz; değiştirilemez. */
+	/**
+	 * Başka dükkânın siparişi ve müşterisi bulunamaz; değiştirilemez. Örnek veri test sınıfları
+	 * arasında paylaşıldığı için siparişin durumu denemeden önceki haliyle karşılaştırılır.
+	 */
 	@Test
 	void anotherShopsDataIsNotFound() throws Exception {
+		Cookie owner = login("ayla@nergiscicek.com");
+		String before = JsonPath.read(mvc.perform(get("/api/panel/orders/o_4822").cookie(owner))
+			.andReturn()
+			.getResponse()
+			.getContentAsString(), "$.status");
 		Cookie session = login("leyla@lalebahcesi.com");
 		mvc.perform(get("/api/panel/orders/o_4822").cookie(session)).andExpect(status().isNotFound());
 		mvc.perform(get("/api/panel/customers/cu_ayse").cookie(session)).andExpect(status().isNotFound());
@@ -79,8 +88,7 @@ class PanelTests {
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.length()").value(0));
 		changeStatus(session, "o_4822", "preparing").andExpect(status().isUnprocessableContent());
-		Cookie owner = login("ayla@nergiscicek.com");
-		mvc.perform(get("/api/panel/orders/o_4822").cookie(owner)).andExpect(jsonPath("$.status").value("new"));
+		mvc.perform(get("/api/panel/orders/o_4822").cookie(owner)).andExpect(jsonPath("$.status").value(before));
 	}
 
 	private ResultActions changeStatus(Cookie session, String orderId, String next) throws Exception {

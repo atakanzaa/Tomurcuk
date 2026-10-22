@@ -4,7 +4,8 @@ import java.time.Clock;
 import java.time.LocalDate;
 
 import com.tomurcuk.identity.ShopUsers;
-import com.tomurcuk.notification.internal.NotificationLog.Notification;
+import com.tomurcuk.notification.NotificationLog;
+import com.tomurcuk.notification.NotificationLog.Notification;
 import com.tomurcuk.ordering.OrderConfirmed;
 import com.tomurcuk.ordering.OrderNotice;
 import com.tomurcuk.ordering.OrderStatusChanged;

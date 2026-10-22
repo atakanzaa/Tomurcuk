@@ -1,0 +1,278 @@
+{
+  "tickets": [
+    {
+      "id": "tk_1187",
+      "subject": "Kurye adresi bulamıyor, alıcı telefonu açmıyor",
+      "shopId": "shop_nergis",
+      "orderId": "o_4816",
+      "orderNumber": "T-4816",
+      "category": "delivery",
+      "priority": "normal",
+      "status": "open",
+      "assigneeId": "pu_selin",
+      "createdMinutesAgo": 6,
+      "waitingMinutesAgo": 6,
+      "firstResponseMinutesAgo": null,
+      "messages": [
+        {
+          "author": "Ayla Er",
+          "org": "Nergis Çiçek Atölyesi",
+          "internal": false,
+          "text": "Kurye Acıbadem'de, Çeçen Sokak 8'i bulamıyor. Bina numarası yok gibi görünüyor. Alıcıyı iki kez aradık, açmıyor. Çiçekler arabada bekliyor, ne yapalım?",
+          "minutesAgo": 6
+        },
+        {
+          "author": "Selin Karaca",
+          "org": "dahili not, dükkân görmez",
+          "internal": true,
+          "text": "Zaman çizelgesinde \"yolda\" SMS'i alıcıya ulaşmamış görünüyor. Numara formatı doğru. Gönderen Kerem Öztürk'ü arayıp adresi teyit edeceğim.",
+          "minutesAgo": 3
+        }
+      ]
+    },
+    {
+      "id": "tk_1188",
+      "subject": "Ödeme alındı ama sipariş panelde görünmüyor",
+      "shopId": "shop_lale",
+      "orderId": null,
+      "orderNumber": "T-5102",
+      "category": "payment",
+      "priority": "urgent",
+      "status": "open",
+      "assigneeId": null,
+      "createdMinutesAgo": 12,
+      "waitingMinutesAgo": 12,
+      "firstResponseMinutesAgo": null,
+      "messages": [
+        {
+          "author": "Seda Ateş",
+          "org": "Lale Bahçesi",
+          "internal": false,
+          "text": "Müşteri kartından 1.180 TL çekildiğini söylüyor, dekontu da gönderdi. Ama sipariş panelimde yok. Bugün 16:00–19:00 arası teslim edilmesi gerekiyor.",
+          "minutesAgo": 12
+        }
+      ]
+    },
+    {
+      "id": "tk_1180",
+      "subject": "Teslimat bölgelerine Maltepe'yi ekleyemiyorum",
+      "shopId": "shop_papatya",
+      "orderId": null,
+      "orderNumber": null,
+      "category": "account",
+      "priority": "normal",
+      "status": "waiting_shop",
+      "assigneeId": "pu_selin",
+      "createdMinutesAgo": 190,
+      "waitingMinutesAgo": 100,
+      "firstResponseMinutesAgo": 150,
+      "messages": [
+        {
+          "author": "Fatma Yurt",
+          "org": "Papatya Çiçekçilik",
+          "internal": false,
+          "text": "Ayarlarda Maltepe'yi seçince kaydet butonu çalışmıyor.",
+          "minutesAgo": 190
+        },
+        {
+          "author": "Selin Karaca",
+          "org": "Tomurcuk Destek",
+          "internal": false,
+          "text": "Maltepe'nin hangi mahallelerine teslim ettiğinizi yazar mısınız? Bölgeyi mahalleleriyle birlikte ekleyelim.",
+          "minutesAgo": 100
+        }
+      ]
+    },
+    {
+      "id": "tk_1179",
+      "subject": "Müşterilere SMS gitmiyor",
+      "shopId": "shop_begonvil",
+      "orderId": null,
+      "orderNumber": null,
+      "category": "technical",
+      "priority": "normal",
+      "status": "open",
+      "assigneeId": "pu_mert",
+      "createdMinutesAgo": 120,
+      "waitingMinutesAgo": 120,
+      "firstResponseMinutesAgo": null,
+      "messages": [
+        {
+          "author": "Can Bilge",
+          "org": "Begonvil Atölye",
+          "internal": false,
+          "text": "Dünden beri sipariş onay SMS'leri müşterilere ulaşmıyor.",
+          "minutesAgo": 120
+        }
+      ]
+    },
+    {
+      "id": "tk_1176",
+      "subject": "Ürün fotoğrafı yüklenmiyor",
+      "shopId": "shop_orkide",
+      "orderId": null,
+      "orderNumber": null,
+      "category": "technical",
+      "priority": "normal",
+      "status": "open",
+      "assigneeId": "pu_mert",
+      "createdMinutesAgo": 180,
+      "waitingMinutesAgo": 180,
+      "firstResponseMinutesAgo": null,
+      "messages": [
+        {
+          "author": "Leyla Su",
+          "org": "Orkide Evi",
+          "internal": false,
+          "text": "Telefondan çektiğim fotoğrafı yüklerken hata veriyor.",
+          "minutesAgo": 180
+        }
+      ]
+    },
+    {
+      "id": "tk_1185",
+      "subject": "Çikolata seçeneği fiyatı güncellenmiyor",
+      "shopId": "shop_nergis",
+      "orderId": null,
+      "orderNumber": null,
+      "category": "technical",
+      "priority": "normal",
+      "status": "open",
+      "assigneeId": "pu_mert",
+      "createdMinutesAgo": 1560,
+      "waitingMinutesAgo": 1320,
+      "firstResponseMinutesAgo": 1500,
+      "messages": [
+        {
+          "author": "Ayla Er",
+          "org": "Nergis Çiçek Atölyesi",
+          "internal": false,
+          "text": "Çikolata eklemesinin fiyatını 240 TL yaptım ama vitrinde hâlâ 220 TL görünüyor.",
+          "minutesAgo": 1560
+        }
+      ]
+    },
+    {
+      "id": "tk_1170",
+      "subject": "Kısmi iade nasıl yapılır?",
+      "shopId": "shop_nergis",
+      "orderId": "o_4790",
+      "orderNumber": "T-4790",
+      "category": "payment",
+      "priority": "normal",
+      "status": "resolved",
+      "assigneeId": "pu_selin",
+      "createdMinutesAgo": 1800,
+      "waitingMinutesAgo": 1440,
+      "firstResponseMinutesAgo": 1740,
+      "messages": [
+        {
+          "author": "Ayla Er",
+          "org": "Nergis Çiçek Atölyesi",
+          "internal": false,
+          "text": "Vazo stokta yoktu, müşteriye vazo ücretini iade etmek istiyorum.",
+          "minutesAgo": 1800
+        },
+        {
+          "author": "Selin Karaca",
+          "org": "Tomurcuk Destek",
+          "internal": false,
+          "text": "Sipariş detayında \"İade başlat\" ile yalnızca vazo tutarını girebilirsiniz. İade toplamı ödenen tutarı aşamaz.",
+          "minutesAgo": 1740
+        }
+      ]
+    }
+  ],
+  "notes": [
+    {
+      "id": "sn_1",
+      "shopId": "shop_nergis",
+      "authorName": "Selin K.",
+      "dayOffset": -19,
+      "text": "14 Şubat için kapasiteyi aralık başına 25'e çıkarmak istiyorlar. Ocak'ta hatırlat."
+    },
+    {
+      "id": "sn_2",
+      "shopId": "shop_nergis",
+      "authorName": "Mert A.",
+      "dayOffset": -40,
+      "text": "Instagram linkini bio'ya biz ekledik. Sahibi teknik konularda telefonla konuşmayı tercih ediyor."
+    }
+  ],
+  "notifications": [
+    {
+      "id": "demo_nl_1",
+      "shopId": "shop_nergis",
+      "orderId": "o_4816",
+      "orderNumber": "T-4816",
+      "kind": "order_on_way",
+      "channel": "sms",
+      "recipient": "0541 330 52 03",
+      "text": "Nergis Çiçek Atölyesi: Size bir gönderi yolda. Saat 12:00 civarında teslim edilecek.",
+      "delivered": false,
+      "providerResponse": "Abone ulaşılamıyor",
+      "afterStatus": "onway"
+    },
+    {
+      "id": "demo_nl_2",
+      "shopId": "shop_nergis",
+      "orderId": "o_4817",
+      "orderNumber": "T-4817",
+      "kind": "order_delivered",
+      "channel": "sms",
+      "recipient": "0505 310 22 47",
+      "text": "Nergis Çiçek Atölyesi: T-4817 teslim edildi. Alıcı: Selin Arslan, saat 12:30.",
+      "delivered": true,
+      "providerResponse": null,
+      "afterStatus": "delivered"
+    },
+    {
+      "id": "demo_nl_3",
+      "shopId": "shop_nergis",
+      "orderId": "o_4816",
+      "orderNumber": "T-4816",
+      "kind": "order_confirmed",
+      "channel": "sms",
+      "recipient": "0541 220 31 03",
+      "text": "Nergis Çiçek Atölyesi: Siparişiniz alındı.",
+      "delivered": true,
+      "providerResponse": null,
+      "afterStatus": "new"
+    },
+    {
+      "id": "demo_nl_4",
+      "shopId": "shop_nergis",
+      "orderId": null,
+      "orderNumber": null,
+      "kind": "daily_summary",
+      "channel": "email",
+      "recipient": "ayla@nergiscicek.com",
+      "text": "Günün siparişleri özeti",
+      "delivered": true,
+      "providerResponse": null,
+      "todayAt": "09:00"
+    }
+  ],
+  "audit": [
+    {
+      "id": "demo_au_1",
+      "actorId": "pu_mert",
+      "actorName": "Mert Arslan",
+      "shopId": "shop_begonvil",
+      "action": "Dükkân adına giriş",
+      "record": "30 dakikalık oturum",
+      "reason": "Dükkân telefonda yardım istedi",
+      "minutesAgo": 1560
+    },
+    {
+      "id": "demo_au_2",
+      "actorId": "pu_selin",
+      "actorName": "Selin Karaca",
+      "shopId": "shop_nergis",
+      "action": "Telefon görüntülendi",
+      "record": "Sipariş T-4790, alıcı telefonu",
+      "reason": "Talep: Kısmi iade nasıl yapılır?",
+      "minutesAgo": 1740
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+# Staging (QA): main'e her merge. Örnek dükkânlar (demo profili) ve kalıcı test verisi; prod
+# verisi buraya kopyalanmaz. iyzico sandbox; SMS Netgsm ile yalnızca ekip numaralarına.
+# Anahtarlar sunucudaki .env'de (deploy/README.md).
+tomurcuk:
+  payment:
+    provider: iyzico
+    iyzico:
+      base-url: https://sandbox-api.iyzipay.com
+  sms:
+    provider: netgsm
+    # Virgülle ayrılmış ekip numaraları; diğer numaralara gönderilmez. Tanımsızsa uygulama açılmaz.
+    allowed-recipients: ${TOMURCUK_SMS_ALLOWED_RECIPIENTS}

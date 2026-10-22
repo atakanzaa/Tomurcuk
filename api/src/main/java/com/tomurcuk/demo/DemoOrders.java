@@ -15,6 +15,7 @@ import com.tomurcuk.shared.Instants;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Component;
@@ -29,6 +30,7 @@ import tools.jackson.databind.json.JsonMapper;
  */
 @Component
 @Profile("demo")
+@Order(1)
 class DemoOrders implements ApplicationRunner {
 
 	private static final ZoneId ISTANBUL = ZoneId.of("Europe/Istanbul");

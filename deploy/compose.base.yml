@@ -1,0 +1,71 @@
+# Her ortamda aynı: Postgres, API ve web. Ortam farkları compose.<ortam>.yml'de ve ortam
+# klasöründeki .env'de. Elle çalıştırılmaz; scripts/deploy.sh şöyle çağırır:
+#   docker compose -p <proje> --project-directory <ortam klasörü> \
+#     -f compose.base.yml -f compose.<ortam>.yml up -d --wait
+# Gerekenler: TAG (image etiketi), PROJECT, HOST, POSTGRES_PASSWORD.
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: tomurcuk
+      POSTGRES_USER: tomurcuk
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tomurcuk -d tomurcuk"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # API iç ağda kalır; dışarı yalnızca web açılır.
+  api:
+    image: ${IMAGE_PREFIX:-ghcr.io/atakanzaa/tomurcuk}-api:${TAG:?}
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    # Uygulamanın anahtarları (iyzico, Netgsm) ortam klasöründeki .env'den; repoda yok.
+    env_file: .env
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/tomurcuk
+      SPRING_DATASOURCE_USERNAME: tomurcuk
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+      TOMURCUK_WEBURL: https://${HOST:?}
+      TZ: Europe/Istanbul
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8080/actuator/health"]
+      interval: 10s
+      timeout: 3s
+      start_period: 60s
+      retries: 6
+
+  web:
+    image: ${IMAGE_PREFIX:-ghcr.io/atakanzaa/tomurcuk}-web:${TAG:?}
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+    environment:
+      TOMURCUK_API_URL: http://api:8080
+      TZ: Europe/Istanbul
+    networks:
+      - default
+      - traefik
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=traefik
+      - traefik.http.routers.${PROJECT:?}.rule=Host(`${HOST}`)
+      - traefik.http.routers.${PROJECT}.entrypoints=websecure
+      - traefik.http.routers.${PROJECT}.tls.certresolver=letsencrypt
+      - traefik.http.services.${PROJECT}.loadbalancer.server.port=3000
+
+volumes:
+  postgres-data:
+
+networks:
+  # Sunucudaki Traefik'in ağı (traefik/compose.yml).
+  traefik:
+    external: true

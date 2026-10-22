@@ -153,3 +153,36 @@ ON CONFLICT (id) DO UPDATE SET
     email = EXCLUDED.email,
     password_hash = EXCLUDED.password_hash,
     role = EXCLUDED.role;
+
+-- Demo destek ekibi; şifre "tomurcuk-demo", iki adımlı doğrulama anahtarı JBSWY3DPEHPK3PXP (herhangi bir doğrulayıcı uygulamaya eklenir).
+INSERT INTO platform_user (id, name, email, password_hash, totp_secret, role)
+VALUES
+    ('pu_selin', 'Selin Karaca', 'selin@tomurcuk.app', '{bcrypt}$2a$10$37i3/8ZTj8VoEmVe8Md.rOT.NH9z1rkPsc3ouAUJUHa0mC4ga7vS2', 'JBSWY3DPEHPK3PXP', 'agent'),
+    ('pu_mert', 'Mert Arslan', 'mert@tomurcuk.app', '{bcrypt}$2a$10$37i3/8ZTj8VoEmVe8Md.rOT.NH9z1rkPsc3ouAUJUHa0mC4ga7vS2', 'JBSWY3DPEHPK3PXP', 'agent'),
+    ('pu_derya', 'Derya Kılıç', 'derya@tomurcuk.app', '{bcrypt}$2a$10$37i3/8ZTj8VoEmVe8Md.rOT.NH9z1rkPsc3ouAUJUHa0mC4ga7vS2', 'JBSWY3DPEHPK3PXP', 'lead')
+ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, email = EXCLUDED.email, password_hash = EXCLUDED.password_hash,
+    totp_secret = EXCLUDED.totp_secret, role = EXCLUDED.role;
+
+INSERT INTO canned_reply (id, title, text, category)
+VALUES
+    ('cr_1', 'Adres teyidi', 'Merhaba, gönderenle iletişime geçip adresi teyit ediyoruz. 5 dakika içinde size dönüyoruz; kurye bu arada bölgede beklesin.', 'delivery'),
+    ('cr_2', 'Ödeme sorgulanıyor', 'Merhaba, ödemeyi sağlayıcının kayıtlarından sorguluyoruz. Ödeme alındıysa sipariş birkaç dakika içinde panelinize düşer; size ayrıca haber vereceğiz.', 'payment'),
+    ('cr_3', 'Kısmi iade', 'Sipariş detayında "İade başlat" ile iade edilecek tutarı girebilirsiniz. İade toplamı ödenen tutarı aşamaz; her iade ayrı kaydedilir.', 'payment'),
+    ('cr_4', 'Teslimat bölgesi ekleme', 'Ayarlar, Teslimat bölgeleri bölümünden ilçeyi seçip teslim ettiğiniz mahalleleri ve ücreti girebilirsiniz.', 'account')
+ON CONFLICT (id) DO UPDATE SET title = EXCLUDED.title, text = EXCLUDED.text, category = EXCLUDED.category;
+
+-- Ödeme hesabı onaylı dükkânlar (demo alt üye işyeri anahtarları).
+INSERT INTO shop_payment_account (shop_id, iyzico_sub_merchant_key)
+VALUES
+    ('shop_nergis', 'demo-shop_nergis'),
+    ('shop_lale', 'demo-shop_lale'),
+    ('shop_begonvil', 'demo-shop_begonvil'),
+    ('shop_orkide', 'demo-shop_orkide')
+ON CONFLICT (shop_id) DO UPDATE SET iyzico_sub_merchant_key = EXCLUDED.iyzico_sub_merchant_key;
+
+-- Dükkânların Tomurcuk'a katıldığı gün.
+UPDATE shop SET created_at = '2025-08-04T09:00:00+03:00' WHERE id = 'shop_nergis';
+UPDATE shop SET created_at = '2025-09-12T09:00:00+03:00' WHERE id = 'shop_lale';
+UPDATE shop SET created_at = '2026-01-20T09:00:00+03:00' WHERE id = 'shop_papatya';
+UPDATE shop SET created_at = '2026-03-02T09:00:00+03:00' WHERE id = 'shop_begonvil';
+UPDATE shop SET created_at = '2025-11-15T09:00:00+03:00' WHERE id = 'shop_orkide';

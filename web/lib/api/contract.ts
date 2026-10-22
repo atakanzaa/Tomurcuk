@@ -35,9 +35,9 @@ import type {
 } from "./types";
 
 /**
- * Frontend'in backend'den beklediği her şey. Şimdilik lib/mock uygular;
- * Spring Boot API hazır olunca aynı arayüzü HTTP ile uygulayan bir sürüm yazılır.
- * Dükkâna ait her çağrı shopId ile sınırlıdır.
+ * Frontend'in backend'den beklediği her şey; api/ (Spring Boot) HTTP ile uygular (lib/api/http).
+ * Dükkâna ait her çağrı dükkânla sınırlıdır: vitrin uçlarında shopId adreste, panel uçlarında
+ * oturumdan gelir.
  */
 export interface TomurcukApi {
   findShop(slug: string): Promise<ShopLookup>;

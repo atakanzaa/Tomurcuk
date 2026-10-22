@@ -1,0 +1,15 @@
+# PR önizlemesi: pr-42.test.alanadi.com. Kendi Postgres'iyle kalkar, PR kapanınca `down -v` ile
+# silinir. Ekip dışına kapalı: Traefik'te parola (BASIC_AUTH_USERS, sunucudaki preview.env).
+
+services:
+  api:
+    environment:
+      SPRING_PROFILES_ACTIVE: preview
+      JAVA_TOOL_OPTIONS: -XX:MaxRAMPercentage=70
+    mem_limit: 640m
+
+  web:
+    mem_limit: 256m
+    labels:
+      - traefik.http.routers.${PROJECT}.middlewares=${PROJECT}-auth
+      - traefik.http.middlewares.${PROJECT}-auth.basicauth.users=${BASIC_AUTH_USERS:?}

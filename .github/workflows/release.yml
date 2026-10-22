@@ -1,0 +1,89 @@
+name: Prod
+
+# Prod'a tag ile çıkılır: `git tag v0.1.0 && git push origin v0.1.0`. Yeni build yok; main'de
+# build edilip staging'e çıkmış sha-<commit> image'ı sürüm etiketiyle işaretlenir ve prod'a
+# gider. production ortamının onaycısı onaylamadan deploy başlamaz. Deploy ya da smoke test
+# başarısız olursa önceki sürüme dönülür.
+# Eski bir sürüme elle dönmek için: Actions → Prod → Run workflow, sürüm etiketini yazın.
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Prod'a çıkacak sürüm etiketi (örn. v0.1.0)
+        required: true
+
+permissions:
+  contents: read
+
+env:
+  IMAGE_PREFIX: ghcr.io/atakanzaa/tomurcuk
+  VERSION: ${{ inputs.version || github.ref_name }}
+
+concurrency:
+  group: prod
+  cancel-in-progress: false
+
+jobs:
+  images:
+    name: image'ları etiketle
+    if: vars.PROD_DOMAIN != ''
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.VERSION }}
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - run: |
+          sha=$(git rev-parse HEAD)
+          for app in api web; do
+            if ! docker buildx imagetools inspect "$IMAGE_PREFIX-$app:sha-$sha" > /dev/null 2>&1; then
+              echo "::error::$IMAGE_PREFIX-$app:sha-$sha yok. Sürüm etiketi main'deki bir commit'e konmalı ve o commit'in CI'ı bitmiş olmalı."
+              exit 1
+            fi
+            docker buildx imagetools create -t "$IMAGE_PREFIX-$app:$VERSION" "$IMAGE_PREFIX-$app:sha-$sha"
+          done
+
+  prod:
+    name: prod
+    needs: images
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+    environment:
+      name: production
+      url: https://${{ vars.PROD_DOMAIN }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.VERSION }}
+      - id: deploy
+        uses: ./.github/actions/remote
+        with:
+          host: ${{ vars.SERVER2_HOST }}
+          user: ${{ vars.DEPLOY_USER }}
+          ssh-key: ${{ secrets.SERVER2_SSH_KEY }}
+          known-hosts: ${{ secrets.SERVER2_KNOWN_HOSTS }}
+          registry-token: ${{ secrets.GITHUB_TOKEN }}
+          script: deploy.sh prod ${{ env.VERSION }}
+      - id: smoke
+        run: deploy/scripts/smoke.sh "https://${{ vars.PROD_DOMAIN }}"
+      - name: Önceki sürüme dön
+        if: failure() && (steps.deploy.outcome == 'failure' || steps.smoke.outcome == 'failure')
+        uses: ./.github/actions/remote
+        with:
+          host: ${{ vars.SERVER2_HOST }}
+          user: ${{ vars.DEPLOY_USER }}
+          ssh-key: ${{ secrets.SERVER2_SSH_KEY }}
+          known-hosts: ${{ secrets.SERVER2_KNOWN_HOSTS }}
+          script: rollback.sh prod

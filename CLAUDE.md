@@ -6,6 +6,7 @@ Küçük çiçekçiler için sipariş sayfası, sipariş paneli ve müşteri def
 
 - `docs/mvp.md`: kapsam, özellikler, roller ve yetki matrisi, edge case'ler, veri modeli, ortamlar ve CI/CD, yol haritası. Bir özelliğe başlamadan önce ilgili bölümünü oku.
 - `docs/backend.md`: backend planı; modüller, API kuralları, aşamalar ve hangi aşamada hangi mock'un kalktığı. Backend'de iş yapmadan önce oku.
+- `deploy/README.md`: image'lar, ortamlar (önizleme, staging, prod), sunucu ve GitHub kurulumu, geri dönüş. Yayınla ilgili iş yapmadan önce oku.
 - `design/tomurcuk/`: design system. `tokens.json` tek doğru kaynak; `tokens.css` ondan üretilmiş CSS değişkenleri; `components/bundle.css` bileşen stilleri; her bileşenin `README.md` dosyası kullanım kuralları.
 - `design/screens/`: onaylanmış ekran tasarımları (alıcı, satıcı, destek, tanıtım). Bunlar referans mockup'lardır; `<x-dc>`, `{{...}}` ve `data-props` gibi canvas işaretlemeleri içerir. Ekranı React'te yeniden kur, dosyayı olduğu gibi kopyalama. Düzen, metinler, boşluklar ve renk tokenları birebir korunur.
 

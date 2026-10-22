@@ -1,0 +1,8 @@
+# Web image'ının build bağlamı (docker build -f web/Dockerfile .). API'nin kendi bağlamı api/.
+.git
+**/node_modules
+**/.next
+web/*.tsbuildinfo
+web/.env*
+api
+docs
