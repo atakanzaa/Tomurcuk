@@ -1,5 +1,6 @@
 import { Printer } from "@phosphor-icons/react/dist/ssr";
 import type { Metadata } from "next";
+import { connection } from "next/server";
 import { Suspense, type ReactNode } from "react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Button } from "@/components/ui/Button";
@@ -31,7 +32,17 @@ const PREVIEW_NOW = "12:00";
 const LONG_NOTE =
   "Sevgili Elif, yeni evinin her köşesi kahkahayla dolsun. Taşınma telaşı bitince ilk kahveyi balkonda birlikte içelim; çiçekler de o güne kadar sana bizi hatırlatsın. Kapının her zaman açık olduğunu biliyorsun, biz de buradayız. Sevgiyle.";
 
-export default async function ComponentsPage() {
+export default function ComponentsPage() {
+  return (
+    <Suspense>
+      <Preview />
+    </Suspense>
+  );
+}
+
+/** Örnek dükkânın verisiyle çalışır; veri derlemede değil istek anında okunur. */
+async function Preview() {
+  await connection();
   const lookup = await findShop(PREVIEW_SHOP_SLUG);
   if (lookup.kind !== ShopLookupKind.Found) throw new Error(`Önizleme dükkânı bulunamadı: ${PREVIEW_SHOP_SLUG}`);
   const { shop } = lookup;
@@ -42,7 +53,7 @@ export default async function ComponentsPage() {
         <div>
           <h1 className={styles.title}>Bileşenler</h1>
           <p className={styles.lede}>
-            design/tomurcuk bileşenlerinin React karşılıkları, tüm halleriyle. Veriler lib/mock&apos;tan gelir.
+            design/tomurcuk bileşenlerinin React karşılıkları, tüm halleriyle. Veriler örnek dükkândan (nergis) gelir.
           </p>
         </div>
         <ThemeToggle />

@@ -80,12 +80,18 @@ Frontend'de `web/lib/api/impl.ts` geçiş boyunca mock ile HTTP uygulamasını b
 | Aşama | Backend | Frontend'de kalkan mock |
 | --- | --- | --- |
 | 1. İskelet | Maven projesi, Modulith, Flyway, Postgres (Docker Compose), Testcontainers, CI | — |
-| 2. Vitrin | `shop`, `catalog`, `delivery` okuma uçları, örnek veri | `findShop`, `getProducts`, `getProduct`, `getCategories`, `getDeliveryZones`, `getTimeSlots`, `getDeliveryDays` |
-| 3. Sipariş ve ödeme | taslak, rezervasyon, sipariş, iyzico sandbox, callback, takip | sipariş akışı ve takip |
+| 2. Vitrin (bitti) | `shop`, `catalog`, `delivery` okuma uçları, örnek veri | `findShop`, `getCategories`, `getProducts`, `getProduct`, `getDeliveryZones`, `getTimeSlots`; `listFeaturedShopSlugs` kaldırıldı |
+| 3. Sipariş ve ödeme | kapalı gün, günlük kapasite, taslak, rezervasyon, sipariş, iyzico sandbox, callback, takip | `getDeliveryDays`, sipariş akışı ve takip |
 | 4. Giriş ve panel | dükkân girişi, siparişler, durum geçişleri, elle sipariş, müşteriler, hatırlatmalar | panel fonksiyonları; giriş ekranı eklenir |
 | 5. Bildirim | bildirim kaydı, `SmsSender`, yeni sipariş e-postası | — |
 | 6. Destek | platform girişi ve TOTP, talepler, dükkân adına oturum, telefon açma, denetim kaydı | destek fonksiyonları; giriş ekranı eklenir |
 | 7. Yayın | Dockerfile, compose dosyaları, PR önizleme, staging, onaylı prod | `lib/mock` tamamen silinir |
+
+## Örnek veri ve derleme
+
+- Örnek dükkânlar `api/src/main/resources/db/demo/R__demo_data.sql` içinde, yalnızca `demo` profiliyle yüklenir (yerel, önizleme, staging). Tekrar çalıştırılabilir; kayıt varsa günceller.
+- Örnek veri `web/lib/mock/data.ts` ile aynı id'leri kullanır. Geçiş süresince mock'ta kalan akışlar (sipariş, panel, destek) API'deki ürün, bölge ve aralıklarla bu id'ler üzerinden birleşir.
+- Frontend derlemesi API'ye bağlanmaz. Image bir kez build edilip her ortamda çalıştığı için dükkân verisi derlemede sayfaya gömülmez: vitrin rotaları derlemede yalnızca kabuk (`SHELL_SLUG`) ile doğrulanır, dükkân sayfaları ilk ziyarette üretilip önbelleğe alınır.
 
 ## Testler
 
@@ -102,6 +108,8 @@ Testler tek bir paylaşılan Postgres container'ı kullanır (`@ServiceConnectio
 Gerekenler: JDK 21, Docker (Windows'ta Docker Desktop), Node.js 22+ ve pnpm 10.
 
 ```bash
-cd api && ./mvnw spring-boot:run      # Postgres'i compose.yaml'dan kendisi kaldırır; http://localhost:8080
-cd web && pnpm dev                    # http://localhost:3000
+cd api && ./mvnw spring-boot:run      # Postgres'i compose.yaml'dan kaldırır, örnek veriyle açılır; http://localhost:8080
+cd web && pnpm dev                    # http://localhost:3000; API adresi TOMURCUK_API_URL (varsayılan localhost:8080)
 ```
+
+Vitrin sayfaları API çalışmadan açılmaz; panel ve destek ekranları kendi aşamalarına kadar mock'la çalışır.

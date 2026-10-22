@@ -1,22 +1,20 @@
 import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
 import { connection } from "next/server";
+import { SHELL_SLUG } from "@/lib/routes";
 import type { TomurcukApi } from "./contract";
 import { impl } from "./impl";
+import { ShopLookupKind, type ShopLookup } from "./types";
 
 // Vitrin verisi herkese açıktır ve her ziyaretçi için aynıdır; "use cache" ile önbelleğe
 // alınır ve sayfanın statik kabuğuna girer.
 
-export async function listFeaturedShopSlugs() {
-  "use cache";
-  cacheLife("hours");
-  return impl.listFeaturedShopSlugs();
-}
-
-export async function findShop(slug: string) {
+export async function findShop(slug: string): Promise<ShopLookup> {
   "use cache";
   cacheLife("minutes");
   cacheTag(`shop-slug:${slug}`);
+  // Derlemedeki kabuk API'ye gitmez; sayfa bunu bulunamayan dükkân gibi işler.
+  if (slug === SHELL_SLUG) return { kind: ShopLookupKind.Missing };
   return impl.findShop(slug);
 }
 

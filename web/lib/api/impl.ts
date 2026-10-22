@@ -1,6 +1,10 @@
 import "server-only";
 import { mockApi } from "@/lib/mock/api";
 import type { TomurcukApi } from "./contract";
+import { httpVitrinApi } from "./http/vitrin";
 
-/** Kullanılan uygulama. Spring Boot API'ye geçerken yalnızca bu satır değişir. */
-export const impl: TomurcukApi = mockApi;
+/**
+ * Kullanılan uygulama. Backend aşamaları ilerledikçe modüller mock'tan HTTP'ye geçer
+ * (docs/backend.md "Aşamalar"); hepsi geçince mock silinir.
+ */
+export const impl: TomurcukApi = { ...mockApi, ...httpVitrinApi };

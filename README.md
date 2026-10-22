@@ -13,19 +13,23 @@ Küçük çiçekçiler için sipariş sayfası, sipariş paneli ve müşteri def
 
 Gerekenler: Node.js 22+ ve pnpm 10; backend için JDK 21 ve Docker.
 
+Önce API, sonra frontend:
+
+```bash
+cd api
+./mvnw spring-boot:run   # compose.yaml'daki Postgres'i kaldırır, örnek dükkânlarla açılır; http://localhost:8080
+./mvnw verify            # testler Testcontainers ile gerçek Postgres'e karşı çalışır
+```
+
 ```bash
 cd web
 pnpm install
 pnpm dev     # http://localhost:3000
 pnpm lint
-pnpm build
+pnpm build   # API'ye ihtiyaç duymaz
 ```
 
-```bash
-cd api
-./mvnw spring-boot:run   # compose.yaml'daki Postgres'i kendisi kaldırır; http://localhost:8080
-./mvnw verify            # testler Testcontainers ile gerçek Postgres'e karşı çalışır
-```
+Frontend API'yi `TOMURCUK_API_URL` adresinde arar (varsayılan `http://localhost:8080`, bkz. `web/.env.example`).
 
 Windows'ta `./mvnw` yerine `.\mvnw.cmd` yazın.
 
@@ -53,6 +57,6 @@ Windows'ta `./mvnw` yerine `.\mvnw.cmd` yazın.
 **Geliştirme**
 - `/bilesenler`: design system bileşenlerinin önizlemesi
 
-Mock backend bütün değişiklikleri bellekte tutar; sunucu yeniden başlayınca sıfırlanır. Tasarımlardaki örnek tarihler (22 Ekim) ilk istekte bugüne kaydırılır.
+Mock'ta kalan kısımlar değişiklikleri bellekte tutar; sunucu yeniden başlayınca sıfırlanır. Tasarımlardaki örnek tarihler (22 Ekim) ilk istekte bugüne kaydırılır.
 
-Frontend veriyi `web/lib/api` arayüzünden alır; şimdilik `web/lib/mock` ile çalışır. Backend aşamaları ilerledikçe `web/lib/api/impl.ts` modül modül API'ye geçer (`docs/backend.md`).
+Frontend veriyi `web/lib/api` arayüzünden alır. Vitrin okumaları API'den gelir; sipariş akışı, panel ve destek şimdilik `web/lib/mock` ile çalışır. Backend aşamaları ilerledikçe `web/lib/api/impl.ts` modül modül API'ye geçer (`docs/backend.md`).

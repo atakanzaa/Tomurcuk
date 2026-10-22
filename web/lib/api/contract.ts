@@ -39,8 +39,6 @@ import type {
  * Dükkâna ait her çağrı shopId ile sınırlıdır.
  */
 export interface TomurcukApi {
-  /** Derlemede önceden render edilecek dükkânların slug'ları. */
-  listFeaturedShopSlugs(): Promise<string[]>;
   findShop(slug: string): Promise<ShopLookup>;
   getCategories(shopId: string): Promise<Category[]>;
   /** Yalnızca aktif ürünler, `order` sırasıyla. */
