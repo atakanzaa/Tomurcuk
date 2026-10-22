@@ -85,7 +85,7 @@ Frontend'de `web/lib/api/impl.ts` geçiş boyunca mock ile HTTP uygulamasını b
 | 2. Vitrin (bitti) | `shop`, `catalog`, `delivery` okuma uçları, örnek veri | `findShop`, `getCategories`, `getProducts`, `getProduct`, `getDeliveryZones`, `getTimeSlots`; `listFeaturedShopSlugs` kaldırıldı |
 | 3. Sipariş ve ödeme (bitti, iyzico adapter'ı hariç) | kapalı gün, günlük kapasite, taslak, rezervasyon, sipariş, ödeme kaydı, sahte sağlayıcı, ödeme dönüşü, zamanlanmış işler, takip | `getDeliveryDays`, `createDraft`, `getDraft`, `saveDelivery`, `saveCard`, `placeOrder`, `getOrderTracking`, `findTrackingToken`; yeni `completePayment` |
 | 4. Giriş ve panel (bitti) | dükkân girişi ve oturum, siparişler, durum geçişleri, ödendi işareti, elle sipariş, müşteriler, özel günler ve hatırlatmalar | `getPanelSession`, `getOrders`, `getOrder`, `updateOrderStatus`, `markOrderPaid`, `getCustomers`, `getCustomer`, `findCustomerByPhone`, `getReminders`, `createManualOrder`; `/giris` eklendi. Panelden açılan talepler (`getShopTickets`, `createTicket`) destek aşamasında |
-| 5. Bildirim | bildirim kaydı, `SmsSender`, yeni sipariş e-postası | — |
+| 5. Bildirim (bitti, gerçek sağlayıcılar hariç) | `notification_log`, `SmsSender` ve `EmailSender` (yerelde log'a yazar), onay ve durum SMS'leri, yeni sipariş e-postası, yeniden deneme | — (arayüzde bildirim yok; destek panelindeki bildirim listesi 6. aşamada API'ye geçer) |
 | 6. Destek | platform girişi ve TOTP, talepler, dükkân adına oturum, telefon açma, denetim kaydı | destek fonksiyonları; giriş ekranı eklenir |
 | 7. Yayın | Dockerfile, compose dosyaları, PR önizleme, staging, onaylı prod | `lib/mock` tamamen silinir |
 
@@ -107,6 +107,22 @@ Sağlayıcılar:
 
 Geçiş notu: destek paneli 6. aşamaya kadar mock'ta. Destekten "Dükkân adına gir" panelde henüz oturum açmaz; panel kendi girişini ister. Destek ekranlarındaki siparişler mock verisidir.
 
+## Bildirimler
+
+| Olay | Kime | Kanal |
+| --- | --- | --- |
+| `OrderConfirmed`: havalede sipariş anında, kartla ödemede ödeme ilk kez onaylanınca | gönderen (onay ve takip linki), dükkân sahipleri (yeni sipariş) | SMS, e-posta |
+| `OrderStatusChanged` → Yolda | alıcı | SMS |
+| → Teslim edildi | gönderen | SMS |
+| → Teslim edilemedi | gönderen ve alıcı | SMS |
+
+- Panelden elle girilen sipariş ve "Hazırlanıyor" geçişi bildirim göndermez.
+- Dinleyiciler `@ApplicationModuleListener`: işlem tamamlandıktan sonra ayrı iş parçacığında çalışır, olay kaydı veritabanında durur. Sipariş akışı SMS sağlayıcısını beklemez; uygulama yeniden başlarsa yarım kalan olay yeniden işlenir.
+- Bildirim önce `notification_log`'a yazılır, sonra gönderilir. `dedupe_key` (sipariş + tür + olay sırası + alıcı) tekildir; aynı olay iki kez işlense de bildirim bir kez gider. Teslim edilemeyen sipariş yeniden yola çıkınca olay sırası farklı olduğu için yeni SMS gider.
+- Gönderilemeyen bildirim 1, 5, 30 dakika ve 2 saat arayla yeniden denenir; beşinci denemeden sonra bırakılır ve sağlayıcının yanıtıyla kayıtta kalır.
+- Metinlerde alıcıya ve gönderene dükkân konuşur, dükkân adı başta yazılır; isimsiz gönderimde gönderen hiç geçmez. Bütün mesajlar işlem mesajıdır; pazarlama mesajı (09:00–21:00 kuralı, İYS izni) MVP'de otomatik gönderilmez.
+- Sağlayıcılar: `tomurcuk.sms.provider` ve `tomurcuk.email.provider` şimdilik `log`. SMS sağlayıcısı (Netgsm, İleti Merkezi) ve e-posta (SMTP ya da servis) seçilince adapter eklenir.
+
 ## Örnek veri ve derleme
 
 - Örnek dükkânlar, katalog, teslimat ve müşteriler `api/src/main/resources/db/demo/R__demo_data.sql` içinde, yalnızca `demo` profiliyle yüklenir (yerel, önizleme, staging). Tekrar çalıştırılabilir; kayıt varsa günceller.
@@ -121,6 +137,8 @@ Kapsam bilerek dar tutulur; geliştirme hızı önce gelir.
 - `ModularityTests`: modül sınırları (`ApplicationModules.verify()`).
 - Aşama 3 (`CheckoutTests`, `DeliveryScheduleTests`): ödeme callback'inin iki kez gelmesi, aynı idempotency anahtarı, aynı aralığa 20 eşzamanlı rezervasyon (kapasite 6), süresi dolan rezervasyon, "bugün" ve son sipariş saatinde saat dilimi, başka dükkânın takip kodu.
 - Aşama 4 (`PanelTests`): oturumsuz istek 401, yanlış şifrede hangi alanın yanlış olduğu söylenmez, durum geçişleri (atlanan ve geri giden reddedilir), çalışan iptal edemez (403), başka dükkânın siparişi ve müşterisi bulunamaz.
+
+- Aşama 5 (`NotificationTests`): aynı olay iki kez işlense de tek SMS, isimsiz gönderimde gönderen metinde yok.
 
 Testlerde saat `MutableClock` ile sabitlenir, zamanlanmış işler kapalıdır (`tomurcuk.jobs.enabled=false`).
 

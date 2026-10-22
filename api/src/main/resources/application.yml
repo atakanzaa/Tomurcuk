@@ -22,6 +22,8 @@ spring:
   modulith:
     events:
       republish-outstanding-events-on-restart: true
+      # Tamamlanan olay kayıtları silinir; tamamlanmayanlar yeniden işlenmek üzere kalır.
+      completion-mode: delete
 
 tomurcuk:
   # Alıcının ödeme sonrası döndüğü frontend adresi (callback). Ortama göre değişir.
@@ -29,6 +31,11 @@ tomurcuk:
   payment:
     # fake: geliştirme ve önizleme; iyzico: staging ve prod.
     provider: fake
+  sms:
+    # log: SMS gönderilmez, log'a yazılır. Sağlayıcı (Netgsm, İleti Merkezi) seçilince eklenecek.
+    provider: log
+  email:
+    provider: log
   jobs:
     enabled: true
 

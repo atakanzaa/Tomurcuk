@@ -18,6 +18,7 @@ import com.tomurcuk.customer.Customers;
 import com.tomurcuk.delivery.DeliverySchedule;
 import com.tomurcuk.delivery.SlotInfo;
 import com.tomurcuk.delivery.ZoneInfo;
+import com.tomurcuk.ordering.OrderConfirmed;
 import com.tomurcuk.ordering.OrderSource;
 import com.tomurcuk.ordering.OrderStatus;
 import com.tomurcuk.ordering.PaymentMethod;
@@ -33,6 +34,7 @@ import com.tomurcuk.shared.ValidationException;
 import com.tomurcuk.shop.ShopDirectory;
 import com.tomurcuk.shop.ShopInfo;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -80,9 +82,11 @@ public class Checkout {
 
 	private final String webUrl;
 
+	private final ApplicationEventPublisher events;
+
 	Checkout(DraftStore drafts, OrderStore orders, ShopDirectory shops, Catalog catalog, DeliverySchedule schedule,
 			Customers customers, Payments payments, Clock clock, TransactionTemplate tx,
-			@Value("${tomurcuk.web-url}") String webUrl) {
+			@Value("${tomurcuk.web-url}") String webUrl, ApplicationEventPublisher events) {
 		this.drafts = drafts;
 		this.orders = orders;
 		this.shops = shops;
@@ -93,6 +97,7 @@ public class Checkout {
 		this.clock = clock;
 		this.tx = tx;
 		this.webUrl = webUrl;
+		this.events = events;
 	}
 
 	public Draft createDraft(String shopId, String productId, List<String> optionIds) {
@@ -283,6 +288,10 @@ public class Checkout {
 				draft.subtotal(), draft.deliveryFee(), draft.total(), null, now, Ids.token(16), card.senderPhone(),
 				null, List.of(new Order.Event(OrderStatus.NEW, now)));
 		orders.insert(order, blankToNull(idempotencyKey));
+		// Havalede sipariş hemen kesinleşir; kartla ödemede ödeme onaylanınca (PaymentListener).
+		if (method == PaymentMethod.TRANSFER) {
+			events.publishEvent(new OrderConfirmed(Notices.of(order)));
+		}
 		drafts.update(new Draft(draft.id(), draft.shopId(), draft.item(), delivery, card, draft.subtotal(),
 				draft.deliveryFee(), draft.total(), orderId, draft.expiresAt()));
 		return order;
