@@ -103,7 +103,8 @@ Frontend'de `web/lib/api/impl.ts` geçiş boyunca mock ile HTTP uygulamasını b
 
 Sağlayıcılar:
 - `fake` (varsayılan): ödeme sayfası frontend'deki `/{slug}/siparis/odeme/deneme`; "Ödemeyi onayla" ve "Ödemeyi yarıda bırak" ile iki sonuç da denenebilir.
-- `iyzico`: Checkout Form ve pazaryeri (alt üye işyeri anahtarı dükkânda). Sandbox anahtarları gelince yazılacak; anahtarlar repoya değil ortamın secret'larına girer.
+- `iyzico` (yazıldı, sandbox'ta henüz denenmedi): Checkout Form. `POST /payment/iyzipos/checkoutform/initialize/auth/ecom` ödeme sayfasını açar, `POST /payment/iyzipos/checkoutform/auth/ecom/detail` token'ın sonucunu döner (`paymentStatus` SUCCESS, FAILURE ya da henüz yok). Kimlik doğrulaması IYZWSv2 (HMAC-SHA256). Sepet tek satır (ürün + teslimat), tek çekim. Alıcı üye olmadan sipariş verdiği için e-posta yerine `tomurcuk.payment.iyzico.buyer-email`, kimlik numarası yerine iyzico'nun misafir değeri yazılır; alıcının IP'sini Next iletir. Pazaryeri modelinde (`marketplace: true`) satıra dükkânın alt üye işyeri anahtarı (`shop_payment_account`) yazılır; anahtarı yalnızca dükkân sahibi değiştirir. Ödeme sayfası açılamazsa sipariş açık kalır ve alıcıya `payment_unavailable` gösterilir.
+- Anahtarlar repoya değil ortamın secret'larına girer: `TOMURCUK_PAYMENT_IYZICO_APIKEY`, `TOMURCUK_PAYMENT_IYZICO_SECRETKEY`. Sandbox denemesi için ortamın ağ ayarlarında `sandbox-api.iyzipay.com` izinli olmalı.
 
 Geçiş notu: destek paneli 6. aşamaya kadar mock'ta. Destekten "Dükkân adına gir" panelde henüz oturum açmaz; panel kendi girişini ister. Destek ekranlarındaki siparişler mock verisidir.
 
@@ -139,6 +140,7 @@ Kapsam bilerek dar tutulur; geliştirme hızı önce gelir.
 - Aşama 3 (`CheckoutTests`, `DeliveryScheduleTests`): ödeme callback'inin iki kez gelmesi, aynı idempotency anahtarı, aynı aralığa 20 eşzamanlı rezervasyon (kapasite 6), süresi dolan rezervasyon, "bugün" ve son sipariş saatinde saat dilimi, başka dükkânın takip kodu.
 - Aşama 4 (`PanelTests`): oturumsuz istek 401, yanlış şifrede hangi alanın yanlış olduğu söylenmez, durum geçişleri (atlanan ve geri giden reddedilir), çalışan iptal edemez (403), başka dükkânın siparişi ve müşterisi bulunamaz.
 
+- Adapter'lar (`NetgsmSmsSenderTests`, `IyzicoPaymentProviderTests`): istek biçimi, imza ve yanıt kodları, sağlayıcıya bağlanmadan.
 - Aşama 5 (`NotificationTests`): aynı olay iki kez işlense de tek SMS, isimsiz gönderimde gönderen metinde yok.
 
 Testlerde saat `MutableClock` ile sabitlenir, zamanlanmış işler kapalıdır (`tomurcuk.jobs.enabled=false`).

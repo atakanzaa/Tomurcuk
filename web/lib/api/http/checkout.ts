@@ -1,4 +1,5 @@
 import "server-only";
+import { headers } from "next/headers";
 import type { TomurcukApi } from "../contract";
 import type { DeliveryDay, OrderDraft, OrderTracking, PlacedOrder } from "../types";
 import { get, getOrNull, path, postOrNull, send } from "./client";
@@ -24,11 +25,12 @@ export const httpCheckoutApi: CheckoutApi = {
   getDraft: (shopId, draftId) => getOrNull<OrderDraft>(path`/api/public/shops/${shopId}/drafts/${draftId}`),
   saveDelivery: (shopId, draftId, input) => send("PUT", path`/api/public/shops/${shopId}/drafts/${draftId}/delivery`, input),
   saveCard: (shopId, draftId, input) => send("PUT", path`/api/public/shops/${shopId}/drafts/${draftId}/card`, input),
-  placeOrder: (shopId, draftId, input) =>
+  // Ödeme sağlayıcısı alıcının IP'sini ister; tarayıcı API'yi görmediği için Next iletir.
+  placeOrder: async (shopId, draftId, input) =>
     send<PlacedOrder, "paymentMethod" | "consent" | "idempotencyKey" | "draft">(
       "POST",
       path`/api/public/shops/${shopId}/drafts/${draftId}/order`,
-      input,
+      { ...input, clientIp: await clientIp() },
     ),
   completePayment: (shopId, token) =>
     postOrNull<{ trackingToken: string; paid: boolean }>(path`/api/public/shops/${shopId}/payments/complete`, { token }),
@@ -36,3 +38,9 @@ export const httpCheckoutApi: CheckoutApi = {
   findTrackingToken: async (shopId, input) =>
     (await postOrNull<{ token: string }>(path`/api/public/shops/${shopId}/tracking-lookup`, input))?.token ?? null,
 };
+
+/** Proxy arkasında X-Forwarded-For'un ilk adresi. */
+async function clientIp(): Promise<string | null> {
+  const list = await headers();
+  return list.get("x-forwarded-for")?.split(",")[0]?.trim() || list.get("x-real-ip") || null;
+}

@@ -324,6 +324,8 @@ export const CheckoutError = {
   PaymentMethodInvalid: "payment_method_invalid",
   PriceChanged: "price_changed",
   ReservationExpired: "reservation_expired",
+  /** Ödeme sağlayıcısının sayfası açılamadı; sipariş açık kalır. */
+  PaymentUnavailable: "payment_unavailable",
   DraftIncomplete: "draft_incomplete",
 } as const;
 export type CheckoutError = ValueOf<typeof CheckoutError>;

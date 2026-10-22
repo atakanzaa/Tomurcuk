@@ -68,6 +68,8 @@ export function checkoutErrorMessage(
       return `Ürünün fiyatı değişti. Yeni toplam ${formatPrice(Number(meta.total))}; kontrol edip yeniden onaylayın.`;
     case CheckoutError.ReservationExpired:
       return "Ayırdığımız saat aralığı başka bir siparişe geçti. Teslimat adımından yeni bir aralık seçin.";
+    case CheckoutError.PaymentUnavailable:
+      return "Ödeme sayfası şu an açılamıyor. Birkaç dakika sonra yeniden deneyin ya da havaleyle ödeyin.";
     case CheckoutError.DraftIncomplete:
       return "Sipariş bilgileri eksik. Önceki adımları tamamlayın.";
   }

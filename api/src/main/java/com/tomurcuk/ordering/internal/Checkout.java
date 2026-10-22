@@ -177,12 +177,12 @@ public class Checkout {
 		Optional<Order> existing = blankToNull(input.idempotencyKey()) == null ? Optional.empty()
 				: orders.findByIdempotencyKey(shopId, input.idempotencyKey());
 		if (existing.isPresent()) {
-			return placed(existing.get());
+			return placed(existing.get(), input.clientIp());
 		}
 		ShopInfo shop = shops.find(shopId).orElseThrow(() -> incomplete("draft"));
 		Draft draft = drafts.findLive(shopId, draftId, false).orElseThrow(() -> incomplete("draft"));
 		if (draft.orderId() != null) {
-			return placed(orders.find(shopId, draft.orderId()).orElseThrow(() -> incomplete("draft")));
+			return placed(orders.find(shopId, draft.orderId()).orElseThrow(() -> incomplete("draft")), input.clientIp());
 		}
 		if (draft.delivery() == null || draft.card() == null) {
 			throw incomplete("draft");
@@ -232,9 +232,10 @@ public class Checkout {
 		}
 		catch (DuplicateKeyException ex) {
 			// Aynı anahtarla eşzamanlı ikinci gönderim: ilk sipariş döner.
-			return placed(orders.findByIdempotencyKey(shopId, input.idempotencyKey()).orElseThrow(() -> ex));
+			return placed(orders.findByIdempotencyKey(shopId, input.idempotencyKey()).orElseThrow(() -> ex),
+					input.clientIp());
 		}
-		return placed(order);
+		return placed(order, input.clientIp());
 	}
 
 	/** Ödeme sayfasından dönüş; sonuç sağlayıcıdan alınır, alıcının söylediğine güvenilmez. */
@@ -297,7 +298,7 @@ public class Checkout {
 		return order;
 	}
 
-	private Placed placed(Order order) {
+	private Placed placed(Order order, String clientIp) {
 		boolean needsPayment = order.paymentMethod() == PaymentMethod.CARD
 				&& order.paymentStatus() != PaymentStatus.PAID && order.status() == OrderStatus.NEW;
 		if (!needsPayment) {
@@ -308,9 +309,18 @@ public class Checkout {
 			.pathSegment(shop.slug(), "siparis", "odeme", "sonuc")
 			.build()
 			.toUriString();
-		PaymentProvider.Session session = payments.start(new PaymentProvider.Request(order.id(), order.shopId(),
-				order.total(), shop.name() + " siparişi " + order.number(), callbackUrl));
-		return new Placed(order.trackingToken(), session.pageUrl());
+		PaymentProvider.Buyer buyer = new PaymentProvider.Buyer(order.customerId(),
+				order.senderName() == null ? "" : order.senderName(), order.senderPhone(), order.address(),
+				order.zoneName(), clientIp == null || clientIp.isBlank() ? "127.0.0.1" : clientIp);
+		try {
+			PaymentProvider.Session session = payments.start(new PaymentProvider.Request(order.id(), order.shopId(),
+					order.total(), shop.name() + " siparişi " + order.number(), callbackUrl, buyer));
+			return new Placed(order.trackingToken(), session.pageUrl());
+		}
+		catch (PaymentProvider.Unavailable ex) {
+			// Sipariş açık kalır; alıcı biraz sonra yeniden deneyebilir ya da havaleyi seçebilir.
+			throw ValidationException.of("draft", FieldError.of("payment_unavailable"));
+		}
 	}
 
 	/** Ürünün bugünkü fiyatıyla taslak satırı; seçenekler doğrulanır. */
@@ -356,7 +366,8 @@ public class Checkout {
 	public record CardInput(String message, String signature, boolean anonymous, String senderPhone) {
 	}
 
-	public record PlaceOrderInput(String paymentMethod, boolean consent, String idempotencyKey) {
+	/** `clientIp` alıcının IP'si; Next sunucusu iletir, ödeme sağlayıcısı ister. */
+	public record PlaceOrderInput(String paymentMethod, boolean consent, String idempotencyKey, String clientIp) {
 	}
 
 	/** `paymentUrl` doluysa alıcı ödeme sayfasına yönlenir. */

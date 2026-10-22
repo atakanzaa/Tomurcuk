@@ -78,7 +78,7 @@ class CheckoutTests {
 	@Test
 	void sameIdempotencyKeyReturnsSameOrder() {
 		Draft draft = readyDraft("2026-10-25", "s_ogle");
-		PlaceOrderInput input = new PlaceOrderInput("transfer", true, "key-" + draft.id());
+		PlaceOrderInput input = new PlaceOrderInput("transfer", true, "key-" + draft.id(), "127.0.0.1");
 		Placed first = checkout.placeOrder(SHOP, draft.id(), input);
 		Placed second = checkout.placeOrder(SHOP, draft.id(), input);
 		assertThat(second.trackingToken()).isEqualTo(first.trackingToken());
@@ -96,7 +96,7 @@ class CheckoutTests {
 
 	private Placed placeCardOrder(String date, String slotId) {
 		Draft draft = readyDraft(date, slotId);
-		return checkout.placeOrder(SHOP, draft.id(), new PlaceOrderInput("card", true, "key-" + draft.id()));
+		return checkout.placeOrder(SHOP, draft.id(), new PlaceOrderInput("card", true, "key-" + draft.id(), "127.0.0.1"));
 	}
 
 	private Draft readyDraft(String date, String slotId) {
