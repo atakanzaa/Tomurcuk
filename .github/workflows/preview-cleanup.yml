@@ -1,0 +1,26 @@
+name: Önizlemeyi sil
+
+# PR kapanınca (birleşse de kapansa da) önizleme veritabanıyla birlikte silinir.
+
+on:
+  pull_request:
+    types: [closed]
+
+permissions:
+  contents: read
+
+jobs:
+  cleanup:
+    if: vars.PREVIEW_DOMAIN != '' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    concurrency:
+      group: preview-${{ github.event.pull_request.number }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/remote
+        with:
+          host: ${{ vars.SERVER1_HOST }}
+          user: ${{ vars.DEPLOY_USER }}
+          ssh-key: ${{ secrets.SERVER1_SSH_KEY }}
+          known-hosts: ${{ secrets.SERVER1_KNOWN_HOSTS }}
+          script: preview-down.sh ${{ github.event.pull_request.number }}

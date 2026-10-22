@@ -8,6 +8,7 @@ Küçük çiçekçiler için sipariş sayfası, sipariş paneli ve müşteri def
 | `api/` | Spring Boot REST API |
 | `design/` | Design system ve onaylı ekran tasarımları |
 | `docs/` | MVP dokümanı ve backend planı |
+| `deploy/` | Compose dosyaları, deploy script'leri ve yayın kurulumu (`deploy/README.md`) |
 
 ## Çalıştırma
 
@@ -32,6 +33,15 @@ pnpm build   # API'ye ihtiyaç duymaz
 Frontend API'yi `TOMURCUK_API_URL` adresinde arar (varsayılan `http://localhost:8080`, bkz. `web/.env.example`).
 
 Windows'ta `./mvnw` yerine `.\mvnw.cmd` yazın.
+
+Image'lar (ortamlarda çalışanın aynısı):
+
+```bash
+docker build -t tomurcuk-api api
+docker build -f web/Dockerfile -t tomurcuk-web .
+```
+
+Önizleme, staging ve prod: `deploy/README.md`.
 
 ## Ekranlar
 

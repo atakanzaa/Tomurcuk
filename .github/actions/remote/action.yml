@@ -1,0 +1,69 @@
+name: Sunucuda çalıştır
+description: >
+  deploy/ klasörünü SSH ile sunucuya gönderir ve içindeki bir script'i çalıştırır. Gönderilen
+  kopya iş bitince silinir; script kendi ortam klasörüne kopyalar.
+
+inputs:
+  host:
+    description: Sunucu adresi
+    required: true
+  user:
+    description: SSH kullanıcısı (docker grubunda, /srv/tomurcuk'a yazabilir)
+    required: true
+  ssh-key:
+    description: Özel anahtar
+    required: true
+  known-hosts:
+    description: Sunucunun ssh-keyscan çıktısı
+    required: true
+  script:
+    description: deploy/scripts altındaki script ve argümanları, örn. "deploy.sh staging sha-abc"
+    required: true
+  allow-exit-code:
+    description: Bu çıkış kodu hata sayılmaz; sonucu `status` çıktısından okunur (önizleme sınırı için 3)
+    required: false
+    default: ""
+  registry-token:
+    description: Doluysa sunucu image'ları çekmeden önce ghcr.io'ya bu token'la girer
+    required: false
+    default: ""
+
+outputs:
+  status:
+    description: Script'in çıkış kodu
+    value: ${{ steps.run.outputs.status }}
+
+runs:
+  using: composite
+  steps:
+    - name: SSH ayarı
+      shell: bash
+      env:
+        SSH_KEY: ${{ inputs.ssh-key }}
+        KNOWN_HOSTS: ${{ inputs.known-hosts }}
+      run: |
+        install -m 700 -d ~/.ssh
+        printf '%s\n' "$SSH_KEY" > ~/.ssh/deploy_key
+        chmod 600 ~/.ssh/deploy_key
+        printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+
+    - name: Çalıştır
+      id: run
+      shell: bash
+      env:
+        TARGET: ${{ inputs.user }}@${{ inputs.host }}
+        SCRIPT: ${{ inputs.script }}
+        REGISTRY_TOKEN: ${{ inputs.registry-token }}
+        ALLOW: ${{ inputs.allow-exit-code }}
+        WORK: tomurcuk-deploy/${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}
+      run: |
+        ssh_() { ssh -i ~/.ssh/deploy_key -o BatchMode=yes "$TARGET" "$@"; }
+        tar -czf - deploy | ssh_ "mkdir -p '$WORK' && tar -xzf - -C '$WORK'"
+        if [ -n "$REGISTRY_TOKEN" ]; then
+          printf '%s' "$REGISTRY_TOKEN" | ssh_ "docker login ghcr.io -u '$GITHUB_ACTOR' --password-stdin" > /dev/null
+        fi
+        status=0
+        ssh_ "'$WORK/deploy/scripts/'$SCRIPT" || status=$?
+        ssh_ "rm -rf '$WORK'" || true
+        echo "status=$status" >> "$GITHUB_OUTPUT"
+        [ "$status" = 0 ] || [ "$status" = "$ALLOW" ] || exit $status

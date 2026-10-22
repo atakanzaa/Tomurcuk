@@ -1,0 +1,8 @@
+# PR önizlemesi: her PR'ın kendi veritabanı, örnek dükkânlar (demo profili). Ödeme sahte
+# sağlayıcıyla, SMS ve e-posta log'a yazılır; dış servise hiçbir şey gitmez. Sandbox ile denemek
+# için sunucudaki preview.env'e TOMURCUK_PAYMENT_PROVIDER=iyzico ve anahtarlar yazılır.
+tomurcuk:
+  payment:
+    provider: fake
+  sms:
+    provider: log

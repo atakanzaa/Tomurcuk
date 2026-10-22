@@ -5,6 +5,8 @@ import type { NextConfig } from "next";
 const repoRoot = path.join(__dirname, "..");
 
 const nextConfig: NextConfig = {
+  // Docker image'ı yalnızca çalışması gereken dosyaları taşır (web/Dockerfile).
+  output: "standalone",
   cacheComponents: true,
   partialPrefetching: true,
   turbopack: { root: repoRoot },

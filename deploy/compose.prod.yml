@@ -1,0 +1,39 @@
+# Prod: ayrı sunucu, tag ve onayla. Veritabanı her gece yedeklenir, yedekler 14 gün tutulur;
+# sunucu dışına kopyası ve geri yükleme deploy/README.md'de.
+
+services:
+  api:
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+    mem_limit: 1536m
+
+  web:
+    mem_limit: 512m
+
+  backup:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      PGHOST: postgres
+      PGUSER: tomurcuk
+      PGDATABASE: tomurcuk
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+      TZ: Europe/Istanbul
+    volumes:
+      - ${BACKUP_DIR:-./backups}:/backups
+    # Her gece 03:00'te bir yedek; 14 günden eskiler silinir.
+    entrypoint:
+      - sh
+      - -c
+      - |
+        while true; do
+          file=/backups/tomurcuk-$$(date +%Y%m%d).sql.gz
+          if [ "$$(date +%H)" = 03 ] && [ ! -f "$$file" ]; then
+            pg_dump --no-owner | gzip > "$$file.part" && mv "$$file.part" "$$file" && echo "yedek: $$file"
+            find /backups -name 'tomurcuk-*.sql.gz' -mtime +14 -delete
+          fi
+          sleep 600
+        done

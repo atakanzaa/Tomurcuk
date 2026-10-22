@@ -8,8 +8,9 @@ import { CheckoutStep, checkoutPath, PAYMENT_FAILED_PARAM, shopPath, trackingOrd
 // iyzico token'ı form olarak POST eder; geliştirmedeki sahte sağlayıcı GET ile gelir. Sonuç
 // token'la backend'den sorulur; adresteki bilgiye güvenilmez.
 
-async function handle(request: NextRequest, slug: string, token: string | null) {
-  const to = (pathname: string) => NextResponse.redirect(new URL(pathname, request.url), 303);
+async function handle(slug: string, token: string | null) {
+  // Göreli adres: Traefik'in arkasında request.url container'ın iç adresini (0.0.0.0:3000) taşır.
+  const to = (pathname: string) => new NextResponse(null, { status: 303, headers: { Location: pathname } });
   const lookup = await findShop(slug);
   if (lookup.kind !== ShopLookupKind.Found) return to(shopPath(slug));
   const failed = `${checkoutPath(slug, CheckoutStep.Payment)}?${PAYMENT_FAILED_PARAM}=1`;
@@ -23,12 +24,12 @@ async function handle(request: NextRequest, slug: string, token: string | null) 
 
 export async function GET(request: NextRequest, { params }: RouteContext<"/[slug]/siparis/odeme/sonuc">) {
   const { slug } = await params;
-  return handle(request, slug, request.nextUrl.searchParams.get("token"));
+  return handle(slug, request.nextUrl.searchParams.get("token"));
 }
 
 export async function POST(request: NextRequest, { params }: RouteContext<"/[slug]/siparis/odeme/sonuc">) {
   const { slug } = await params;
   const form = await request.formData().catch(() => null);
   const token = form?.get("token");
-  return handle(request, slug, typeof token === "string" ? token : null);
+  return handle(slug, typeof token === "string" ? token : null);
 }

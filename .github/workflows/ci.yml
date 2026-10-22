@@ -1,5 +1,9 @@
 name: CI
 
+# Testler geçince image'lar bir kez build edilir ve git sha ile etiketlenir (sha-<commit>).
+# PR'da önizleme, main'de staging aynı image'ı çalıştırır; prod release.yml ile.
+# Sunucular ayarlanmadıysa (repo değişkenleri boş) deploy işleri atlanır; kurulum deploy/README.md.
+
 on:
   pull_request:
   push:
@@ -11,6 +15,11 @@ concurrency:
 
 permissions:
   contents: read
+
+env:
+  IMAGE_PREFIX: ghcr.io/atakanzaa/tomurcuk
+  # PR'da github.sha GitHub'ın geçici birleştirme commit'idir; image o koda göre build edilir.
+  TAG: sha-${{ github.sha }}
 
 jobs:
   web:
@@ -49,3 +58,97 @@ jobs:
           cache-dependency-path: api/pom.xml
       # Testcontainers runner'daki Docker'ı kullanır.
       - run: ./mvnw -B verify
+
+  images:
+    name: images
+    needs: [web, api]
+    # Fork'tan gelen PR'ın registry'ye yazma izni yok.
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@v6
+        with:
+          context: api
+          push: true
+          tags: ${{ env.IMAGE_PREFIX }}-api:${{ env.TAG }}
+          labels: org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+          cache-from: type=gha,scope=api
+          cache-to: type=gha,scope=api,mode=max
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: web/Dockerfile
+          push: true
+          tags: ${{ env.IMAGE_PREFIX }}-web:${{ env.TAG }}
+          labels: org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+          cache-from: type=gha,scope=web
+          cache-to: type=gha,scope=web,mode=max
+
+  preview:
+    name: önizleme
+    needs: images
+    if: github.event_name == 'pull_request' && vars.PREVIEW_DOMAIN != ''
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+    concurrency:
+      group: preview-${{ github.event.pull_request.number }}
+    environment:
+      name: preview
+      url: ${{ steps.deploy.outputs.status == '0' && format('https://pr-{0}.{1}', github.event.pull_request.number, vars.PREVIEW_DOMAIN) || '' }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: deploy
+        uses: ./.github/actions/remote
+        with:
+          host: ${{ vars.SERVER1_HOST }}
+          user: ${{ vars.DEPLOY_USER }}
+          ssh-key: ${{ secrets.SERVER1_SSH_KEY }}
+          known-hosts: ${{ secrets.SERVER1_KNOWN_HOSTS }}
+          registry-token: ${{ secrets.GITHUB_TOKEN }}
+          script: deploy.sh preview ${{ env.TAG }} ${{ github.event.pull_request.number }}
+          allow-exit-code: "3"
+      - if: steps.deploy.outputs.status == '3'
+        run: echo "::warning::Önizleme sınırı dolu (3). Başka bir PR kapanınca bu PR'a yeni bir commit gelince açılır."
+      - if: steps.deploy.outputs.status == '0'
+        env:
+          SMOKE_AUTH: ${{ secrets.TEAM_BASIC_AUTH }}
+        run: deploy/scripts/smoke.sh "https://pr-${{ github.event.pull_request.number }}.${{ vars.PREVIEW_DOMAIN }}" nergis
+
+  staging:
+    name: staging
+    needs: images
+    if: github.event_name == 'push' && vars.STAGING_DOMAIN != ''
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+    concurrency:
+      group: staging
+    environment:
+      name: staging
+      url: https://${{ vars.STAGING_DOMAIN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/remote
+        with:
+          host: ${{ vars.SERVER1_HOST }}
+          user: ${{ vars.DEPLOY_USER }}
+          ssh-key: ${{ secrets.SERVER1_SSH_KEY }}
+          known-hosts: ${{ secrets.SERVER1_KNOWN_HOSTS }}
+          registry-token: ${{ secrets.GITHUB_TOKEN }}
+          script: deploy.sh staging ${{ env.TAG }}
+      - env:
+          SMOKE_AUTH: ${{ secrets.TEAM_BASIC_AUTH }}
+        run: deploy/scripts/smoke.sh "https://${{ vars.STAGING_DOMAIN }}" nergis

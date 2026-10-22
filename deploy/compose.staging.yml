@@ -1,0 +1,14 @@
+# Staging (QA): staging.alanadi.com, main'e her merge. Veri kalıcı (postgres-data). Ekip dışına
+# kapalı: Traefik'te parola (BASIC_AUTH_USERS, ortam klasöründeki .env).
+
+services:
+  api:
+    environment:
+      SPRING_PROFILES_ACTIVE: staging
+    mem_limit: 1g
+
+  web:
+    mem_limit: 384m
+    labels:
+      - traefik.http.routers.${PROJECT}.middlewares=${PROJECT}-auth
+      - traefik.http.middlewares.${PROJECT}-auth.basicauth.users=${BASIC_AUTH_USERS:?}

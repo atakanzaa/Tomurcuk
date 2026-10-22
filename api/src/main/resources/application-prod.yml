@@ -1,0 +1,15 @@
+# Prod: gerçek dükkânlar, örnek veri yüklenmez. iyzico canlı ortam, pazaryeri modeli: her dükkânın
+# alt üye işyeri anahtarı shop_payment_account'ta. SMS Netgsm. Anahtarlar sunucudaki .env'de.
+tomurcuk:
+  payment:
+    provider: iyzico
+    iyzico:
+      base-url: https://api.iyzipay.com
+      marketplace: true
+  sms:
+    provider: netgsm
+
+# API iç ağda; sözleşme belgesi prod'da yayınlanmaz.
+springdoc:
+  api-docs:
+    enabled: false

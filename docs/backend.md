@@ -14,7 +14,7 @@
 | SMS | Netgsm (REST v2); `SmsSender` arayüzünün arkasında, yerelde log'a yazar |
 | API sözleşmesi | springdoc ile OpenAPI; frontend tipleri `openapi-typescript` ile üretilir |
 | Testler | Az ve kritik: modül sınırı doğrulaması ve CLAUDE.md'deki beş senaryo. Testcontainers ile gerçek Postgres |
-| CI | GitHub Actions: `web` için lint ve build, `api` için `mvnw verify` |
+| CI/CD | GitHub Actions: `web` için lint ve build, `api` için `mvnw verify`; geçince image'lar bir kez build edilip `ghcr.io`'ya `sha-<commit>` etiketiyle gider. PR'da önizleme, main'de staging, `v*` etiketiyle onaylı prod (`deploy/README.md`) |
 
 ## Mimari
 
@@ -91,7 +91,7 @@ Frontend'deki mock'lar aşama aşama kalktı: her aşamada o modülün fonksiyon
 | 4. Giriş ve panel (bitti) | dükkân girişi ve oturum, siparişler, durum geçişleri, ödendi işareti, elle sipariş, müşteriler, özel günler ve hatırlatmalar | `getPanelSession`, `getOrders`, `getOrder`, `updateOrderStatus`, `markOrderPaid`, `getCustomers`, `getCustomer`, `findCustomerByPhone`, `getReminders`, `createManualOrder`; `/giris` eklendi. Panelden açılan talepler (`getShopTickets`, `createTicket`) destek aşamasında |
 | 5. Bildirim (bitti, gerçek sağlayıcılar hariç) | `notification_log`, `SmsSender` ve `EmailSender` (yerelde log'a yazar), onay ve durum SMS'leri, yeni sipariş e-postası, yeniden deneme | — (arayüzde bildirim yok; destek panelindeki bildirim listesi 6. aşamada API'ye geçer) |
 | 6. Destek (bitti) | platform girişi ve TOTP, talepler, ekip notları, hazır cevaplar, dükkân adına oturum, gerekçeyle telefon açma, arama, dükkân özeti, denetim kaydı; panelden talepler; pilot başvuruları | kalan bütün fonksiyonlar; `web/lib/mock` silindi, `/destek/giris` eklendi |
-| 7. Yayın | Dockerfile, compose dosyaları, PR önizleme, staging, onaylı prod; iyzico ve Netgsm ile uçtan uca deneme | — |
+| 7. Yayın (bitti, uçtan uca deneme hariç) | Dockerfile'lar, ortam profilleri (`preview`, `staging`, `prod`), compose dosyaları ve Traefik, deploy/geri dönüş/smoke script'leri, GitHub Actions: PR önizleme, main'den staging, tag ve onayla prod; staging'de SMS yalnızca ekip numaralarına; prod'da gece yedeği. Ayrıntılar `deploy/README.md`. iyzico sandbox ve Netgsm ile uçtan uca deneme sunucular kurulunca | — |
 
 ## Sipariş ve ödeme akışı
 
@@ -126,6 +126,7 @@ Sağlayıcılar:
 - Gönderilemeyen bildirim 1, 5, 30 dakika ve 2 saat arayla yeniden denenir; beşinci denemeden sonra bırakılır ve sağlayıcının yanıtıyla kayıtta kalır.
 - Metinlerde alıcıya ve gönderene dükkân konuşur, dükkân adı başta yazılır; isimsiz gönderimde gönderen hiç geçmez. Bütün mesajlar işlem mesajıdır; pazarlama mesajı (09:00–21:00 kuralı, İYS izni) MVP'de otomatik gönderilmez.
 - SMS sağlayıcısı Netgsm (`tomurcuk.sms.provider=netgsm`): `POST https://api.netgsm.com.tr/sms/rest/v2/send`, Basic auth, `encoding: TR`, `iysfilter: "0"` (bilgilendirme mesajı). Yanıttaki `code` "00" başarılıdır, `jobid` kayda yazılır. Kalıcı hatalar (20 metin, 30 kimlik, 40/41 başlık, 50/51 İYS, 70 parametre) yeniden denenmez; 85 ve 100 denenir. Kullanıcı kodu, şifre ve onaylı mesaj başlığı ortamın secret'larındadır: `TOMURCUK_SMS_NETGSM_USERCODE`, `TOMURCUK_SMS_NETGSM_PASSWORD`, `TOMURCUK_SMS_NETGSM_HEADER`. İstek biçimi Netgsm hesabıyla ilk gönderimde doğrulanmalı.
+- Staging'de Netgsm yalnızca `tomurcuk.sms.allowed-recipients` (`TOMURCUK_SMS_ALLOWED_RECIPIENTS`) numaralarına gönderir; diğerleri kayda "Gönderilmedi: ekip numarası değil" notuyla düşer. Değişken tanımsızsa staging açılmaz.
 - Yerelde ve önizlemede `log`: SMS gönderilmez, log'a yazılır. E-posta sağlayıcısı (SMTP ya da servis) seçilince `EmailSender` adapter'ı eklenir.
 
 ## Örnek veri ve derleme
@@ -144,7 +145,7 @@ Kapsam bilerek dar tutulur; geliştirme hızı önce gelir.
 - Aşama 3 (`CheckoutTests`, `DeliveryScheduleTests`): ödeme callback'inin iki kez gelmesi, aynı idempotency anahtarı, aynı aralığa 20 eşzamanlı rezervasyon (kapasite 6), süresi dolan rezervasyon, "bugün" ve son sipariş saatinde saat dilimi, başka dükkânın takip kodu.
 - Aşama 4 (`PanelTests`): oturumsuz istek 401, yanlış şifrede hangi alanın yanlış olduğu söylenmez, durum geçişleri (atlanan ve geri giden reddedilir), çalışan iptal edemez (403), başka dükkânın siparişi ve müşterisi bulunamaz.
 
-- Adapter'lar (`NetgsmSmsSenderTests`, `IyzicoPaymentProviderTests`): istek biçimi, imza ve yanıt kodları, sağlayıcıya bağlanmadan.
+- Adapter'lar (`NetgsmSmsSenderTests`, `IyzicoPaymentProviderTests`): istek biçimi, imza ve yanıt kodları, sağlayıcıya bağlanmadan; staging'de SMS'in yalnızca ekip numaralarına gitmesi.
 - Aşama 6 (`SupportTests`): şifre ve TOTP birlikte; dükkân oturumuyla panele destek girişi yok; telefon maskeli, gerekçesiz açılmaz, açılış kayda geçer; dükkân adına oturum çalışan yetkisinde (iptal 403), işlem kayda geçer, 30 dakikada biter; denetim kaydı güncellenemez ve silinemez.
 - Aşama 5 (`NotificationTests`): aynı olay iki kez işlense de tek SMS, isimsiz gönderimde gönderen metinde yok.
 

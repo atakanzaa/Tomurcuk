@@ -8,6 +8,8 @@ import static org.springframework.test.web.client.match.MockRestRequestMatchers.
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
+import java.util.List;
+
 import com.tomurcuk.notification.SmsSender;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -68,5 +70,22 @@ class NetgsmSmsSenderTests {
 		assertThat(header.response()).isEqualTo("Netgsm kod 40: mesaj başlığı tanımlı değil");
 		assertThat(system.delivered()).isFalse();
 		assertThat(system.retryable()).isTrue();
+	}
+
+	/** Staging: yalnızca ekip numaralarına gönderilir; diğerleri Netgsm'e hiç gitmez. */
+	@Test
+	void stagingSendsOnlyToTeamNumbers() {
+		server.expect(requestTo("https://api.netgsm.com.tr/sms/rest/v2/send"))
+			.andExpect(content().json("{\"messages\":[{\"no\":\"5324128819\"}]}"))
+			.andRespond(withSuccess("{\"code\":\"00\",\"jobid\":\"1\"}", MediaType.APPLICATION_JSON));
+		SmsSender staging = new AllowListSmsSender(sender, List.of("05324128819"));
+
+		SmsSender.Result team = staging.send("0532 412 88 19", "metin");
+		SmsSender.Result other = staging.send("0555 000 11 22", "metin");
+
+		assertThat(team.response()).isEqualTo("jobid 1");
+		assertThat(other.delivered()).isTrue();
+		assertThat(other.response()).isEqualTo("Gönderilmedi: ekip numarası değil");
+		server.verify();
 	}
 }

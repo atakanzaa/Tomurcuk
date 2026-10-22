@@ -1,6 +1,11 @@
 spring:
   application:
     name: tomurcuk-api
+  profiles:
+    group:
+      # Örnek dükkânlarla çalışan ortamlar (application-demo.yml). Prod'da örnek veri yok.
+      preview: demo
+      staging: demo
   autoconfigure:
     # Giriş kendi uçlarımızla yapılır; Spring Security'nin varsayılan kullanıcısı açılmaz.
     exclude: org.springframework.boot.security.autoconfigure.UserDetailsServiceAutoConfiguration
