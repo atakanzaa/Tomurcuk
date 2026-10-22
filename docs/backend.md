@@ -11,7 +11,7 @@
 | Build | Maven (wrapper ile, `api/mvnw`) |
 | Veritabanı | PostgreSQL 17, Flyway. Basit okuma tabloları (dükkân, katalog, teslimat ayarları) Spring Data JPA (`open-in-view` kapalı); sipariş, kapasite ve ödeme `JdbcClient` ile açık SQL (atomik güncellemeler, JSONB) |
 | Ödeme | iyzico, pazaryeri modeli (alt üye işyeri) ve Checkout Form; `PaymentProvider` arayüzünün arkasında |
-| SMS | `SmsSender` arayüzü; yerelde log'a yazar, sağlayıcı seçimi bildirim aşamasında |
+| SMS | Netgsm (REST v2); `SmsSender` arayüzünün arkasında, yerelde log'a yazar |
 | API sözleşmesi | springdoc ile OpenAPI; frontend tipleri `openapi-typescript` ile üretilir |
 | Testler | Az ve kritik: modül sınırı doğrulaması ve CLAUDE.md'deki beş senaryo. Testcontainers ile gerçek Postgres |
 | CI | GitHub Actions: `web` için lint ve build, `api` için `mvnw verify` |
@@ -121,7 +121,8 @@ Geçiş notu: destek paneli 6. aşamaya kadar mock'ta. Destekten "Dükkân adın
 - Bildirim önce `notification_log`'a yazılır, sonra gönderilir. `dedupe_key` (sipariş + tür + olay sırası + alıcı) tekildir; aynı olay iki kez işlense de bildirim bir kez gider. Teslim edilemeyen sipariş yeniden yola çıkınca olay sırası farklı olduğu için yeni SMS gider.
 - Gönderilemeyen bildirim 1, 5, 30 dakika ve 2 saat arayla yeniden denenir; beşinci denemeden sonra bırakılır ve sağlayıcının yanıtıyla kayıtta kalır.
 - Metinlerde alıcıya ve gönderene dükkân konuşur, dükkân adı başta yazılır; isimsiz gönderimde gönderen hiç geçmez. Bütün mesajlar işlem mesajıdır; pazarlama mesajı (09:00–21:00 kuralı, İYS izni) MVP'de otomatik gönderilmez.
-- Sağlayıcılar: `tomurcuk.sms.provider` ve `tomurcuk.email.provider` şimdilik `log`. SMS sağlayıcısı (Netgsm, İleti Merkezi) ve e-posta (SMTP ya da servis) seçilince adapter eklenir.
+- SMS sağlayıcısı Netgsm (`tomurcuk.sms.provider=netgsm`): `POST https://api.netgsm.com.tr/sms/rest/v2/send`, Basic auth, `encoding: TR`, `iysfilter: "0"` (bilgilendirme mesajı). Yanıttaki `code` "00" başarılıdır, `jobid` kayda yazılır. Kalıcı hatalar (20 metin, 30 kimlik, 40/41 başlık, 50/51 İYS, 70 parametre) yeniden denenmez; 85 ve 100 denenir. Kullanıcı kodu, şifre ve onaylı mesaj başlığı ortamın secret'larındadır: `TOMURCUK_SMS_NETGSM_USERCODE`, `TOMURCUK_SMS_NETGSM_PASSWORD`, `TOMURCUK_SMS_NETGSM_HEADER`. İstek biçimi Netgsm hesabıyla ilk gönderimde doğrulanmalı.
+- Yerelde ve önizlemede `log`: SMS gönderilmez, log'a yazılır. E-posta sağlayıcısı (SMTP ya da servis) seçilince `EmailSender` adapter'ı eklenir.
 
 ## Örnek veri ve derleme
 

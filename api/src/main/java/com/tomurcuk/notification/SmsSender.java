@@ -8,7 +8,15 @@ public interface SmsSender {
 
 	Result send(String phone, String text);
 
-	/** `delivered` false ise bildirim yeniden denenir; `response` destek ekibine gösterilir. */
-	record Result(boolean delivered, String response) {
+	/**
+	 * `delivered` false ve `retryable` true ise bildirim yeniden denenir (sağlayıcı geçici
+	 * hatası). Yanlış numara ya da tanımsız başlık gibi kalıcı hatalarda denenmez.
+	 * `response` destek ekibine gösterilir.
+	 */
+	record Result(boolean delivered, String response, boolean retryable) {
+
+		public Result(boolean delivered, String response) {
+			this(delivered, response, true);
+		}
 	}
 }

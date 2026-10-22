@@ -32,7 +32,8 @@ tomurcuk:
     # fake: geliştirme ve önizleme; iyzico: staging ve prod.
     provider: fake
   sms:
-    # log: SMS gönderilmez, log'a yazılır. Sağlayıcı (Netgsm, İleti Merkezi) seçilince eklenecek.
+    # log: SMS gönderilmez, log'a yazılır (yerel, önizleme). netgsm: staging (yalnızca ekip
+    # numaraları) ve prod; kullanıcı kodu, şifre ve başlık ortamın secret'larından gelir.
     provider: log
   email:
     provider: log

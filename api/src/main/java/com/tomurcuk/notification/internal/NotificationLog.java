@@ -18,7 +18,8 @@ import org.springframework.stereotype.Service;
 /**
  * Bildirimi önce kayda yazar, sonra gönderir. Sağlayıcı hata verirse (ya da çökerse) satır
  * `failed` kalır ve artan aralıklarla yeniden denenir: 1, 5, 30 dakika, 2 saat. Beşinci
- * denemeden sonra bırakılır; destek panelinde sağlayıcının yanıtıyla görünür.
+ * denemeden sonra ya da kalıcı hatada (yanlış numara, tanımsız başlık) bırakılır; destek
+ * panelinde sağlayıcının yanıtıyla görünür.
  */
 @Service
 public class NotificationLog {
@@ -104,7 +105,8 @@ public class NotificationLog {
 		}
 		int attempts = row.attempts() + 1;
 		Instant now = clock.instant();
-		Instant next = !result.delivered() && attempts < MAX_ATTEMPTS ? now.plus(BACKOFF.get(attempts - 1)) : null;
+		Instant next = !result.delivered() && result.retryable() && attempts < MAX_ATTEMPTS
+				? now.plus(BACKOFF.get(attempts - 1)) : null;
 		jdbc.sql("""
 				UPDATE notification_log
 				SET status = :status, attempts = :attempts, provider_response = :response, next_attempt_at = :next,
