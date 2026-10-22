@@ -23,9 +23,6 @@ export interface StoredTicket extends Omit<TicketSummary, "shopName" | "shopDist
 
 interface MockState {
   orders: Order[];
-  /** "tarih|aralık" → mock'ta verilen sipariş sayısı (örnek kapasitenin üstüne). */
-  slotUsage: Map<string, number>;
-  nextNumber: number;
   customers: Customer[];
   specialDays: SpecialDay[];
   shopUsers: ShopUser[];
@@ -170,8 +167,6 @@ function createState(now: Date): MockState {
 
   return {
     orders,
-    slotUsage: new Map(),
-    nextNumber: 4830,
     customers: structuredClone(customers),
     specialDays,
     shopUsers: structuredClone(shopUsers).map((u) => ({ ...u, lastSeenAt: u.lastSeenAt && shiftIso(u.lastSeenAt) })),

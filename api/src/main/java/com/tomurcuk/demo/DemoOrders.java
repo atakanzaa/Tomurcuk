@@ -23,7 +23,7 @@ import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.json.JsonMapper;
 
 /**
- * Tasarımlardaki örnek siparişler (web/lib/mock/data.ts). Her açılışta silinip yeniden yüklenir;
+ * Tasarımlardaki örnek siparişler ve özel günler (web/lib/mock/data.ts). Her açılışta silinip yeniden yüklenir;
  * tarihler tasarımın taban gününden (22 Ekim) gerçek bugüne kaydırılır. Böylece "Bugün"
  * ekranı ve takip linkleri her gün dolu görünür. Yalnızca `demo` profilinde çalışır.
  */
@@ -60,6 +60,25 @@ class DemoOrders implements ApplicationRunner {
 		fixture.get("orders").forEach(order -> ids.add(order.get("id").asString()));
 		jdbc.sql("DELETE FROM orders WHERE id IN (:ids)").param("ids", ids).update();
 		fixture.get("orders").forEach(order -> insert(order, shift));
+
+		// Özel günler taban güne göre (2, 4, 6 gün sonra); hatırlatma listesi her gün dolu görünür.
+		LocalDate baseDate = LocalDate.parse(fixture.get("baseDate").asString());
+		for (JsonNode day : fixture.get("specialDays")) {
+			LocalDate date = baseDate.plusDays(day.get("dayOffset").asLong() + shift);
+			jdbc.sql("""
+					INSERT INTO special_day (id, customer_id, title, day, month, recipient_name)
+					VALUES (:id, :customerId, :title, :day, :month, :recipientName)
+					ON CONFLICT (id) DO UPDATE SET day = EXCLUDED.day, month = EXCLUDED.month, title = EXCLUDED.title,
+					    recipient_name = EXCLUDED.recipient_name
+					""")
+				.param("id", text(day, "id"))
+				.param("customerId", text(day, "customerId"))
+				.param("title", text(day, "title"))
+				.param("day", date.getDayOfMonth())
+				.param("month", date.getMonthValue())
+				.param("recipientName", text(day, "recipientName"))
+				.update();
+		}
 
 		jdbc.sql("""
 				INSERT INTO shop_order_counter (shop_id, next_number) VALUES (:shopId, :next)

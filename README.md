@@ -45,7 +45,7 @@ Windows'ta `./mvnw` yerine `.\mvnw.cmd` yazın.
 - `/nergis/takip`: sipariş numarası ve telefonla sipariş bulma (T-4821, 0533 207 41 65)
 - `/nergis/takip/a3Fq9ZmLx2VbN8cR` (alındı), `y7Kp2RvXq9LmT3sB` (yolda), `d4Wn8HcZp1QaE6uJ` (teslim edildi, isimsiz)
 
-**Satıcı paneli** (giriş ekranı yok; mock dükkân sahibi Ayla Er oturumda sayılır)
+**Satıcı paneli** (`/giris`; şifre `tomurcuk-demo`: `ayla@nergiscicek.com` sahip, `kemal@nergiscicek.com` çalışan)
 - `/panel`: Bugün; `?gun=yarin`, `?gun=hafta`
 - `/panel/siparisler/[id]`: sipariş detayı ve durum geçişleri; `/panel/siparisler/yeni`: elle sipariş
 - `/panel/siparisler`, `/panel/musteriler`, `/panel/musteriler/ozel-gunler`, `/panel/urunler`, `/panel/teslimat`, `/panel/yardim`, `/panel/fisler`
@@ -60,4 +60,4 @@ Windows'ta `./mvnw` yerine `.\mvnw.cmd` yazın.
 
 Mock'ta kalan kısımlar değişiklikleri bellekte tutar; sunucu yeniden başlayınca sıfırlanır. Tasarımlardaki örnek tarihler (22 Ekim) ilk istekte bugüne kaydırılır.
 
-Frontend veriyi `web/lib/api` arayüzünden alır. Vitrin, sipariş akışı, ödeme ve takip API'den gelir; panel ve destek şimdilik `web/lib/mock` ile çalışır. Geliştirmede kartla ödeme sahte sağlayıcıyla yapılır: "Kartla öde" deneme ödeme sayfasını açar. Backend aşamaları ilerledikçe `web/lib/api/impl.ts` modül modül API'ye geçer (`docs/backend.md`).
+Frontend veriyi `web/lib/api` arayüzünden alır. Vitrin, sipariş akışı, ödeme, takip ve satıcı paneli API'den gelir; destek paneli ve tanıtım sitesinin başvuru formu şimdilik `web/lib/mock` ile çalışır. Geliştirmede kartla ödeme sahte sağlayıcıyla yapılır: "Kartla öde" deneme ödeme sayfasını açar. Backend aşamaları ilerledikçe `web/lib/api/impl.ts` modül modül API'ye geçer (`docs/backend.md`).

@@ -1,4 +1,7 @@
 import "server-only";
+import { redirect } from "next/navigation";
+import { API_SESSION_COOKIE, readPanelSession } from "@/lib/panel/cookie";
+import { LOGIN_PATH } from "@/lib/routes";
 import type { FieldErrors, Result } from "../types";
 
 // API iç ağdadır; tarayıcı onu hiç görmez. Yalnızca Server Component'ler, Server Action'lar,
@@ -20,12 +23,27 @@ export function path(strings: TemplateStringsArray, ...values: string[]): string
   return strings.reduce((out, part, i) => out + part + (i < values.length ? encodeURIComponent(values[i]) : ""), "");
 }
 
+export const apiUrl = (path: string) => `${API_URL}${path}`;
+
+/**
+ * Panel uçları (`/api/panel/...`) tarayıcının panel oturumunu API'ye iletir. Oturum yoksa ya da
+ * süresi dolduysa (401) kullanıcı giriş sayfasına gider.
+ */
 async function request(method: string, path: string, body?: unknown): Promise<Response> {
-  return fetch(`${API_URL}${path}`, {
+  const panel = path.startsWith("/api/panel/");
+  const session = panel ? await readPanelSession() : null;
+  if (panel && !session) redirect(LOGIN_PATH);
+  const response = await fetch(apiUrl(path), {
     method,
-    headers: { Accept: "application/json", ...(body === undefined ? {} : { "Content-Type": "application/json" }) },
+    headers: {
+      Accept: "application/json",
+      ...(body === undefined ? {} : { "Content-Type": "application/json" }),
+      ...(session ? { Cookie: `${API_SESSION_COOKIE}=${session}` } : {}),
+    },
     body: body === undefined ? undefined : JSON.stringify(body),
   });
+  if (panel && response.status === 401) redirect(LOGIN_PATH);
+  return response;
 }
 
 export async function get<T>(path: string): Promise<T> {

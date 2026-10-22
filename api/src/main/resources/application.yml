@@ -1,6 +1,9 @@
 spring:
   application:
     name: tomurcuk-api
+  autoconfigure:
+    # Giriş kendi uçlarımızla yapılır; Spring Security'nin varsayılan kullanıcısı açılmaz.
+    exclude: org.springframework.boot.security.autoconfigure.UserDetailsServiceAutoConfiguration
   jpa:
     open-in-view: false
     hibernate:
@@ -13,6 +16,9 @@ spring:
   docker:
     compose:
       lifecycle-management: start-only
+  session:
+    jdbc:
+      initialize-schema: never
   modulith:
     events:
       republish-outstanding-events-on-restart: true
@@ -29,6 +35,10 @@ tomurcuk:
 server:
   port: 8080
   shutdown: graceful
+  servlet:
+    session:
+      # Panel oturumu; cookie ayarları SecurityConfig'te.
+      timeout: 30d
 
 management:
   endpoints:

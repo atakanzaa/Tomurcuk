@@ -7,6 +7,50 @@
     "s_ogle": 3,
     "s_aksam": 8
   },
+  "specialDays": [
+    {
+      "id": "sd_1",
+      "customerId": "cu_ayse",
+      "title": "Annesi Gül Hanım'ın doğum günü",
+      "recipientName": "Gül Demir",
+      "dayOffset": 2
+    },
+    {
+      "id": "sd_2",
+      "customerId": "cu_burak",
+      "title": "Evlilik yıl dönümü",
+      "recipientName": "Ece Çelik",
+      "dayOffset": 2
+    },
+    {
+      "id": "sd_3",
+      "customerId": "cu_zeynep",
+      "title": "Ablası Derya'nın doğum günü",
+      "recipientName": "Derya Aksoy",
+      "dayOffset": 4
+    },
+    {
+      "id": "sd_4",
+      "customerId": "cu_okan",
+      "title": "Ofis açılış yıl dönümü",
+      "recipientName": null,
+      "dayOffset": 4
+    },
+    {
+      "id": "sd_5",
+      "customerId": "cu_nilay",
+      "title": "Kızının doğum günü",
+      "recipientName": "Defne Koç",
+      "dayOffset": 6
+    },
+    {
+      "id": "sd_6",
+      "customerId": "cu_gizem",
+      "title": "Annesinin doğum günü",
+      "recipientName": null,
+      "dayOffset": 40
+    }
+  ],
   "orders": [
     {
       "trackingToken": "mock-o_4815",

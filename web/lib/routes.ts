@@ -1,5 +1,11 @@
 /** Kök düzeyde dükkân slug'ı olamayacak bölümler. Proxy bunlara dokunmaz. */
-const RESERVED_SEGMENTS = new Set(["_next", "api", "panel", "destek", "bilesenler"]);
+const RESERVED_SEGMENTS = new Set(["_next", "api", "panel", "destek", "bilesenler", "giris"]);
+
+/** Satıcı panelinin giriş sayfası. */
+export const LOGIN_PATH = "/giris";
+
+/** Tarayıcıdaki panel oturumu cookie'si (lib/panel/cookie.ts). */
+export const PANEL_SESSION_COOKIE = "tomurcuk_oturum";
 
 export function isReservedSegment(segment: string): boolean {
   // Nokta içeren bölümler dosyadır (favicon.ico, robots.txt).

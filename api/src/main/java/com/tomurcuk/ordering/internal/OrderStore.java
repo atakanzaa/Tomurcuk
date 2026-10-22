@@ -6,7 +6,9 @@ import java.sql.Time;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import com.tomurcuk.shared.Instants;
@@ -170,6 +172,70 @@ class OrderStore {
 				""")
 			.param("id", orderId)
 			.update();
+	}
+
+	/** Teslim gününe göre; `from` ve `to` dahil, boşsa sınırsız. Gün ve aralık başlangıcına göre sıralı. */
+	List<Order> findByDeliveryDate(String shopId, LocalDate from, LocalDate to) {
+		return jdbc.sql("SELECT o.* FROM orders o WHERE o.shop_id = :shopId"
+				+ (from == null ? "" : " AND o.delivery_date >= :from") + (to == null ? "" : " AND o.delivery_date <= :to")
+				+ " ORDER BY o.delivery_date, o.slot_start, o.number")
+			.param("shopId", shopId)
+			.param("from", from)
+			.param("to", to)
+			.query(this::mapOrder)
+			.list();
+	}
+
+	/** Müşterinin siparişleri, yeniden eskiye. */
+	List<Order> findByCustomer(String shopId, String customerId) {
+		return jdbc.sql("SELECT o.* FROM orders o WHERE o.shop_id = :shopId AND o.customer_id = :customerId ORDER BY o.created_at DESC")
+			.param("shopId", shopId)
+			.param("customerId", customerId)
+			.query(this::mapOrder)
+			.list();
+	}
+
+	/** İptal edilmemiş siparişlerden müşteri başına sayı, toplam ve son sipariş anı. */
+	Map<String, CustomerTotals> customerTotals(String shopId) {
+		Map<String, CustomerTotals> totals = new HashMap<>();
+		jdbc.sql("""
+				SELECT customer_id, count(*) AS order_count, sum(total) AS total_spent, max(created_at) AS last_order_at
+				FROM orders WHERE shop_id = :shopId AND status <> 'cancelled'
+				GROUP BY customer_id
+				""")
+			.param("shopId", shopId)
+			.query((rs, n) -> totals.put(rs.getString("customer_id"), new CustomerTotals(rs.getInt("order_count"),
+					rs.getLong("total_spent"), rs.getTimestamp("last_order_at").toInstant())))
+			.list();
+		return totals;
+	}
+
+	/**
+	 * Durumu `from`'dan `to`'ya geçirir; bu arada başkası değiştirdiyse 0 döner. Teslimde teslim
+	 * saati yazılır.
+	 */
+	int changeStatus(String shopId, String orderId, OrderStatus from, OrderStatus to, LocalTime deliveredAt) {
+		return jdbc.sql("""
+				UPDATE orders SET status = :to,
+				       delivery_time = CASE WHEN :to = 'delivered' THEN CAST(:deliveredAt AS time) ELSE delivery_time END
+				WHERE shop_id = :shopId AND id = :id AND status = :from
+				""")
+			.param("to", to.code())
+			.param("deliveredAt", deliveredAt)
+			.param("shopId", shopId)
+			.param("id", orderId)
+			.param("from", from.code())
+			.update();
+	}
+
+	int markPaid(String shopId, String orderId) {
+		return jdbc.sql("UPDATE orders SET payment_status = 'paid' WHERE shop_id = :shopId AND id = :id AND payment_status <> 'paid'")
+			.param("shopId", shopId)
+			.param("id", orderId)
+			.update();
+	}
+
+	record CustomerTotals(int orderCount, long totalSpent, Instant lastOrderAt) {
 	}
 
 	Optional<Order> findById(String orderId) {

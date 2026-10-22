@@ -140,3 +140,16 @@ ON CONFLICT (id) DO UPDATE SET
     email = EXCLUDED.email,
     note = EXCLUDED.note,
     marketing_consent = EXCLUDED.marketing_consent;
+
+-- Demo panel kullanıcıları; şifre "tomurcuk-demo".
+INSERT INTO shop_user (id, shop_id, name, email, password_hash, role)
+VALUES
+    ('su_ayla', 'shop_nergis', 'Ayla Er', 'ayla@nergiscicek.com', '{bcrypt}$2a$10$37i3/8ZTj8VoEmVe8Md.rOT.NH9z1rkPsc3ouAUJUHa0mC4ga7vS2', 'owner'),
+    ('su_kemal', 'shop_nergis', 'Kemal Er', 'kemal@nergiscicek.com', '{bcrypt}$2a$10$37i3/8ZTj8VoEmVe8Md.rOT.NH9z1rkPsc3ouAUJUHa0mC4ga7vS2', 'staff'),
+    ('su_lale', 'shop_lale', 'Leyla Bahçe', 'leyla@lalebahcesi.com', '{bcrypt}$2a$10$37i3/8ZTj8VoEmVe8Md.rOT.NH9z1rkPsc3ouAUJUHa0mC4ga7vS2', 'owner')
+ON CONFLICT (id) DO UPDATE SET
+    shop_id = EXCLUDED.shop_id,
+    name = EXCLUDED.name,
+    email = EXCLUDED.email,
+    password_hash = EXCLUDED.password_hash,
+    role = EXCLUDED.role;

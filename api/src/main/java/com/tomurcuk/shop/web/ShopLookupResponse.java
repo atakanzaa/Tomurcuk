@@ -1,15 +1,16 @@
 package com.tomurcuk.shop.web;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.tomurcuk.shop.ShopView;
 
 /**
  * web/lib/api/types.ts `ShopLookup`: güncel slug'la `found` ve dükkân, eski slug'la `moved`
  * ve güncel slug, ikisi de değilse `missing`.
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
-record ShopLookupResponse(String kind, ShopResponse shop, String slug) {
+record ShopLookupResponse(String kind, ShopView shop, String slug) {
 
-	static ShopLookupResponse found(ShopResponse shop) {
+	static ShopLookupResponse found(ShopView shop) {
 		return new ShopLookupResponse("found", shop, null);
 	}
 

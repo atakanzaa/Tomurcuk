@@ -246,6 +246,20 @@ public class DeliverySchedule {
 		return expired.size();
 	}
 
+	/** Rezervasyonsuz alınan yer (panelden elle girilen sipariş); yer yoksa false. */
+	public boolean takeForOrder(String shopId, LocalDate date, String slotId) {
+		return take(shopId, date, slotId);
+	}
+
+	/** Dükkânın aktif bölgeleri, dükkânın sırasıyla. */
+	@Transactional(readOnly = true)
+	public List<ZoneInfo> activeZones(String shopId) {
+		return zones.findByShopIdAndActiveTrueOrderByPosition(shopId)
+			.stream()
+			.map(zone -> new ZoneInfo(zone.getId(), zone.getDistrict(), zone.getNeighborhood(), zone.getFee()))
+			.toList();
+	}
+
 	/** Gün ve aralığın sayacını şablondan açar ve yer varsa bir artırır. */
 	private boolean take(String shopId, LocalDate date, String slotId) {
 		jdbc.sql("""

@@ -1,14 +1,13 @@
-package com.tomurcuk.shop.web;
+package com.tomurcuk.shop;
 
 import java.util.List;
 
 import com.tomurcuk.shared.ClockTimes;
-import com.tomurcuk.shop.ShopPlan;
 import com.tomurcuk.shop.internal.Shop;
 import com.tomurcuk.shop.internal.ShopSlugHistory;
 
-/** web/lib/api/types.ts `Shop` */
-record ShopResponse(
+/** Dükkânın vitrin ve panelde gösterilen hali; JSON'u web/lib/api/types.ts `Shop`. */
+public record ShopView(
 		String id,
 		String name,
 		String shortName,
@@ -26,8 +25,8 @@ record ShopResponse(
 		String openingHours,
 		String featuredProductId) {
 
-	static ShopResponse of(Shop shop) {
-		return new ShopResponse(
+	public static ShopView of(Shop shop) {
+		return new ShopView(
 				shop.getId(),
 				shop.getName(),
 				shop.getShortName(),

@@ -17,6 +17,10 @@ public class ShopDirectory {
 		this.shops = shops;
 	}
 
+	public Optional<ShopView> view(String shopId) {
+		return shops.findById(shopId).map(ShopView::of);
+	}
+
 	public Optional<ShopInfo> find(String shopId) {
 		return shops.findById(shopId)
 			.map(shop -> new ShopInfo(shop.getId(), shop.getSlug(), shop.getName(), shop.isActive(),

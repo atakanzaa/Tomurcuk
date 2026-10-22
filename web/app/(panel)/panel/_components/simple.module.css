@@ -119,3 +119,10 @@
   font-size: 14px;
   line-height: 20px;
 }
+
+.signedIn {
+  margin: 0 0 var(--space-3);
+  color: var(--ink-muted);
+  font-size: 14px;
+  line-height: 20px;
+}
