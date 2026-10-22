@@ -1,0 +1,28 @@
+spring:
+  application:
+    name: tomurcuk-api
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    locations: classpath:db/migration
+  mvc:
+    problemdetails:
+      enabled: true
+  docker:
+    compose:
+      lifecycle-management: start-only
+  modulith:
+    events:
+      republish-outstanding-events-on-restart: true
+
+server:
+  port: 8080
+  shutdown: graceful
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
