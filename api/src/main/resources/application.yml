@@ -17,6 +17,15 @@ spring:
     events:
       republish-outstanding-events-on-restart: true
 
+tomurcuk:
+  # Alıcının ödeme sonrası döndüğü frontend adresi (callback). Ortama göre değişir.
+  web-url: http://localhost:3000
+  payment:
+    # fake: geliştirme ve önizleme; iyzico: staging ve prod.
+    provider: fake
+  jobs:
+    enabled: true
+
 server:
   port: 8080
   shutdown: graceful

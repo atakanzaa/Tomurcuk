@@ -20,6 +20,8 @@
     <java.version>21</java.version>
     <spring-modulith.version>2.1.1</spring-modulith.version>
     <springdoc.version>3.1.1</springdoc.version>
+    <libphonenumber.version>9.0.41</libphonenumber.version>
+    <ulid-creator.version>5.2.4</ulid-creator.version>
   </properties>
 
   <dependencyManagement>
@@ -76,6 +78,17 @@
       <groupId>org.springdoc</groupId>
       <artifactId>springdoc-openapi-starter-webmvc-api</artifactId>
       <version>${springdoc.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.googlecode.libphonenumber</groupId>
+      <artifactId>libphonenumber</artifactId>
+      <version>${libphonenumber.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.github.f4b6a3</groupId>
+      <artifactId>ulid-creator</artifactId>
+      <version>${ulid-creator.version}</version>
     </dependency>
 
     <!-- Yerelde `spring-boot:run` compose.yaml'daki Postgres'i kaldırır. -->

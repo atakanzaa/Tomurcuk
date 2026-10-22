@@ -6,7 +6,7 @@ import { getDeliveryDays } from "@/lib/api";
 import { OptionKind, type OrderDraft } from "@/lib/api/types";
 import { formatDeliveryDay } from "@/lib/dates";
 import { formatPrice, formatTimeRange } from "@/lib/format";
-import { CheckoutStep, checkoutPath, shopPath } from "@/lib/routes";
+import { CheckoutStep, checkoutPath, PAYMENT_FAILED_PARAM, shopPath } from "@/lib/routes";
 import { FlowHeader } from "@/components/flow/FlowHeader";
 import flow from "@/components/flow/flow.module.css";
 import { FlowNotice } from "../FlowNotice";
@@ -16,17 +16,24 @@ import styles from "./payment.module.css";
 
 export const metadata: Metadata = { title: "Ödeme", robots: { index: false } };
 
-export default function PaymentPage({ params }: PageProps<"/[slug]/siparis/odeme">) {
+export default function PaymentPage({ params, searchParams }: PageProps<"/[slug]/siparis/odeme">) {
   return (
     <Suspense>
-      <PaymentStep params={params} />
+      <PaymentStep params={params} searchParams={searchParams} />
     </Suspense>
   );
 }
 
-async function PaymentStep({ params }: { params: Promise<{ slug: string }> }) {
+async function PaymentStep({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
   await connection();
   const { shop, draft } = await loadCheckout(params);
+  const paymentFailed = (await searchParams)[PAYMENT_FAILED_PARAM] !== undefined;
   const back = { href: checkoutPath(shop.slug, CheckoutStep.Card), label: "Kart notu" };
   if (!draft?.delivery || !draft.card) {
     const missing = !draft
@@ -51,6 +58,11 @@ async function PaymentStep({ params }: { params: Promise<{ slug: string }> }) {
       <FlowHeader back={back} step={3} />
       <div className={flow.body}>
         <h1 className={flow.title}>Kontrol edip ödeyin</h1>
+        {paymentFailed && (
+          <p className={flow.formError} role="alert">
+            Ödeme tamamlanmadı. Kart bilgilerinizi kontrol edip yeniden deneyin; siparişiniz 30 dakika ayrılı kalır.
+          </p>
+        )}
         <OrderSummary draft={draft} />
         <section aria-label="Teslimat bilgileri" className={styles.review}>
           <ReviewRow label="Ne zaman" href={edit(CheckoutStep.Delivery)}>

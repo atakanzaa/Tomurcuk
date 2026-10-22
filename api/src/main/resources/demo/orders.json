@@ -1,0 +1,1062 @@
+{
+  "baseDate": "2026-10-22",
+  "shopId": "shop_nergis",
+  "nextNumber": 4830,
+  "remainingToday": {
+    "s_sabah": 0,
+    "s_ogle": 3,
+    "s_aksam": 8
+  },
+  "orders": [
+    {
+      "trackingToken": "mock-o_4815",
+      "senderPhone": "0532 555 18 40",
+      "courierName": null,
+      "events": [
+        {
+          "status": "new",
+          "at": "2026-10-21T13:20:00.000Z"
+        },
+        {
+          "status": "preparing",
+          "at": "2026-10-22T06:30:00.000Z"
+        }
+      ],
+      "shopId": "shop_nergis",
+      "source": "link",
+      "paymentStatus": "paid",
+      "paymentMethod": "card",
+      "deliveryDate": "2026-10-22",
+      "exactTime": false,
+      "recipientPhone": "0536 402 11 58",
+      "address": "Moda Cad. No: 88, Daire 2",
+      "courierNote": null,
+      "cardNote": null,
+      "senderName": null,
+      "anonymous": false,
+      "subtotal": 125000,
+      "deliveryFee": 0,
+      "deliveryPhotoUrl": null,
+      "createdAt": "2026-10-21T13:20:00.000Z",
+      "id": "o_4815",
+      "number": "T-4815",
+      "customerId": "cu_ali",
+      "status": "preparing",
+      "recipientName": "Zeynep Aksoy",
+      "zoneName": "Moda, Kadıköy",
+      "deliveryZoneId": "z_caferaga",
+      "timeSlotId": "s_sabah",
+      "slotStart": "10:00",
+      "slotEnd": "13:00",
+      "deliveryTime": "11:40",
+      "total": 125000,
+      "items": [
+        {
+          "productId": "p_mevsim",
+          "productName": "Mevsim buketi",
+          "unitPrice": 85000,
+          "quantity": 1,
+          "options": [
+            {
+              "name": "Orta",
+              "kind": "size",
+              "extraPrice": 25000
+            },
+            {
+              "name": "Cam vazo",
+              "kind": "vase",
+              "extraPrice": 18000
+            }
+          ],
+          "id": "o_4815_i1",
+          "orderId": "o_4815"
+        }
+      ]
+    },
+    {
+      "trackingToken": "y7Kp2RvXq9LmT3sB",
+      "senderPhone": "0541 220 31 03",
+      "courierName": "Murat",
+      "events": [
+        {
+          "status": "new",
+          "at": "2026-10-21T08:05:00.000Z"
+        },
+        {
+          "status": "preparing",
+          "at": "2026-10-22T06:30:00.000Z"
+        },
+        {
+          "status": "onway",
+          "at": "2026-10-22T08:40:00.000Z"
+        }
+      ],
+      "shopId": "shop_nergis",
+      "source": "link",
+      "paymentStatus": "paid",
+      "paymentMethod": "card",
+      "deliveryDate": "2026-10-22",
+      "exactTime": false,
+      "recipientPhone": "0541 330 52 03",
+      "address": "Çeçen Sok. No: 8, Daire 3",
+      "courierNote": null,
+      "cardNote": null,
+      "senderName": null,
+      "anonymous": false,
+      "subtotal": 160000,
+      "deliveryFee": 9000,
+      "deliveryPhotoUrl": null,
+      "createdAt": "2026-10-21T08:05:00.000Z",
+      "id": "o_4816",
+      "number": "T-4816",
+      "customerId": "cu_kerem",
+      "status": "onway",
+      "recipientName": "Can Öztürk",
+      "zoneName": "Acıbadem, Üsküdar",
+      "deliveryZoneId": "z_acibadem",
+      "timeSlotId": "s_sabah",
+      "slotStart": "10:00",
+      "slotEnd": "13:00",
+      "deliveryTime": "12:00",
+      "total": 169000,
+      "items": [
+        {
+          "productId": "p_orkide",
+          "productName": "Mor orkide",
+          "unitPrice": 160000,
+          "quantity": 1,
+          "options": [],
+          "id": "o_4816_i1",
+          "orderId": "o_4816"
+        }
+      ]
+    },
+    {
+      "trackingToken": "d4Wn8HcZp1QaE6uJ",
+      "senderPhone": "0505 310 22 47",
+      "courierName": "Murat",
+      "events": [
+        {
+          "status": "new",
+          "at": "2026-10-21T09:12:00.000Z"
+        },
+        {
+          "status": "preparing",
+          "at": "2026-10-22T06:05:00.000Z"
+        },
+        {
+          "status": "onway",
+          "at": "2026-10-22T09:00:00.000Z"
+        },
+        {
+          "status": "delivered",
+          "at": "2026-10-22T09:30:00.000Z"
+        }
+      ],
+      "shopId": "shop_nergis",
+      "source": "link",
+      "paymentStatus": "paid",
+      "paymentMethod": "card",
+      "deliveryDate": "2026-10-22",
+      "exactTime": false,
+      "recipientPhone": "0505 412 60 47",
+      "address": "Fener Kalamış Cad. No: 41",
+      "courierNote": null,
+      "cardNote": "Nice yıllara, iyi ki varsın.",
+      "senderName": "Deniz",
+      "anonymous": true,
+      "subtotal": 74000,
+      "deliveryFee": 0,
+      "deliveryPhotoUrl": "mock:delivery",
+      "createdAt": "2026-10-21T09:12:00.000Z",
+      "id": "o_4817",
+      "number": "T-4817",
+      "customerId": "cu_deniz",
+      "status": "delivered",
+      "recipientName": "Selin Arslan",
+      "zoneName": "Fenerbahçe, Kadıköy",
+      "deliveryZoneId": "z_fenerbahce",
+      "timeSlotId": "s_sabah",
+      "slotStart": "10:00",
+      "slotEnd": "13:00",
+      "deliveryTime": "12:30",
+      "total": 74000,
+      "items": [
+        {
+          "productId": "p_kir",
+          "productName": "Kır buketi",
+          "unitPrice": 65000,
+          "quantity": 1,
+          "options": [],
+          "id": "o_4817_i1",
+          "orderId": "o_4817"
+        }
+      ]
+    },
+    {
+      "trackingToken": "a3Fq9ZmLx2VbN8cR",
+      "senderPhone": "0533 207 41 65",
+      "courierName": null,
+      "events": [
+        {
+          "status": "new",
+          "at": "2026-10-21T10:52:00.000Z"
+        }
+      ],
+      "shopId": "shop_nergis",
+      "source": "link",
+      "paymentStatus": "paid",
+      "paymentMethod": "card",
+      "deliveryDate": "2026-10-22",
+      "exactTime": false,
+      "recipientPhone": "0532 412 88 19",
+      "address": "Moda Cad. Şair Nefi Sok. No: 12, Daire 4",
+      "courierNote": "Zil çalışmıyor, arayın.",
+      "cardNote": "Yeni evin hayırlı olsun, ilk çiçekler bizden.",
+      "senderName": "Ayşe ve Can",
+      "anonymous": false,
+      "subtotal": 123000,
+      "deliveryFee": 9000,
+      "deliveryPhotoUrl": null,
+      "createdAt": "2026-10-21T10:52:00.000Z",
+      "id": "o_4821",
+      "number": "T-4821",
+      "customerId": "cu_ayse",
+      "status": "new",
+      "recipientName": "Elif Yılmaz",
+      "zoneName": "Caferağa, Kadıköy",
+      "deliveryZoneId": "z_caferaga",
+      "timeSlotId": "s_ogle",
+      "slotStart": "13:00",
+      "slotEnd": "16:00",
+      "deliveryTime": null,
+      "total": 132000,
+      "items": [
+        {
+          "productId": "p_lale",
+          "productName": "Bu haftanın lalesi",
+          "unitPrice": 72000,
+          "quantity": 1,
+          "options": [
+            {
+              "name": "Orta",
+              "kind": "size",
+              "extraPrice": 33000
+            },
+            {
+              "name": "Cam vazo",
+              "kind": "vase",
+              "extraPrice": 18000
+            }
+          ],
+          "id": "o_4821_i1",
+          "orderId": "o_4821"
+        }
+      ]
+    },
+    {
+      "trackingToken": "mock-o_4822",
+      "senderPhone": "0544 318 09 12",
+      "courierName": null,
+      "events": [
+        {
+          "status": "new",
+          "at": "2026-10-22T05:40:00.000Z"
+        }
+      ],
+      "shopId": "shop_nergis",
+      "source": "phone",
+      "paymentStatus": "paid",
+      "paymentMethod": "card",
+      "deliveryDate": "2026-10-22",
+      "exactTime": true,
+      "recipientPhone": "0544 702 18 30",
+      "address": "Simitçi Şakir Sok. No: 5",
+      "courierNote": null,
+      "cardNote": null,
+      "senderName": null,
+      "anonymous": false,
+      "subtotal": 107000,
+      "deliveryFee": 0,
+      "deliveryPhotoUrl": null,
+      "createdAt": "2026-10-22T05:40:00.000Z",
+      "id": "o_4822",
+      "number": "T-4822",
+      "customerId": "cu_gizem",
+      "status": "new",
+      "recipientName": "Mert Kaya",
+      "zoneName": "Kuzguncuk, Üsküdar",
+      "deliveryZoneId": "z_kuzguncuk",
+      "timeSlotId": "s_ogle",
+      "slotStart": "13:00",
+      "slotEnd": "16:00",
+      "deliveryTime": "14:00",
+      "total": 107000,
+      "items": [
+        {
+          "productId": "p_beyaz_gul",
+          "productName": "Beyaz güller (12 dal)",
+          "unitPrice": 98000,
+          "quantity": 1,
+          "options": [],
+          "id": "o_4822_i1",
+          "orderId": "o_4822"
+        }
+      ]
+    },
+    {
+      "trackingToken": "mock-o_4823",
+      "senderPhone": "0535 761 44 20",
+      "courierName": null,
+      "events": [
+        {
+          "status": "new",
+          "at": "2026-10-22T06:10:00.000Z"
+        }
+      ],
+      "shopId": "shop_nergis",
+      "source": "whatsapp",
+      "paymentStatus": "unpaid",
+      "paymentMethod": "transfer",
+      "deliveryDate": "2026-10-22",
+      "exactTime": false,
+      "recipientPhone": "0535 118 90 21",
+      "address": "Ataşehir Bulvarı, Gardenya 4, Kat 9",
+      "courierNote": null,
+      "cardNote": null,
+      "senderName": null,
+      "anonymous": false,
+      "subtotal": 252000,
+      "deliveryFee": 0,
+      "deliveryPhotoUrl": null,
+      "createdAt": "2026-10-22T06:10:00.000Z",
+      "id": "o_4823",
+      "number": "T-4823",
+      "customerId": "cu_hakan",
+      "status": "new",
+      "recipientName": "Duygu Şahin",
+      "zoneName": "Ataşehir merkez",
+      "deliveryZoneId": "z_atasehir",
+      "timeSlotId": "s_ogle",
+      "slotStart": "13:00",
+      "slotEnd": "16:00",
+      "deliveryTime": null,
+      "total": 252000,
+      "items": [
+        {
+          "productId": "p_celenk",
+          "productName": "Ayaklı çelenk",
+          "unitPrice": 240000,
+          "quantity": 1,
+          "options": [],
+          "id": "o_4823_i1",
+          "orderId": "o_4823"
+        }
+      ]
+    },
+    {
+      "trackingToken": "mock-o_4824",
+      "senderPhone": "0532 640 77 15",
+      "courierName": null,
+      "events": [
+        {
+          "status": "new",
+          "at": "2026-10-22T07:15:00.000Z"
+        }
+      ],
+      "shopId": "shop_nergis",
+      "source": "link",
+      "paymentStatus": "paid",
+      "paymentMethod": "card",
+      "deliveryDate": "2026-10-23",
+      "exactTime": false,
+      "recipientPhone": "0532 640 77 16",
+      "address": "Paşa Limanı Cad. No: 22",
+      "courierNote": null,
+      "cardNote": null,
+      "senderName": null,
+      "anonymous": false,
+      "subtotal": 110000,
+      "deliveryFee": 0,
+      "deliveryPhotoUrl": null,
+      "createdAt": "2026-10-22T07:15:00.000Z",
+      "id": "o_4824",
+      "number": "T-4824",
+      "customerId": "cu_burak",
+      "status": "new",
+      "recipientName": "Ece Çelik",
+      "zoneName": "Kuzguncuk, Üsküdar",
+      "deliveryZoneId": "z_kuzguncuk",
+      "timeSlotId": "s_sabah",
+      "slotStart": "10:00",
+      "slotEnd": "13:00",
+      "deliveryTime": null,
+      "total": 110000,
+      "items": [
+        {
+          "productId": "p_beyaz_gul",
+          "productName": "Beyaz güller (12 dal)",
+          "unitPrice": 98000,
+          "quantity": 1,
+          "options": [],
+          "id": "o_4824_i1",
+          "orderId": "o_4824"
+        }
+      ]
+    },
+    {
+      "trackingToken": "mock-o_4825",
+      "senderPhone": "0532 111 22 33",
+      "courierName": null,
+      "events": [
+        {
+          "status": "new",
+          "at": "2026-10-22T08:30:00.000Z"
+        }
+      ],
+      "shopId": "shop_nergis",
+      "source": "instagram",
+      "paymentStatus": "pending",
+      "paymentMethod": "cash",
+      "deliveryDate": "2026-10-23",
+      "exactTime": false,
+      "recipientPhone": "0532 111 22 34",
+      "address": "Bahariye Cad. No: 60",
+      "courierNote": null,
+      "cardNote": null,
+      "senderName": null,
+      "anonymous": false,
+      "subtotal": 74000,
+      "deliveryFee": 0,
+      "deliveryPhotoUrl": null,
+      "createdAt": "2026-10-22T08:30:00.000Z",
+      "id": "o_4825",
+      "number": "T-4825",
+      "customerId": "cu_nilay",
+      "status": "new",
+      "recipientName": "Defne Koç",
+      "zoneName": "Caferağa, Kadıköy",
+      "deliveryZoneId": "z_caferaga",
+      "timeSlotId": "s_aksam",
+      "slotStart": "16:00",
+      "slotEnd": "19:00",
+      "deliveryTime": null,
+      "total": 74000,
+      "items": [
+        {
+          "productId": "p_kir",
+          "productName": "Kır buketi",
+          "unitPrice": 65000,
+          "quantity": 1,
+          "options": [],
+          "id": "o_4825_i1",
+          "orderId": "o_4825"
+        }
+      ]
+    },
+    {
+      "trackingToken": "mock-o_4826",
+      "senderPhone": "0533 207 41 65",
+      "courierName": null,
+      "events": [
+        {
+          "status": "new",
+          "at": "2026-10-22T09:05:00.000Z"
+        }
+      ],
+      "shopId": "shop_nergis",
+      "source": "link",
+      "paymentStatus": "paid",
+      "paymentMethod": "card",
+      "deliveryDate": "2026-10-24",
+      "exactTime": false,
+      "recipientPhone": "0533 207 41 66",
+      "address": "Rıhtım Cad. No: 3, Daire 7",
+      "courierNote": null,
+      "cardNote": "İyi ki doğdun anneciğim.",
+      "senderName": "Ayşe",
+      "anonymous": false,
+      "subtotal": 119000,
+      "deliveryFee": 0,
+      "deliveryPhotoUrl": null,
+      "createdAt": "2026-10-22T09:05:00.000Z",
+      "id": "o_4826",
+      "number": "T-4826",
+      "customerId": "cu_ayse",
+      "status": "new",
+      "recipientName": "Gül Demir",
+      "zoneName": "Caferağa, Kadıköy",
+      "deliveryZoneId": "z_caferaga",
+      "timeSlotId": "s_sabah",
+      "slotStart": "10:00",
+      "slotEnd": "13:00",
+      "deliveryTime": null,
+      "total": 119000,
+      "items": [
+        {
+          "productId": "p_mevsim",
+          "productName": "Mevsim buketi",
+          "unitPrice": 85000,
+          "quantity": 1,
+          "options": [
+            {
+              "name": "Orta",
+              "kind": "size",
+              "extraPrice": 25000
+            }
+          ],
+          "id": "o_4826_i1",
+          "orderId": "o_4826"
+        }
+      ]
+    },
+    {
+      "trackingToken": "mock-o_4809",
+      "senderPhone": "0533 980 12 64",
+      "courierName": null,
+      "events": [
+        {
+          "status": "new",
+          "at": "2026-10-19T07:00:00.000Z"
+        },
+        {
+          "status": "preparing",
+          "at": "2026-10-21T11:00:00.000Z"
+        },
+        {
+          "status": "onway",
+          "at": "2026-10-21T13:30:00.000Z"
+        },
+        {
+          "status": "failed",
+          "at": "2026-10-21T15:10:00.000Z"
+        }
+      ],
+      "shopId": "shop_nergis",
+      "source": "link",
+      "paymentStatus": "paid",
+      "paymentMethod": "card",
+      "deliveryDate": "2026-10-21",
+      "exactTime": false,
+      "recipientPhone": "0216 455 10 10",
+      "address": "Barbaros Mah. Mor Sümbül Sok. No: 7",
+      "courierNote": null,
+      "cardNote": null,
+      "senderName": null,
+      "anonymous": false,
+      "subtotal": 240000,
+      "deliveryFee": 0,
+      "deliveryPhotoUrl": null,
+      "createdAt": "2026-10-19T07:00:00.000Z",
+      "id": "o_4809",
+      "number": "T-4809",
+      "customerId": "cu_okan",
+      "status": "failed",
+      "recipientName": "Okan Yıldız Ofis",
+      "zoneName": "Ataşehir merkez",
+      "deliveryZoneId": "z_atasehir",
+      "timeSlotId": "s_aksam",
+      "slotStart": "16:00",
+      "slotEnd": "19:00",
+      "deliveryTime": null,
+      "total": 240000,
+      "items": [
+        {
+          "productId": "p_celenk",
+          "productName": "Ayaklı çelenk",
+          "unitPrice": 240000,
+          "quantity": 1,
+          "options": [],
+          "id": "o_4809_i1",
+          "orderId": "o_4809"
+        }
+      ]
+    },
+    {
+      "trackingToken": "mock-o_4820",
+      "senderPhone": "0533 207 41 65",
+      "courierName": null,
+      "events": [
+        {
+          "status": "new",
+          "at": "2026-10-20T15:30:00.000Z"
+        },
+        {
+          "status": "delivered",
+          "at": "2026-10-21T11:10:00.000Z"
+        }
+      ],
+      "shopId": "shop_nergis",
+      "source": "link",
+      "paymentStatus": "paid",
+      "paymentMethod": "card",
+      "deliveryDate": "2026-10-21",
+      "exactTime": false,
+      "recipientPhone": "",
+      "address": "",
+      "courierNote": null,
+      "cardNote": null,
+      "senderName": null,
+      "anonymous": false,
+      "subtotal": 63000,
+      "deliveryFee": 0,
+      "deliveryPhotoUrl": null,
+      "createdAt": "2026-10-20T15:30:00.000Z",
+      "id": "o_4820",
+      "number": "T-4820",
+      "customerId": "cu_ayse",
+      "status": "delivered",
+      "recipientName": "",
+      "zoneName": "Caferağa, Kadıköy",
+      "deliveryZoneId": "z_caferaga",
+      "timeSlotId": "s_ogle",
+      "slotStart": "13:00",
+      "slotEnd": "16:00",
+      "deliveryTime": "14:10",
+      "total": 63000,
+      "items": [
+        {
+          "productId": "",
+          "productName": "Papatya kutusu",
+          "unitPrice": 63000,
+          "quantity": 1,
+          "options": [],
+          "id": "o_4820_i1",
+          "orderId": "o_4820"
+        }
+      ]
+    },
+    {
+      "trackingToken": "mock-o_4790",
+      "senderPhone": "0532 555 18 40",
+      "courierName": null,
+      "events": [
+        {
+          "status": "new",
+          "at": "2026-10-16T15:30:00.000Z"
+        },
+        {
+          "status": "delivered",
+          "at": "2026-10-17T11:10:00.000Z"
+        }
+      ],
+      "shopId": "shop_nergis",
+      "source": "link",
+      "paymentStatus": "paid",
+      "paymentMethod": "card",
+      "deliveryDate": "2026-10-17",
+      "exactTime": false,
+      "recipientPhone": "",
+      "address": "",
+      "courierNote": null,
+      "cardNote": null,
+      "senderName": null,
+      "anonymous": false,
+      "subtotal": 144000,
+      "deliveryFee": 0,
+      "deliveryPhotoUrl": null,
+      "createdAt": "2026-10-16T15:30:00.000Z",
+      "id": "o_4790",
+      "number": "T-4790",
+      "customerId": "cu_ali",
+      "status": "delivered",
+      "recipientName": "",
+      "zoneName": "Caferağa, Kadıköy",
+      "deliveryZoneId": "z_caferaga",
+      "timeSlotId": "s_ogle",
+      "slotStart": "13:00",
+      "slotEnd": "16:00",
+      "deliveryTime": "14:10",
+      "total": 144000,
+      "items": [
+        {
+          "productId": "",
+          "productName": "Pembe şakayık",
+          "unitPrice": 144000,
+          "quantity": 1,
+          "options": [],
+          "id": "o_4790_i1",
+          "orderId": "o_4790"
+        }
+      ]
+    },
+    {
+      "trackingToken": "mock-o_4501",
+      "senderPhone": "0533 207 41 65",
+      "courierName": null,
+      "events": [
+        {
+          "status": "new",
+          "at": "2026-08-22T15:30:00.000Z"
+        },
+        {
+          "status": "delivered",
+          "at": "2026-08-23T11:10:00.000Z"
+        }
+      ],
+      "shopId": "shop_nergis",
+      "source": "link",
+      "paymentStatus": "paid",
+      "paymentMethod": "card",
+      "deliveryDate": "2026-08-23",
+      "exactTime": false,
+      "recipientPhone": "",
+      "address": "",
+      "courierNote": null,
+      "cardNote": null,
+      "senderName": null,
+      "anonymous": false,
+      "subtotal": 107000,
+      "deliveryFee": 0,
+      "deliveryPhotoUrl": null,
+      "createdAt": "2026-08-22T15:30:00.000Z",
+      "id": "o_4501",
+      "number": "T-4501",
+      "customerId": "cu_ayse",
+      "status": "delivered",
+      "recipientName": "",
+      "zoneName": "Caferağa, Kadıköy",
+      "deliveryZoneId": "z_caferaga",
+      "timeSlotId": "s_ogle",
+      "slotStart": "13:00",
+      "slotEnd": "16:00",
+      "deliveryTime": "14:10",
+      "total": 107000,
+      "items": [
+        {
+          "productId": "",
+          "productName": "Beyaz güller (12 dal)",
+          "unitPrice": 107000,
+          "quantity": 1,
+          "options": [],
+          "id": "o_4501_i1",
+          "orderId": "o_4501"
+        }
+      ]
+    },
+    {
+      "trackingToken": "mock-o_4302",
+      "senderPhone": "0533 207 41 65",
+      "courierName": null,
+      "events": [
+        {
+          "status": "new",
+          "at": "2026-06-23T15:30:00.000Z"
+        },
+        {
+          "status": "delivered",
+          "at": "2026-06-24T11:10:00.000Z"
+        }
+      ],
+      "shopId": "shop_nergis",
+      "source": "link",
+      "paymentStatus": "paid",
+      "paymentMethod": "card",
+      "deliveryDate": "2026-06-24",
+      "exactTime": false,
+      "recipientPhone": "",
+      "address": "",
+      "courierNote": null,
+      "cardNote": null,
+      "senderName": null,
+      "anonymous": false,
+      "subtotal": 169000,
+      "deliveryFee": 0,
+      "deliveryPhotoUrl": null,
+      "createdAt": "2026-06-23T15:30:00.000Z",
+      "id": "o_4302",
+      "number": "T-4302",
+      "customerId": "cu_ayse",
+      "status": "delivered",
+      "recipientName": "",
+      "zoneName": "Caferağa, Kadıköy",
+      "deliveryZoneId": "z_caferaga",
+      "timeSlotId": "s_ogle",
+      "slotStart": "13:00",
+      "slotEnd": "16:00",
+      "deliveryTime": "14:10",
+      "total": 169000,
+      "items": [
+        {
+          "productId": "",
+          "productName": "Mor orkide",
+          "unitPrice": 169000,
+          "quantity": 1,
+          "options": [],
+          "id": "o_4302_i1",
+          "orderId": "o_4302"
+        }
+      ]
+    },
+    {
+      "trackingToken": "mock-o_4011",
+      "senderPhone": "0533 207 41 65",
+      "courierName": null,
+      "events": [
+        {
+          "status": "new",
+          "at": "2026-04-04T15:30:00.000Z"
+        },
+        {
+          "status": "delivered",
+          "at": "2026-04-05T11:10:00.000Z"
+        }
+      ],
+      "shopId": "shop_nergis",
+      "source": "link",
+      "paymentStatus": "paid",
+      "paymentMethod": "card",
+      "deliveryDate": "2026-04-05",
+      "exactTime": false,
+      "recipientPhone": "",
+      "address": "",
+      "courierNote": null,
+      "cardNote": null,
+      "senderName": null,
+      "anonymous": false,
+      "subtotal": 74000,
+      "deliveryFee": 0,
+      "deliveryPhotoUrl": null,
+      "createdAt": "2026-04-04T15:30:00.000Z",
+      "id": "o_4011",
+      "number": "T-4011",
+      "customerId": "cu_ayse",
+      "status": "delivered",
+      "recipientName": "",
+      "zoneName": "Caferağa, Kadıköy",
+      "deliveryZoneId": "z_caferaga",
+      "timeSlotId": "s_ogle",
+      "slotStart": "13:00",
+      "slotEnd": "16:00",
+      "deliveryTime": "14:10",
+      "total": 74000,
+      "items": [
+        {
+          "productId": "",
+          "productName": "Kır buketi",
+          "unitPrice": 74000,
+          "quantity": 1,
+          "options": [],
+          "id": "o_4011_i1",
+          "orderId": "o_4011"
+        }
+      ]
+    },
+    {
+      "trackingToken": "mock-o_3120",
+      "senderPhone": "0533 207 41 65",
+      "courierName": null,
+      "events": [
+        {
+          "status": "new",
+          "at": "2025-10-23T15:30:00.000Z"
+        },
+        {
+          "status": "delivered",
+          "at": "2025-10-24T11:10:00.000Z"
+        }
+      ],
+      "shopId": "shop_nergis",
+      "source": "link",
+      "paymentStatus": "paid",
+      "paymentMethod": "card",
+      "deliveryDate": "2025-10-24",
+      "exactTime": false,
+      "recipientPhone": "",
+      "address": "",
+      "courierNote": null,
+      "cardNote": null,
+      "senderName": null,
+      "anonymous": false,
+      "subtotal": 85000,
+      "deliveryFee": 0,
+      "deliveryPhotoUrl": null,
+      "createdAt": "2025-10-23T15:30:00.000Z",
+      "id": "o_3120",
+      "number": "T-3120",
+      "customerId": "cu_ayse",
+      "status": "delivered",
+      "recipientName": "",
+      "zoneName": "Caferağa, Kadıköy",
+      "deliveryZoneId": "z_caferaga",
+      "timeSlotId": "s_ogle",
+      "slotStart": "13:00",
+      "slotEnd": "16:00",
+      "deliveryTime": "14:10",
+      "total": 85000,
+      "items": [
+        {
+          "productId": "",
+          "productName": "Mevsim buketi",
+          "unitPrice": 85000,
+          "quantity": 1,
+          "options": [],
+          "id": "o_3120_i1",
+          "orderId": "o_3120"
+        }
+      ]
+    },
+    {
+      "trackingToken": "mock-o_3119",
+      "senderPhone": "0532 640 77 15",
+      "courierName": null,
+      "events": [
+        {
+          "status": "new",
+          "at": "2025-10-23T15:30:00.000Z"
+        },
+        {
+          "status": "delivered",
+          "at": "2025-10-24T11:10:00.000Z"
+        }
+      ],
+      "shopId": "shop_nergis",
+      "source": "link",
+      "paymentStatus": "paid",
+      "paymentMethod": "card",
+      "deliveryDate": "2025-10-24",
+      "exactTime": false,
+      "recipientPhone": "",
+      "address": "",
+      "courierNote": null,
+      "cardNote": null,
+      "senderName": null,
+      "anonymous": false,
+      "subtotal": 140000,
+      "deliveryFee": 0,
+      "deliveryPhotoUrl": null,
+      "createdAt": "2025-10-23T15:30:00.000Z",
+      "id": "o_3119",
+      "number": "T-3119",
+      "customerId": "cu_burak",
+      "status": "delivered",
+      "recipientName": "",
+      "zoneName": "Caferağa, Kadıköy",
+      "deliveryZoneId": "z_caferaga",
+      "timeSlotId": "s_ogle",
+      "slotStart": "13:00",
+      "slotEnd": "16:00",
+      "deliveryTime": "14:10",
+      "total": 140000,
+      "items": [
+        {
+          "productId": "",
+          "productName": "Kırmızı güller",
+          "unitPrice": 140000,
+          "quantity": 1,
+          "options": [],
+          "id": "o_3119_i1",
+          "orderId": "o_3119"
+        }
+      ]
+    },
+    {
+      "trackingToken": "mock-o_3140",
+      "senderPhone": "0536 402 11 58",
+      "courierName": null,
+      "events": [
+        {
+          "status": "new",
+          "at": "2025-10-25T15:30:00.000Z"
+        },
+        {
+          "status": "delivered",
+          "at": "2025-10-26T11:10:00.000Z"
+        }
+      ],
+      "shopId": "shop_nergis",
+      "source": "link",
+      "paymentStatus": "paid",
+      "paymentMethod": "card",
+      "deliveryDate": "2025-10-26",
+      "exactTime": false,
+      "recipientPhone": "",
+      "address": "",
+      "courierNote": null,
+      "cardNote": null,
+      "senderName": null,
+      "anonymous": false,
+      "subtotal": 135000,
+      "deliveryFee": 0,
+      "deliveryPhotoUrl": null,
+      "createdAt": "2025-10-25T15:30:00.000Z",
+      "id": "o_3140",
+      "number": "T-3140",
+      "customerId": "cu_zeynep",
+      "status": "delivered",
+      "recipientName": "",
+      "zoneName": "Caferağa, Kadıköy",
+      "deliveryZoneId": "z_caferaga",
+      "timeSlotId": "s_ogle",
+      "slotStart": "13:00",
+      "slotEnd": "16:00",
+      "deliveryTime": "14:10",
+      "total": 135000,
+      "items": [
+        {
+          "productId": "",
+          "productName": "Pembe şakayık",
+          "unitPrice": 135000,
+          "quantity": 1,
+          "options": [],
+          "id": "o_3140_i1",
+          "orderId": "o_3140"
+        }
+      ]
+    },
+    {
+      "trackingToken": "mock-o_3141",
+      "senderPhone": "0533 980 12 64",
+      "courierName": null,
+      "events": [
+        {
+          "status": "new",
+          "at": "2025-10-25T15:30:00.000Z"
+        },
+        {
+          "status": "delivered",
+          "at": "2025-10-26T11:10:00.000Z"
+        }
+      ],
+      "shopId": "shop_nergis",
+      "source": "link",
+      "paymentStatus": "paid",
+      "paymentMethod": "card",
+      "deliveryDate": "2025-10-26",
+      "exactTime": false,
+      "recipientPhone": "",
+      "address": "",
+      "courierNote": null,
+      "cardNote": null,
+      "senderName": null,
+      "anonymous": false,
+      "subtotal": 240000,
+      "deliveryFee": 0,
+      "deliveryPhotoUrl": null,
+      "createdAt": "2025-10-25T15:30:00.000Z",
+      "id": "o_3141",
+      "number": "T-3141",
+      "customerId": "cu_okan",
+      "status": "delivered",
+      "recipientName": "",
+      "zoneName": "Caferağa, Kadıköy",
+      "deliveryZoneId": "z_caferaga",
+      "timeSlotId": "s_ogle",
+      "slotStart": "13:00",
+      "slotEnd": "16:00",
+      "deliveryTime": "14:10",
+      "total": 240000,
+      "items": [
+        {
+          "productId": "",
+          "productName": "Ayaklı çelenk",
+          "unitPrice": 240000,
+          "quantity": 1,
+          "options": [],
+          "id": "o_3141_i1",
+          "orderId": "o_3141"
+        }
+      ]
+    }
+  ]
+}

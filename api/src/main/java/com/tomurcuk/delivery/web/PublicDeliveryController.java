@@ -2,15 +2,19 @@ package com.tomurcuk.delivery.web;
 
 import java.util.List;
 
+import com.tomurcuk.delivery.DeliveryDay;
+import com.tomurcuk.delivery.DeliverySchedule;
 import com.tomurcuk.delivery.internal.DeliveryZone;
 import com.tomurcuk.delivery.internal.DeliveryZoneRepository;
 import com.tomurcuk.delivery.internal.TimeSlot;
 import com.tomurcuk.delivery.internal.TimeSlotRepository;
 import com.tomurcuk.shared.ClockTimes;
+import com.tomurcuk.shop.ShopDirectory;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -22,9 +26,22 @@ class PublicDeliveryController {
 
 	private final TimeSlotRepository slots;
 
-	PublicDeliveryController(DeliveryZoneRepository zones, TimeSlotRepository slots) {
+	private final ShopDirectory shops;
+
+	private final DeliverySchedule schedule;
+
+	PublicDeliveryController(DeliveryZoneRepository zones, TimeSlotRepository slots, ShopDirectory shops,
+			DeliverySchedule schedule) {
 		this.zones = zones;
 		this.slots = slots;
+		this.shops = shops;
+		this.schedule = schedule;
+	}
+
+	/** Bugünden (dükkânın saat dilimine göre) başlayarak en fazla 14 günün takvimi ve kalan yerler. */
+	@GetMapping("/delivery-days")
+	List<DeliveryDay> days(@PathVariable String shopId, @RequestParam(defaultValue = "14") int days) {
+		return shops.find(shopId).map(shop -> schedule.days(shop, days)).orElse(List.of());
 	}
 
 	/** Yalnızca aktif bölgeler; listede olmayan adres sipariş veremez. */

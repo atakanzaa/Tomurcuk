@@ -92,6 +92,8 @@ export async function submitPayment(slug: string, prev: FormState, formData: For
     const { draft, ...fields } = result.errors;
     return failed(prev, formData, draft ? { ...fields, form: draft } : fields);
   }
+  // Kartla ödemede taslak, ödeme yarıda kalırsa yeniden denenebilsin diye ödeme dönüşüne kadar durur.
+  if (result.value.paymentUrl) redirect(result.value.paymentUrl);
   await clearDraftId(slug);
   redirect(trackingOrderPath(slug, result.value.trackingToken));
 }

@@ -27,3 +27,6 @@ export const CheckoutStep = {
 export type CheckoutStep = (typeof CheckoutStep)[keyof typeof CheckoutStep];
 
 export const checkoutPath = (slug: string, step: CheckoutStep) => `/${slug}/siparis/${step}`;
+
+/** Ödeme sayfasından başarısız dönüşte ödeme adımına eklenen parametre. */
+export const PAYMENT_FAILED_PARAM = "odeme-basarisiz";

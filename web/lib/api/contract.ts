@@ -27,6 +27,7 @@ import type {
   OrderDraft,
   OrderTracking,
   PlaceOrderInput,
+  PlacedOrder,
   Product,
   Result,
   ShopLookup,
@@ -66,13 +67,17 @@ export interface TomurcukApi {
   saveCard(shopId: string, draftId: string, input: CardInput): Promise<Result<OrderDraft, keyof CardInput>>;
   /**
    * Ürünü, fiyatı, son saati ve aralık rezervasyonunu yeniden doğrular, siparişi oluşturur.
-   * Kartla ödemede gerçek uygulama sağlayıcının sayfasına yönlendirir; mock ödemeyi başarılı sayar.
+   * Kartla ödemede `paymentUrl` sağlayıcının ödeme sayfasıdır; alıcı oraya yönlenir ve
+   * ödeme sonrası `completePayment` ile döner. Ödeme yarıda kalırsa aynı taslakla yeniden
+   * çağrılınca aynı sipariş için yeni ödeme sayfası açılır.
    */
   placeOrder(
     shopId: string,
     draftId: string,
     input: PlaceOrderInput,
-  ): Promise<Result<{ trackingToken: string }, keyof PlaceOrderInput | "draft">>;
+  ): Promise<Result<PlacedOrder, keyof PlaceOrderInput | "draft">>;
+  /** Ödeme sayfasından dönüş. Sonucu backend sağlayıcıdan alır; bilinmeyen token null. */
+  completePayment(shopId: string, token: string): Promise<{ trackingToken: string; paid: boolean } | null>;
   getOrderTracking(shopId: string, token: string): Promise<OrderTracking | null>;
   /** Sipariş numarası ve gönderen telefonu eşleşirse takip token'ı. */
   findTrackingToken(shopId: string, input: { number: string; phone: string }): Promise<string | null>;

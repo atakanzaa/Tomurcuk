@@ -121,3 +121,22 @@ ON CONFLICT (id) DO UPDATE SET
     end_time = EXCLUDED.end_time,
     capacity = EXCLUDED.capacity;
 
+
+INSERT INTO customer (id, shop_id, name, phone, email, note, marketing_consent)
+VALUES
+    ('cu_ayse', 'shop_nergis', 'Ayşe Demir', '0533 207 41 65', NULL, NULL, TRUE),
+    ('cu_kerem', 'shop_nergis', 'Kerem Öztürk', '0541 220 31 03', NULL, NULL, TRUE),
+    ('cu_deniz', 'shop_nergis', 'Deniz Arslan', '0505 310 22 47', NULL, NULL, FALSE),
+    ('cu_ali', 'shop_nergis', 'Ali Aksoy', '0532 555 18 40', NULL, NULL, TRUE),
+    ('cu_gizem', 'shop_nergis', 'Gizem Kaya', '0544 318 09 12', NULL, NULL, TRUE),
+    ('cu_hakan', 'shop_nergis', 'Hakan Şahin', '0535 761 44 20', NULL, NULL, FALSE),
+    ('cu_burak', 'shop_nergis', 'Burak Çelik', '0532 640 77 15', NULL, NULL, TRUE),
+    ('cu_zeynep', 'shop_nergis', 'Zeynep Aksoy', '0536 402 11 58', NULL, NULL, TRUE),
+    ('cu_okan', 'shop_nergis', 'Okan Yıldız', '0533 980 12 64', NULL, NULL, TRUE),
+    ('cu_nilay', 'shop_nergis', 'Nilay Koç', '0532 111 22 33', NULL, NULL, FALSE)
+ON CONFLICT (id) DO UPDATE SET
+    name = EXCLUDED.name,
+    phone = EXCLUDED.phone,
+    email = EXCLUDED.email,
+    note = EXCLUDED.note,
+    marketing_consent = EXCLUDED.marketing_consent;

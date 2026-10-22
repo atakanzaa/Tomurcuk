@@ -1,6 +1,6 @@
 import type { TomurcukApi } from "@/lib/api/contract";
+import type { CheckoutApi } from "@/lib/api/http/checkout";
 import type { VitrinApi } from "@/lib/api/http/vitrin";
-import { mockCheckoutApi } from "./checkout";
 import { mockPanelApi } from "./panel";
 import { mockSupportApi } from "./support";
 import { getStore } from "./store";
@@ -8,8 +8,8 @@ import { getStore } from "./store";
 // Çağıranın sabit veriyi değiştirememesi için her yanıt kopyalanır, tıpkı ağdan gelmiş gibi.
 const copy = <T>(value: T): T => structuredClone(value);
 
-/** Henüz API'ye geçmemiş fonksiyonlar. Vitrin okumaları api/'den gelir (lib/api/http/vitrin.ts). */
-export const mockApi: Omit<TomurcukApi, keyof VitrinApi> = {
+/** Henüz API'ye geçmemiş fonksiyonlar: satıcı paneli, destek ve tanıtım sitesi. */
+export const mockApi: Omit<TomurcukApi, keyof VitrinApi | keyof CheckoutApi> = {
   async getOrders(shopId, filter) {
     return copy(
       getStore()
@@ -23,7 +23,6 @@ export const mockApi: Omit<TomurcukApi, keyof VitrinApi> = {
     );
   },
 
-  ...mockCheckoutApi,
   ...mockPanelApi,
   ...mockSupportApi,
 };

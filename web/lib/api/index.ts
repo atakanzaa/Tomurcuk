@@ -82,6 +82,7 @@ export const saveDelivery = write("saveDelivery");
 export const saveCard = write("saveCard");
 export const placeOrder = write("placeOrder");
 export const findTrackingToken = write("findTrackingToken");
+export const completePayment = write("completePayment");
 
 // Satıcı paneli
 export const getPanelSession = read("getPanelSession");

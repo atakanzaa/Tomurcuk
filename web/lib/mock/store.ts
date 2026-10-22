@@ -5,7 +5,6 @@ import {
   type Impersonation,
   type NotificationLog,
   type Order,
-  type OrderDraft,
   type PilotApplicationInput,
   type ShopUser,
   type SpecialDay,
@@ -18,20 +17,12 @@ import { zonedNow } from "@/lib/format";
 import { BASE_DATE, customers, orders as seedOrders, shopUsers, shops, specialDaySeeds } from "./data";
 import { noteSeeds, supportUsers, ticketSeeds } from "./support-data";
 
-/** Bellekteki taslak; backend'de order_draft tablosuna karşılık gelir. */
-export interface StoredDraft extends OrderDraft {
-  expiresAt: number;
-}
-
 export interface StoredTicket extends Omit<TicketSummary, "shopName" | "shopDistrict" | "assigneeName" | "orderDate" | "orderSlot"> {
   messages: TicketMessage[];
 }
 
 interface MockState {
-  drafts: Map<string, StoredDraft>;
   orders: Order[];
-  /** idempotency anahtarı → takip token'ı */
-  idempotency: Map<string, string>;
   /** "tarih|aralık" → mock'ta verilen sipariş sayısı (örnek kapasitenin üstüne). */
   slotUsage: Map<string, number>;
   nextNumber: number;
@@ -178,9 +169,7 @@ function createState(now: Date): MockState {
   ];
 
   return {
-    drafts: new Map(),
     orders,
-    idempotency: new Map(),
     slotUsage: new Map(),
     nextNumber: 4830,
     customers: structuredClone(customers),
