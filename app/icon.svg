@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Tomurcuk: sap üstünde bir tomurcuk. Renkler tokens.json'dan (kraft, stem, peony); favicon CSS değişkeni okuyamaz. -->
+  <rect width="32" height="32" rx="7" fill="#e6d7bf"/>
+  <rect x="15" y="15" width="2.5" height="13" fill="#2e4a35"/>
+  <rect x="11" y="5" width="10.5" height="14" rx="5.25" fill="#b0365e"/>
+</svg>

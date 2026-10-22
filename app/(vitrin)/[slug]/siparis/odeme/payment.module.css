@@ -1,0 +1,115 @@
+/* Sipariş özeti, kraft zemin üzerinde tek kutu: makbuz gibi. */
+.summary {
+  display: grid;
+  gap: 10px;
+  padding: var(--space-5);
+  border-radius: var(--radius-l);
+  background: var(--kraft);
+}
+
+.line {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+  font-size: 15px;
+  line-height: 22px;
+}
+
+.amount {
+  white-space: nowrap;
+}
+
+.secondaryInline {
+  color: var(--ink-muted);
+}
+
+.rule {
+  height: 1px;
+  margin: var(--space-1) 0;
+  border: 0;
+  background: var(--kraft-deep);
+}
+
+.totalLine {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+  font-size: 18px;
+  line-height: 24px;
+  font-weight: 600;
+}
+
+.review {
+  border-bottom: 1px solid var(--line);
+}
+
+.row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding-block: var(--space-3);
+  border-top: 1px solid var(--line);
+}
+
+.rowText {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.label {
+  color: var(--ink-muted);
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.value {
+  font-size: 16px;
+  line-height: 22px;
+}
+
+.secondary {
+  color: var(--ink-muted);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.cardNote {
+  font-family: var(--font-display);
+  font-size: 17px;
+  line-height: 24px;
+  overflow-wrap: anywhere;
+}
+
+/* Metin bağlantısı; dokunma alanı 44px. */
+.change {
+  position: relative;
+  flex: none;
+  font-size: 14px;
+  line-height: 22px;
+  font-weight: 500;
+}
+
+.change::after {
+  content: "";
+  position: absolute;
+  inset: -11px -8px;
+}
+
+.consent {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  font-size: 14px;
+  line-height: 20px;
+  cursor: pointer;
+}
+
+.consent input {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  margin: 1px 0 0;
+  accent-color: var(--stem);
+}

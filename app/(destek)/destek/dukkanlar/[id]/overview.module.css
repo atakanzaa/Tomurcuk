@@ -1,0 +1,131 @@
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.headText {
+  display: grid;
+  gap: 6px;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 34px;
+  line-height: 40px;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.facts {
+  display: flex;
+  flex-wrap: wrap;
+  row-gap: var(--space-4);
+  margin: 0;
+  padding: var(--space-4) 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.fact {
+  display: grid;
+  gap: 2px;
+  padding: 0 var(--space-5);
+  border-left: 1px solid var(--line);
+}
+
+.fact:first-child {
+  padding-left: 0;
+  border-left: 0;
+}
+
+.fact dt {
+  color: var(--ink-muted);
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.fact dd {
+  margin: 0;
+  font-size: 15px;
+  line-height: 22px;
+  font-weight: 600;
+}
+
+.active {
+  color: var(--stem);
+}
+
+.suspended {
+  color: var(--danger);
+}
+
+.columns {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--space-7);
+}
+
+.mainCol {
+  flex: 999 1 560px;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-6);
+}
+
+.sideCol {
+  flex: 1 1 320px;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-6);
+}
+
+.notes {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--line);
+}
+
+.note {
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.noteHead {
+  color: var(--ink-muted);
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.userRow {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.failed {
+  color: var(--danger);
+  font-weight: 600;
+}
+
+.h2Sub {
+  color: var(--ink-muted);
+  font-size: 13px;
+  font-weight: 400;
+}

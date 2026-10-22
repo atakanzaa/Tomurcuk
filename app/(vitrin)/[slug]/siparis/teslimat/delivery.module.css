@@ -1,0 +1,3 @@
+.address :global(.tm-field__control) {
+  min-height: 80px;
+}

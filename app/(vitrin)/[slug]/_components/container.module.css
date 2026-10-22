@@ -1,0 +1,12 @@
+/* Kenar boşluğu mobilde space-4, 640px'ten itibaren space-6. */
+.container {
+  max-width: 1200px;
+  margin-inline: auto;
+  padding-inline: var(--space-4);
+}
+
+@media (min-width: 640px) {
+  .container {
+    padding-inline: var(--space-6);
+  }
+}

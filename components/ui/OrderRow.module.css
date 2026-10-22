@@ -1,0 +1,30 @@
+/* Satırın tamamı tek bağlantıyla tıklanır; bağlantı alıcı adıdır, alanı satıra yayılır. */
+.row {
+  position: relative;
+}
+
+.link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+.link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-m);
+}
+
+.link:focus-visible {
+  outline: none;
+}
+
+.link:focus-visible::after {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.slot {
+  display: block;
+}
