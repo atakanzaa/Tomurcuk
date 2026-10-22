@@ -1,7 +1,7 @@
 import Image from "next/image";
 import type { ReactNode } from "react";
 import type { Product } from "@/lib/api/types";
-import { MOCK_PHOTO_PREFIX, mockIllustration } from "@/lib/mock/illustrations";
+import { MOCK_PHOTO_PREFIX, mockIllustration } from "@/lib/demo-photos";
 
 /**
  * Dükkânın çektiği fotoğraf. Yanında ad ya da açıklama yazdığı için dekoratiftir (alt="").

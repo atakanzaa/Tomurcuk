@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 import { Button } from "@/components/ui/Button";
-import { logout } from "@/lib/panel/auth-actions";
+import { logout } from "@/lib/auth/actions";
 import panel from "../_components/panel.module.css";
 import styles from "../_components/simple.module.css";
 import { panelSession } from "../_lib";

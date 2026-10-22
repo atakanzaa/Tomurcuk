@@ -46,6 +46,8 @@ public class Shop {
 
 	private String featuredProductId;
 
+	private java.time.Instant createdAt;
+
 	@OneToMany
 	@JoinColumn(name = "shop_id")
 	private List<ShopSlugHistory> previousSlugs = new ArrayList<>();
@@ -111,6 +113,10 @@ public class Shop {
 
 	public String getFeaturedProductId() {
 		return featuredProductId;
+	}
+
+	public java.time.Instant getCreatedAt() {
+		return createdAt;
 	}
 
 	public List<ShopSlugHistory> getPreviousSlugs() {

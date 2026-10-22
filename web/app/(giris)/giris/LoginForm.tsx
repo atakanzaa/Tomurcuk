@@ -5,8 +5,8 @@ import { SubmitButton } from "@/components/flow/SubmitButton";
 import flow from "@/components/flow/flow.module.css";
 import { Field } from "@/components/ui/Field";
 import { initialFormState, type FormState } from "@/lib/checkout/form-state";
-import { login } from "@/lib/panel/auth-actions";
-import styles from "./login.module.css";
+import { login } from "@/lib/auth/actions";
+import styles from "@/components/auth/login.module.css";
 
 export function LoginForm() {
   const [state, action] = useActionState(login, initialFormState);

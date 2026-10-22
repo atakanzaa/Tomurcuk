@@ -18,6 +18,7 @@ import com.tomurcuk.customer.Customers;
 import com.tomurcuk.delivery.DeliverySchedule;
 import com.tomurcuk.delivery.SlotInfo;
 import com.tomurcuk.delivery.ZoneInfo;
+import com.tomurcuk.ordering.Order;
 import com.tomurcuk.ordering.OrderConfirmed;
 import com.tomurcuk.ordering.OrderSource;
 import com.tomurcuk.ordering.OrderStatus;

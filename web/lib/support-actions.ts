@@ -1,12 +1,11 @@
 "use server";
 
 import { refresh } from "next/cache";
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { addShopNote, escalateTicket, replyToTicket, revealPhone, startImpersonation } from "@/lib/api";
 import { formValues, type FormState } from "@/lib/checkout/form-state";
 import { toMessages } from "@/lib/checkout/messages";
-import { IMPERSONATION_COOKIE } from "@/lib/panel/session";
+import { writeImpersonation } from "@/lib/auth/cookie";
 
 // Destek panelinin işlemleri. Her biri backend'de yetki ve denetim kaydından geçer.
 
@@ -66,12 +65,6 @@ export async function impersonate(shopId: string, prev: FormState, formData: For
   }
   const session = await startImpersonation(shopId, reason);
   if (!session) return { version: prev.version + 1, errors: { reason: "Oturum açılamadı. Sayfayı yenileyin." }, values: formValues(formData) };
-  (await cookies()).set(IMPERSONATION_COOKIE, session.id, {
-    httpOnly: true,
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
-    path: "/",
-    expires: new Date(session.endsAt),
-  });
+  await writeImpersonation(session.id, session.endsAt);
   redirect("/panel");
 }

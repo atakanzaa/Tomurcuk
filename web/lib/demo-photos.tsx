@@ -1,4 +1,4 @@
-// Mock ürün "fotoğrafları": tasarımlardaki çizimler. Gerçek fotoğraflar gelince bu dosya
+// Örnek dükkânın ürün "fotoğrafları": tasarımlardaki çizimler. Gerçek fotoğraflar gelince bu dosya
 // ve `mock:` adresleri kaldırılır. Renkler temadan geldiği için <img> değil satır içi SVG.
 import type { CSSProperties, ReactNode } from "react";
 

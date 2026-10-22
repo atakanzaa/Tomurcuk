@@ -1,7 +1,6 @@
 "use server";
 
 import { refresh } from "next/cache";
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { createManualOrder, createTicket, endImpersonation, markOrderPaid, updateOrderStatus } from "@/lib/api";
 import { OrderStatus } from "@/lib/api/types";
@@ -9,7 +8,9 @@ import { formValues, type FormState } from "@/lib/checkout/form-state";
 import { toMessages } from "@/lib/checkout/messages";
 import { transitionDone } from "@/lib/order-flow";
 import type { ActionNotice } from "./notice";
-import { IMPERSONATION_COOKIE, loadPanel } from "./session";
+import { clearImpersonation, readImpersonation } from "@/lib/auth/cookie";
+import { SUPPORT_HOME_PATH } from "@/lib/routes";
+import { loadPanel } from "./session";
 
 const str = (formData: FormData, key: string) => {
   const value = formData.get(key);
@@ -63,11 +64,10 @@ export async function saveManualOrder(prev: FormState, formData: FormData): Prom
 }
 
 export async function finishImpersonation() {
-  const jar = await cookies();
-  const id = jar.get(IMPERSONATION_COOKIE)?.value;
+  const id = await readImpersonation();
   if (id) await endImpersonation(id);
-  jar.delete(IMPERSONATION_COOKIE);
-  redirect("/destek/dukkanlar");
+  await clearImpersonation();
+  redirect(SUPPORT_HOME_PATH);
 }
 
 export async function openTicket(prev: FormState, formData: FormData): Promise<FormState> {

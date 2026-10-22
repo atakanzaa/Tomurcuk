@@ -2,12 +2,15 @@ package com.tomurcuk.identity.internal;
 
 import java.time.Clock;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import com.tomurcuk.identity.ShopPrincipal;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -47,7 +50,7 @@ public class PanelAuthentication {
 		ShopUserStore.ShopUser u = user.get();
 		ShopPrincipal principal = new ShopPrincipal(u.id(), u.shopId(), u.name(), u.email(), u.role());
 		UsernamePasswordAuthenticationToken token = UsernamePasswordAuthenticationToken.authenticated(principal, null,
-				principal.role().permissions().stream().map(p -> new SimpleGrantedAuthority(p.name())).toList());
+				authorities(principal));
 
 		// Oturum sabitleme saldırısına karşı girişte oturum kimliği yenilenir.
 		if (request.getSession(false) != null) {
@@ -59,6 +62,14 @@ public class PanelAuthentication {
 		contexts.saveContext(context, request, response);
 		users.touch(u.id(), clock.instant());
 		return Optional.of(principal);
+	}
+
+	/** Oturum türü (SHOP) ve rolün izinleri. */
+	static List<GrantedAuthority> authorities(ShopPrincipal principal) {
+		List<GrantedAuthority> authorities = new ArrayList<>();
+		authorities.add(new SimpleGrantedAuthority(Authorities.SHOP));
+		principal.role().permissions().forEach(p -> authorities.add(new SimpleGrantedAuthority(p.name())));
+		return authorities;
 	}
 
 	public Optional<Instant> lastSeen(String userId) {

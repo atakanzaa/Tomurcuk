@@ -3,6 +3,7 @@ package com.tomurcuk.ordering.internal;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.tomurcuk.ordering.Order;
 import com.tomurcuk.ordering.OrderStatus;
 import com.tomurcuk.ordering.PaymentMethod;
 import com.tomurcuk.ordering.PaymentStatus;

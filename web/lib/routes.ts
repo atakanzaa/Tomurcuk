@@ -7,6 +7,14 @@ export const LOGIN_PATH = "/giris";
 /** Tarayıcıdaki panel oturumu cookie'si (lib/panel/cookie.ts). */
 export const PANEL_SESSION_COOKIE = "tomurcuk_oturum";
 
+/** Destek panelinin giriş sayfası ve oturum cookie'si. */
+export const SUPPORT_LOGIN_PATH = "/destek/giris";
+export const SUPPORT_HOME_PATH = "/destek/dukkanlar";
+export const SUPPORT_SESSION_COOKIE = "tomurcuk_destek";
+
+/** Destek ekibinin dükkân adına açtığı oturumun kimliği; destek panelinden yazılır. */
+export const IMPERSONATION_COOKIE = "tomurcuk_destek_oturumu";
+
 export function isReservedSegment(segment: string): boolean {
   // Nokta içeren bölümler dosyadır (favicon.ico, robots.txt).
   return RESERVED_SEGMENTS.has(segment) || segment.includes(".");

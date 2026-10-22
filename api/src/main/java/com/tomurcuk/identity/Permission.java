@@ -6,6 +6,9 @@ package com.tomurcuk.identity;
  */
 public enum Permission {
 
-	ORDER_CANCEL, REFUND_START, CUSTOMER_PII_VIEW, CATALOG_EDIT
+	ORDER_CANCEL, REFUND_START, CUSTOMER_PII_VIEW, CATALOG_EDIT,
+
+	/** Destek: dükkân adına süreli oturum, dükkânı askıya alma, herkesin denetim kaydını görme. */
+	SHOP_IMPERSONATE, SHOP_SUSPEND, AUDIT_VIEW_ALL
 
 }

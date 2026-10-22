@@ -4,6 +4,8 @@ import java.time.Clock;
 import java.time.Instant;
 import java.util.Locale;
 
+import com.tomurcuk.identity.Impersonation;
+import com.tomurcuk.identity.Impersonations;
 import com.tomurcuk.identity.ShopPrincipal;
 import com.tomurcuk.identity.internal.PanelAuthentication;
 import com.tomurcuk.shared.FieldError;
@@ -32,10 +34,14 @@ class PanelAuthController {
 
 	private final Clock clock;
 
-	PanelAuthController(PanelAuthentication authentication, ShopDirectory shops, Clock clock) {
+	private final Impersonations impersonations;
+
+	PanelAuthController(PanelAuthentication authentication, ShopDirectory shops, Clock clock,
+			Impersonations impersonations) {
 		this.authentication = authentication;
 		this.shops = shops;
 		this.clock = clock;
+		this.impersonations = impersonations;
 	}
 
 	/**
@@ -60,16 +66,22 @@ class PanelAuthController {
 		}
 	}
 
-	/** web/lib/api/types.ts `PanelSession`. Dükkân adına oturum destek aşamasında gelir. */
+	/** web/lib/api/types.ts `PanelSession`; destek ekibi dükkân adına girdiyse oturum bilgisiyle. */
 	@GetMapping("/session")
 	PanelSession session(@AuthenticationPrincipal ShopPrincipal principal) {
+		if (principal.impersonationId() != null) {
+			return session(principal, null);
+		}
 		return session(principal, authentication.lastSeen(principal.userId()).orElse(null));
 	}
 
 	private PanelSession session(ShopPrincipal principal, Instant lastSeenAt) {
 		ShopView shop = shops.view(principal.shopId()).orElseThrow();
+		Impersonation impersonation = principal.impersonationId() == null ? null
+				: impersonations.findActive(principal.impersonationId(), principal.userId().replaceFirst("^support:", ""))
+					.orElse(null);
 		return new PanelSession(shop, new User(principal.userId(), principal.shopId(), principal.name(),
-				principal.email(), principal.role().code(), lastSeenAt), null);
+				impersonation == null ? principal.email() : "", principal.role().code(), lastSeenAt), impersonation);
 	}
 
 	record Login(String email, String password) {
@@ -78,6 +90,6 @@ class PanelAuthController {
 	record User(String id, String shopId, String name, String email, String role, Instant lastSeenAt) {
 	}
 
-	record PanelSession(ShopView shop, User user, Object impersonation) {
+	record PanelSession(ShopView shop, User user, Impersonation impersonation) {
 	}
 }

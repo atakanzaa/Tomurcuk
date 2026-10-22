@@ -50,7 +50,7 @@ Windows'ta `./mvnw` yerine `.\mvnw.cmd` yazın.
 - `/panel/siparisler/[id]`: sipariş detayı ve durum geçişleri; `/panel/siparisler/yeni`: elle sipariş
 - `/panel/siparisler`, `/panel/musteriler`, `/panel/musteriler/ozel-gunler`, `/panel/urunler`, `/panel/teslimat`, `/panel/yardim`, `/panel/fisler`
 
-**Destek paneli** (mock destek temsilcisi Selin Karaca oturumda sayılır)
+**Destek paneli** (`/destek/giris`; şifre `tomurcuk-demo`, doğrulama kodu `JBSWY3DPEHPK3PXP` anahtarlı bir TOTP uygulamasından: `selin@tomurcuk.app` temsilci, `derya@tomurcuk.app` lider)
 - `/destek`: talepler; `/destek/talepler/tk_1187` talep detayı
 - `/destek/dukkanlar/shop_nergis`: dükkân özeti, "Dükkân adına gir"
 - `/destek/siparisler`, `/destek/denetim`, `/destek/hazir-cevaplar`, `/destek/ara?q=elif`
@@ -58,6 +58,6 @@ Windows'ta `./mvnw` yerine `.\mvnw.cmd` yazın.
 **Geliştirme**
 - `/bilesenler`: design system bileşenlerinin önizlemesi
 
-Mock'ta kalan kısımlar değişiklikleri bellekte tutar; sunucu yeniden başlayınca sıfırlanır. Tasarımlardaki örnek tarihler (22 Ekim) ilk istekte bugüne kaydırılır.
+Örnek veri `demo` profiliyle yüklenir; örnek siparişler, talepler ve tarihler (tasarımlardaki 22 Ekim) her açılışta bugüne kaydırılır.
 
-Frontend veriyi `web/lib/api` arayüzünden alır. Vitrin, sipariş akışı, ödeme, takip ve satıcı paneli API'den gelir; destek paneli ve tanıtım sitesinin başvuru formu şimdilik `web/lib/mock` ile çalışır. Geliştirmede kartla ödeme sahte sağlayıcıyla yapılır: "Kartla öde" deneme ödeme sayfasını açar. Backend aşamaları ilerledikçe `web/lib/api/impl.ts` modül modül API'ye geçer (`docs/backend.md`).
+Frontend veriyi `web/lib/api` arayüzünden alır; bütün fonksiyonlar Spring Boot API'den gelir (`web/lib/api/http`). Geliştirmede kartla ödeme sahte sağlayıcıyla yapılır: "Kartla öde" deneme ödeme sayfasını açar.

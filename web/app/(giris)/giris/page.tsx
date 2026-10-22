@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { LoginForm } from "./LoginForm";
-import styles from "./login.module.css";
+import styles from "@/components/auth/login.module.css";
 
 export const metadata: Metadata = {
   title: "Panele giriş · Tomurcuk",

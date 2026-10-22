@@ -3,6 +3,7 @@ package com.tomurcuk.ordering.internal;
 import java.util.stream.Collectors;
 
 import com.tomurcuk.catalog.OptionKind;
+import com.tomurcuk.ordering.Order;
 import com.tomurcuk.ordering.OrderNotice;
 
 final class Notices {

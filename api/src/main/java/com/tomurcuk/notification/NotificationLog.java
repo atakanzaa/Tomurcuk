@@ -1,4 +1,4 @@
-package com.tomurcuk.notification.internal;
+package com.tomurcuk.notification;
 
 import java.time.Clock;
 import java.time.Duration;
@@ -6,8 +6,6 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
-import com.tomurcuk.notification.EmailSender;
-import com.tomurcuk.notification.SmsSender;
 import com.tomurcuk.shared.Ids;
 import com.tomurcuk.shared.Instants;
 import org.slf4j.Logger;
@@ -24,7 +22,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class NotificationLog {
 
-	static final List<Duration> BACKOFF = List.of(Duration.ofMinutes(1), Duration.ofMinutes(5),
+	public static final List<Duration> BACKOFF = List.of(Duration.ofMinutes(1), Duration.ofMinutes(5),
 			Duration.ofMinutes(30), Duration.ofHours(2));
 
 	static final int MAX_ATTEMPTS = BACKOFF.size() + 1;
@@ -120,6 +118,48 @@ public class NotificationLog {
 			.param("sentAt", result.delivered() ? Instants.sql(now) : null)
 			.param("id", id)
 			.update();
+	}
+
+	/** Siparişin bildirimleri, eskiden yeniye. */
+	public List<Sent> forOrder(String orderId) {
+		return jdbc.sql(SELECT_SENT + " WHERE order_id = :orderId ORDER BY created_at")
+			.param("orderId", orderId)
+			.query(NotificationLog::mapSent)
+			.list();
+	}
+
+	/** Dükkânın son bildirimleri, yeniden eskiye. */
+	public List<Sent> forShop(String shopId, int limit) {
+		return jdbc.sql(SELECT_SENT + " WHERE shop_id = :shopId ORDER BY created_at DESC LIMIT :limit")
+			.param("shopId", shopId)
+			.param("limit", limit)
+			.query(NotificationLog::mapSent)
+			.list();
+	}
+
+	/** `since`'ten bu yana gönderilen SMS sayısı (paket kullanımı). */
+	public int smsSentSince(String shopId, Instant since) {
+		return jdbc.sql("SELECT count(*) FROM notification_log WHERE shop_id = :shopId AND channel = 'sms' AND status = 'sent' AND created_at >= :since")
+			.param("shopId", shopId)
+			.param("since", Instants.sql(since))
+			.query(Integer.class)
+			.single();
+	}
+
+	private static final String SELECT_SENT = """
+			SELECT id, shop_id, order_number, kind, channel, recipient, coalesce(subject, text) AS text,
+			       status = 'sent' AS delivered, provider_response, coalesce(sent_at, created_at) AS at
+			FROM notification_log""";
+
+	private static Sent mapSent(java.sql.ResultSet rs, int row) throws java.sql.SQLException {
+		return new Sent(rs.getString("id"), rs.getString("shop_id"), rs.getString("order_number"), rs.getString("kind"),
+				rs.getString("channel"), rs.getString("recipient"), rs.getString("text"), rs.getBoolean("delivered"),
+				rs.getString("provider_response"), rs.getTimestamp("at").toInstant());
+	}
+
+	/** Destek ekranında görünen bildirim. */
+	public record Sent(String id, String shopId, String orderNumber, String kind, String channel, String recipient,
+			String text, boolean delivered, String providerResponse, Instant at) {
 	}
 
 	/** `kind`: order_confirmed, order_on_way, order_delivered, order_failed, new_order_email. */

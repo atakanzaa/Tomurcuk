@@ -1,14 +1,10 @@
-package com.tomurcuk.ordering.internal;
+package com.tomurcuk.ordering;
 
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 
 import com.tomurcuk.catalog.OptionKind;
-import com.tomurcuk.ordering.OrderSource;
-import com.tomurcuk.ordering.OrderStatus;
-import com.tomurcuk.ordering.PaymentMethod;
-import com.tomurcuk.ordering.PaymentStatus;
 
 /**
  * Sipariş; JSON'u web/lib/api/types.ts `Order`. Ürün adı, fiyat, bölge adı ve saat aralığı
@@ -29,6 +25,11 @@ public record Order(String id, String number, String shopId, String customerId, 
 	public record ItemOption(String name, OptionKind kind, long extraPrice) {
 	}
 
-	public record Event(OrderStatus status, Instant at) {
+	/** `actor`: durumu değiştiren (dükkân kullanıcısı, destek temsilcisi, sistem); alıcı akışında boş. */
+	public record Event(OrderStatus status, Instant at, String actor) {
+
+		public Event(OrderStatus status, Instant at) {
+			this(status, at, null);
+		}
 	}
 }

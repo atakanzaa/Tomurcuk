@@ -9,7 +9,7 @@ import com.tomurcuk.ordering.OrderStatus;
 import com.tomurcuk.ordering.internal.CustomerDetail;
 import com.tomurcuk.ordering.internal.CustomerSummary;
 import com.tomurcuk.ordering.internal.CustomerWithLastOrder;
-import com.tomurcuk.ordering.internal.Order;
+import com.tomurcuk.ordering.Order;
 import com.tomurcuk.ordering.internal.PanelOrders;
 import com.tomurcuk.ordering.internal.PanelOrders.ManualOrderInput;
 import com.tomurcuk.ordering.internal.Reminder;

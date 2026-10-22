@@ -1,5 +1,6 @@
 package com.tomurcuk.ordering.internal;
 
+import com.tomurcuk.ordering.Order;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
 /** Müşteri özeti ve son siparişi tek nesnede: `CustomerSummary & { lastOrder }`. */

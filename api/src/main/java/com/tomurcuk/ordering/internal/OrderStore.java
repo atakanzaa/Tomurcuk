@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.tomurcuk.ordering.Order;
 import com.tomurcuk.shared.Instants;
 import com.tomurcuk.ordering.OrderSource;
 import com.tomurcuk.ordering.OrderStatus;
@@ -23,7 +24,7 @@ import tools.jackson.databind.json.JsonMapper;
 
 /** Dükkâna ait her sorgu `shop_id` ile sınırlıdır; başka dükkânın kaydı bulunamaz. */
 @Repository
-class OrderStore {
+public class OrderStore {
 
 	private final JdbcClient jdbc;
 
@@ -238,7 +239,64 @@ class OrderStore {
 	record CustomerTotals(int orderCount, long totalSpent, Instant lastOrderAt) {
 	}
 
-	Optional<Order> findById(String orderId) {
+	/**
+	 * Destek araması: sipariş numarası, alıcı adı ya da (en az 4 haneyle) alıcı veya gönderen
+	 * telefonu. Bütün dükkânlarda; yalnızca destek uçları çağırır.
+	 */
+	public List<Order> search(String text, String digits, int limit) {
+		return jdbc.sql("""
+				SELECT o.* FROM orders o
+				WHERE lower(o.number) LIKE :text OR lower(o.recipient_name) LIKE :text
+				   OR (length(:digits) >= 4 AND (regexp_replace(o.recipient_phone, '\\D', '', 'g') LIKE :digitsLike
+				                              OR regexp_replace(o.sender_phone, '\\D', '', 'g') LIKE :digitsLike))
+				ORDER BY o.delivery_date DESC, o.created_at DESC
+				LIMIT :limit
+				""")
+			.param("text", "%" + text + "%")
+			.param("digits", digits)
+			.param("digitsLike", "%" + digits + "%")
+			.param("limit", limit)
+			.query(this::mapOrder)
+			.list();
+	}
+
+	/** Destek sipariş listesi: dünden itibaren teslim edilecekler ve henüz kapanmamışlar. */
+	public List<Order> openOrUpcoming(LocalDate since, int limit) {
+		return jdbc.sql("""
+				SELECT o.* FROM orders o
+				WHERE o.delivery_date >= :since OR o.status IN ('new', 'preparing', 'onway', 'failed')
+				ORDER BY o.delivery_date, o.slot_start, o.number
+				LIMIT :limit
+				""")
+			.param("since", since)
+			.param("limit", limit)
+			.query(this::mapOrder)
+			.list();
+	}
+
+	/** Dükkânın son siparişleri, teslim gününe göre yeniden eskiye. */
+	public List<Order> recent(String shopId, int limit) {
+		return jdbc.sql("SELECT o.* FROM orders o WHERE o.shop_id = :shopId ORDER BY o.delivery_date DESC, o.created_at DESC LIMIT :limit")
+			.param("shopId", shopId)
+			.param("limit", limit)
+			.query(this::mapOrder)
+			.list();
+	}
+
+	public Optional<Order> findByNumber(String shopId, String number) {
+		return findWhere("o.shop_id = :shopId AND o.number = :value", shopId, number);
+	}
+
+	/** `since`'ten bu yana açılan, iptal edilmemiş sipariş sayısı. */
+	public int countSince(String shopId, java.time.Instant since) {
+		return jdbc.sql("SELECT count(*) FROM orders WHERE shop_id = :shopId AND created_at >= :since AND status <> 'cancelled'")
+			.param("shopId", shopId)
+			.param("since", Instants.sql(since))
+			.query(Integer.class)
+			.single();
+	}
+
+	public Optional<Order> findById(String orderId) {
 		return jdbc.sql("SELECT shop_id FROM orders WHERE id = :id")
 			.param("id", orderId)
 			.query(String.class)
@@ -263,10 +321,10 @@ class OrderStore {
 					json.readValue(r.getString("options"), json.getTypeFactory()
 						.constructCollectionType(List.class, Order.ItemOption.class))))
 			.list();
-		List<Order.Event> events = jdbc.sql("SELECT status, at FROM order_event WHERE order_id = :id ORDER BY at, id")
+		List<Order.Event> events = jdbc.sql("SELECT status, at, actor FROM order_event WHERE order_id = :id ORDER BY at, id")
 			.param("id", id)
 			.query((r, n) -> new Order.Event(OrderStatus.fromCode(r.getString("status")),
-					r.getTimestamp("at").toInstant()))
+					r.getTimestamp("at").toInstant(), r.getString("actor")))
 			.list();
 		return new Order(id, rs.getString("number"), rs.getString("shop_id"), rs.getString("customer_id"),
 				OrderSource.fromCode(rs.getString("source")), OrderStatus.fromCode(rs.getString("status")),

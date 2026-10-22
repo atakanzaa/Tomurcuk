@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense, type ReactNode } from "react";
+import { Button } from "@/components/ui/Button";
 import { getShopSummaries, getSupportUser, getTickets } from "@/lib/api";
 import { TicketStatus } from "@/lib/api/types";
+import { supportLogout } from "@/lib/auth/actions";
 import { supportRoleLabel } from "@/lib/permissions";
 import { SupportNav } from "./_components/SupportNav";
 import styles from "./_components/support.module.css";
@@ -12,7 +14,7 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-/** Destek paneli. Gerçek uygulamada e-posta, şifre ve iki adımlı doğrulamayla girilir. */
+/** Destek paneli; e-posta, şifre ve iki adımlı doğrulamayla girilir (/destek/giris). */
 export default function SupportLayout({ children }: LayoutProps<"/destek">) {
   return (
     <Suspense>
@@ -48,6 +50,11 @@ async function SupportFrame({ children }: { children: ReactNode }) {
           <span className={styles.avatar} aria-hidden="true">
             {initials}
           </span>
+          <form action={supportLogout}>
+            <Button type="submit" variant="quiet" size="s">
+              Çıkış yap
+            </Button>
+          </form>
         </div>
       </header>
       <div className={styles.frame}>
