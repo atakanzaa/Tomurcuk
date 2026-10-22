@@ -1,0 +1,4 @@
+# Örnek dükkânlarla çalışan ortamlar: yerel geliştirme, PR önizleme, staging. Prod'da açılmaz.
+spring:
+  flyway:
+    locations: classpath:db/migration,classpath:db/demo

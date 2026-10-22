@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { findShop, getDeliveryZones, getProduct, getProducts, listFeaturedShopSlugs } from "@/lib/api";
+import { findShop, getDeliveryZones, getProduct } from "@/lib/api";
 import { ShopLookupKind, type Product } from "@/lib/api/types";
 import { joinWithAnd, withDativeSuffix, withTimeSuffix } from "@/lib/format";
-import { shopPath } from "@/lib/routes";
+import { SHELL_PRODUCT_ID, SHELL_SLUG, shopPath } from "@/lib/routes";
 import { FlowHeader } from "@/components/flow/FlowHeader";
 import { renderProductPhoto } from "@/components/ProductPhoto";
 import { ProductOrderForm } from "./ProductOrderForm";
@@ -13,14 +13,9 @@ import styles from "./product.module.css";
 
 type Props = PageProps<"/[slug]/urun/[urunId]">;
 
+/** Vitrin sayfasındaki gibi derlemede yalnızca kabuk; ürün sayfaları ilk ziyarette üretilir. */
 export async function generateStaticParams() {
-  const params: { slug: string; urunId: string }[] = [];
-  for (const slug of await listFeaturedShopSlugs()) {
-    const lookup = await findShop(slug);
-    if (lookup.kind !== ShopLookupKind.Found) continue;
-    for (const product of await getProducts(lookup.shop.id)) params.push({ slug, urunId: product.id });
-  }
-  return params;
+  return [{ slug: SHELL_SLUG, urunId: SHELL_PRODUCT_ID }];
 }
 
 async function load(params: Props["params"]) {

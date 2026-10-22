@@ -1,14 +1,17 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { findShop, listFeaturedShopSlugs } from "@/lib/api";
+import { findShop } from "@/lib/api";
 import { ShopLookupKind } from "@/lib/api/types";
+import { SHELL_SLUG } from "@/lib/routes";
 import { Storefront } from "./_components/Storefront";
 import styles from "./page.module.css";
 
-/** Bilinen dükkânlar derlemede hazırlanır; diğerleri ilk ziyarette üretilip saklanır. */
+/**
+ * Derlemede yalnızca sayfa kabuğu doğrulanır (SHELL_SLUG); dükkânlar ilk ziyarette
+ * üretilip önbelleğe alınır. Böylece aynı image her ortamın kendi verisiyle çalışır.
+ */
 export async function generateStaticParams() {
-  const slugs = await listFeaturedShopSlugs();
-  return slugs.map((slug) => ({ slug }));
+  return [{ slug: SHELL_SLUG }];
 }
 
 export async function generateMetadata({ params }: PageProps<"/[slug]">): Promise<Metadata> {

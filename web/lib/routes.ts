@@ -6,6 +6,14 @@ export function isReservedSegment(segment: string): boolean {
   return RESERVED_SEGMENTS.has(segment) || segment.includes(".");
 }
 
+/**
+ * Derlemede vitrin rotalarının kabuğunu doğrulamak için kullanılan sahte slug. Image bir kez
+ * build edilip her ortamda çalıştığı için gerçek dükkân verisi derlemede sayfaya gömülmez;
+ * dükkân sayfaları ilk ziyarette üretilip önbelleğe alınır.
+ */
+export const SHELL_SLUG = "__kabuk";
+export const SHELL_PRODUCT_ID = "__kabuk";
+
 export const shopPath = (slug: string) => `/${slug}`;
 export const productPath = (slug: string, productId: string) => `/${slug}/urun/${productId}`;
 export const trackingPath = (slug: string) => `/${slug}/takip`;
