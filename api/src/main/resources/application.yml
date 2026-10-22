@@ -1,6 +1,9 @@
 spring:
   application:
     name: tomurcuk-api
+  autoconfigure:
+    # Giriş kendi uçlarımızla yapılır; Spring Security'nin varsayılan kullanıcısı açılmaz.
+    exclude: org.springframework.boot.security.autoconfigure.UserDetailsServiceAutoConfiguration
   jpa:
     open-in-view: false
     hibernate:
@@ -13,13 +16,29 @@ spring:
   docker:
     compose:
       lifecycle-management: start-only
+  session:
+    jdbc:
+      initialize-schema: never
   modulith:
     events:
       republish-outstanding-events-on-restart: true
 
+tomurcuk:
+  # Alıcının ödeme sonrası döndüğü frontend adresi (callback). Ortama göre değişir.
+  web-url: http://localhost:3000
+  payment:
+    # fake: geliştirme ve önizleme; iyzico: staging ve prod.
+    provider: fake
+  jobs:
+    enabled: true
+
 server:
   port: 8080
   shutdown: graceful
+  servlet:
+    session:
+      # Panel oturumu; cookie ayarları SecurityConfig'te.
+      timeout: 30d
 
 management:
   endpoints:

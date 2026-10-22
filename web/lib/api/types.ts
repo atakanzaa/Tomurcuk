@@ -302,6 +302,12 @@ export interface PlaceOrderInput {
   idempotencyKey: string;
 }
 
+export interface PlacedOrder {
+  trackingToken: string;
+  /** Kartla ödemede sağlayıcının ödeme sayfası; havalede null. */
+  paymentUrl: string | null;
+}
+
 export const CheckoutError = {
   Required: "required",
   TooLong: "too_long",

@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { impl } from "@/lib/api/impl";
 import { ShopLookupKind } from "@/lib/api/types";
-import { isReservedSegment } from "@/lib/routes";
+import { isReservedSegment, LOGIN_PATH, PANEL_SESSION_COOKIE } from "@/lib/routes";
 
 // Vitrin sayfası akışla (streaming) gönderildiği için yanıt başladıktan sonra durum
 // kodu değişemez. Eski slug'ın kalıcı yönlendirmesi (301) ve olmayan dükkânın 404'ü
@@ -13,6 +13,10 @@ const NOT_FOUND_PATH = "/_/dukkan-bulunamadi";
 
 export async function proxy(request: NextRequest) {
   const [, slug, ...rest] = request.nextUrl.pathname.split("/");
+  // Panel oturumu yoksa render başlamadan giriş sayfasına. Süresi dolmuş oturumu API'nin 401'i yakalar.
+  if (slug === "panel" && !request.cookies.has(PANEL_SESSION_COOKIE)) {
+    return NextResponse.redirect(new URL(LOGIN_PATH, request.url));
+  }
   if (!slug || isReservedSegment(slug)) return NextResponse.next();
 
   const lookup = await impl.findShop(decodeURIComponent(slug));

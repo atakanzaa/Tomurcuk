@@ -9,7 +9,7 @@
 | Repo | Tek repo. `web/` Next.js, `api/` Spring Boot, `design/` ve `docs/` ortak |
 | Dil ve çatı | Java 21, Spring Boot 4.1, Spring Modulith 2.1 |
 | Build | Maven (wrapper ile, `api/mvnw`) |
-| Veritabanı | PostgreSQL 17, Flyway, Spring Data JPA (`open-in-view` kapalı); atomik güncellemeler `@Modifying` sorgu ya da `JdbcClient` ile |
+| Veritabanı | PostgreSQL 17, Flyway. Basit okuma tabloları (dükkân, katalog, teslimat ayarları) Spring Data JPA (`open-in-view` kapalı); sipariş, kapasite ve ödeme `JdbcClient` ile açık SQL (atomik güncellemeler, JSONB) |
 | Ödeme | iyzico, pazaryeri modeli (alt üye işyeri) ve Checkout Form; `PaymentProvider` arayüzünün arkasında |
 | SMS | `SmsSender` arayüzü; yerelde log'a yazar, sağlayıcı seçimi bildirim aşamasında |
 | API sözleşmesi | springdoc ile OpenAPI; frontend tipleri `openapi-typescript` ile üretilir |
@@ -24,7 +24,9 @@ tarayıcı ──> Next.js (web) ──REST──> Spring Boot (api) ──> Pos
 ```
 
 - Tarayıcı API'yi hiç çağırmaz. Server Component'ler ve Server Action'lar `web/lib/api` üzerinden çağırır. API iç ağda kalır; dışarı yalnızca `/webhooks/**` açılır (iyzico bildirimleri).
-- Oturum Spring Security ve Spring Session JDBC ile tutulur. Next sunucusu gelen isteğin oturum cookie'sini API'ye iletir, girişte API'nin `Set-Cookie` başlığını tarayıcıya geçirir. Tarayıcıda token tutulmaz.
+- Oturum Spring Security ve Spring Session JDBC ile tutulur (30 gün). Girişte API oturumu açar ve kimliğini `TOMURCUK_SESSION` cookie'siyle döner; Next bu değeri tarayıcıda kendi httpOnly cookie'sinde (`tomurcuk_oturum`) saklar ve her panel isteğinde API'ye iletir. Tarayıcı API'yi ve token'ı görmez.
+- Oturum cookie'si yoksa proxy `/panel` isteklerini render başlamadan `/giris`'e yönlendirir; süresi dolmuş oturumda API 401 döner, Next yine girişe yönlendirir. Yetkisiz işlem 403 döner. CSRF koruması Next tarafındadır (Server Action köken kontrolü); API iç ağdadır.
+- Rol ve izin matrisi şimdilik kodda (`ShopRole`): sahip iptal ve iade yapabilir, çalışan yapamaz. Platform rolleri gelince (6. aşama) tablolara taşınır.
 - Dükkân kullanıcıları ve platform kullanıcıları ayrı tablolar, ayrı giriş uçları. Platform girişinde TOTP zorunlu.
 - Destek temsilcisi dükkân adına oturum açtığında panel uçlarını kendi oturumuyla çağırır. Backend, süresi dolmamış `impersonation_session` kaydından dükkânı çözer ve her işlemi denetim kaydına yazar.
 
@@ -57,19 +59,19 @@ Modüller arası yan etkiler Modulith olaylarıyla taşınır, olay yayınları 
 - Dükkâna ait her sorgu `shop_id` ile filtrelenir. Başka dükkânın kaydı 404 döner, 403 değil.
 - Silme yerine `active = false` (bölge, ürün). Siparişe ad, fiyat ve bölge ücreti kopyalanır.
 
-`docs/mvp.md` veri modeline frontend yapılırken çıkan eklemeler: `category`, `shop_slug_history`, `shop_order_counter`, `order_draft`, `slot_reservation`, `slot_capacity` (gün + aralık başına `used`), `order_event`, `order.number`, `order.tracking_token`, `order.idempotency_key`, `shop_note`, `pilot_application`.
+`docs/mvp.md` veri modeline frontend yapılırken çıkan eklemeler: `category`, `shop_slug_history`, `shop_order_counter`, `order_draft`, `slot_hold` (10 dakikalık rezervasyon), `slot_capacity` (gün + aralık başına `taken`), `order_event`, `order.number`, `order.tracking_token`, `order.idempotency_key`, `shop_note`, `pilot_application`. Sipariş tablosunun adı `orders` (`order` SQL'de ayrılmış kelime).
 
 ## API kuralları
 
 | Grup | Önek | Oturum |
 | --- | --- | --- |
-| Vitrin ve sipariş akışı | `/api/public/shops/{slug}/...` | yok |
+| Vitrin ve sipariş akışı | `/api/public/shop-lookup/{slug}`, `/api/public/shops/{shopId}/...` | yok |
 | Satıcı paneli | `/api/panel/...` | dükkân kullanıcısı ya da dükkân adına oturum |
 | Destek paneli | `/api/support/...` | platform kullanıcısı |
 | Ödeme bildirimleri | `/webhooks/iyzico` | iyzico imzası |
 
 - Uç noktalar `web/lib/api/contract.ts`'teki fonksiyonlarla bire bir eşleşir; isimler ve alanlar oradaki tiplerle aynı tutulur.
-- Doğrulama hatası `422` ve `{"errors": {"alan": "kod"}}` döner. Kodlar frontend'deki `CheckoutError` değerleridir (`slot_full`, `same_day_closed` ...). Türkçe mesajı frontend üretir.
+- Doğrulama hatası `422` ve `{"errors": {"alan": {"code": "kod", "meta": {...}}}}` döner; `meta` mesaj için ek bilgidir (dolu aralığın alternatifi gibi). Kodlar frontend'deki `CheckoutError` değerleridir (`slot_full`, `same_day_closed` ...). Türkçe mesajı frontend üretir.
 - Diğer hatalar RFC 9457 `ProblemDetail`.
 - Kişisel veri destek uçlarında maskeli gelir; açmak ayrı uç, gerekçe zorunlu, denetim kaydına yazılır.
 
@@ -81,16 +83,35 @@ Frontend'de `web/lib/api/impl.ts` geçiş boyunca mock ile HTTP uygulamasını b
 | --- | --- | --- |
 | 1. İskelet | Maven projesi, Modulith, Flyway, Postgres (Docker Compose), Testcontainers, CI | — |
 | 2. Vitrin (bitti) | `shop`, `catalog`, `delivery` okuma uçları, örnek veri | `findShop`, `getCategories`, `getProducts`, `getProduct`, `getDeliveryZones`, `getTimeSlots`; `listFeaturedShopSlugs` kaldırıldı |
-| 3. Sipariş ve ödeme | kapalı gün, günlük kapasite, taslak, rezervasyon, sipariş, iyzico sandbox, callback, takip | `getDeliveryDays`, sipariş akışı ve takip |
-| 4. Giriş ve panel | dükkân girişi, siparişler, durum geçişleri, elle sipariş, müşteriler, hatırlatmalar | panel fonksiyonları; giriş ekranı eklenir |
+| 3. Sipariş ve ödeme (bitti, iyzico adapter'ı hariç) | kapalı gün, günlük kapasite, taslak, rezervasyon, sipariş, ödeme kaydı, sahte sağlayıcı, ödeme dönüşü, zamanlanmış işler, takip | `getDeliveryDays`, `createDraft`, `getDraft`, `saveDelivery`, `saveCard`, `placeOrder`, `getOrderTracking`, `findTrackingToken`; yeni `completePayment` |
+| 4. Giriş ve panel (bitti) | dükkân girişi ve oturum, siparişler, durum geçişleri, ödendi işareti, elle sipariş, müşteriler, özel günler ve hatırlatmalar | `getPanelSession`, `getOrders`, `getOrder`, `updateOrderStatus`, `markOrderPaid`, `getCustomers`, `getCustomer`, `findCustomerByPhone`, `getReminders`, `createManualOrder`; `/giris` eklendi. Panelden açılan talepler (`getShopTickets`, `createTicket`) destek aşamasında |
 | 5. Bildirim | bildirim kaydı, `SmsSender`, yeni sipariş e-postası | — |
 | 6. Destek | platform girişi ve TOTP, talepler, dükkân adına oturum, telefon açma, denetim kaydı | destek fonksiyonları; giriş ekranı eklenir |
 | 7. Yayın | Dockerfile, compose dosyaları, PR önizleme, staging, onaylı prod | `lib/mock` tamamen silinir |
 
+## Sipariş ve ödeme akışı
+
+1. Taslak: ürün ve seçenekler doğrulanır, fiyat o anki değerdir. Taslak 2 saat yaşar; tarayıcı yalnızca id'sini httpOnly cookie'de tutar.
+2. Teslimat: gün, aralık, bölge ve alanlar doğrulanır; aralık 10 dakika ayrılır (`slot_hold`, `slot_capacity.taken` bir artar). Süresi dolan rezervasyonları dakikada bir çalışan iş siler.
+3. Kart notu: mesaj 250, imza 60 karakter; gönderen telefonu zorunlu. İsimsiz gönderimde imza boş tutulur.
+4. Sipariş: idempotency anahtarı aynıysa ilk sipariş döner. Ürün, fiyat ve aralık yeniden doğrulanır; fiyat değiştiyse taslak güncellenir ve `price_changed` döner. Rezervasyon siparişe geçer; süresi dolmuşsa aralık hâlâ boşsa yeniden alınır, değilse `reservation_expired`.
+5. Kartla ödeme: sipariş `pending` açılır, sağlayıcıda oturum başlar, alıcı ödeme sayfasına yönlenir. Sağlayıcı alıcıyı `/{slug}/siparis/odeme/sonuc` adresine token'la geri gönderir (iyzico form POST'u). Next route handler sonucu API'ye sorar, API sağlayıcıya sorar; adresteki bilgiye güvenilmez.
+6. Ödeme yarıda kalırsa alıcı ödeme adımına döner; aynı taslakla yeniden ödemek aynı sipariş için yeni oturum açar, önceki oturum bırakılır (`abandoned`).
+7. Zamanlanmış işler: callback'i gelmemiş ödemeler 15 dakikada bir sağlayıcıya sorulur; 30 dakikada ödenmeyen kartlı sipariş, son bir sorgudan sonra iptal edilir ve aralığı boşaltılır.
+
+Ödeme kaydı tek UPDATE ile açık halden çıkar; aynı sonuç ikinci kez gelirse etkisizdir, `PaymentSucceeded` bir kez yayınlanır ve sipariş aynı işlemde ödendi olur. Bırakılmış ya da iptal edilmiş siparişin oturumu sonradan başarıyla dönerse para çekilmiştir: ödeme kaydedilir, iade gerektiği hata olarak loglanır (iade akışı panel aşamasında).
+
+Sağlayıcılar:
+- `fake` (varsayılan): ödeme sayfası frontend'deki `/{slug}/siparis/odeme/deneme`; "Ödemeyi onayla" ve "Ödemeyi yarıda bırak" ile iki sonuç da denenebilir.
+- `iyzico`: Checkout Form ve pazaryeri (alt üye işyeri anahtarı dükkânda). Sandbox anahtarları gelince yazılacak; anahtarlar repoya değil ortamın secret'larına girer.
+
+Geçiş notu: destek paneli 6. aşamaya kadar mock'ta. Destekten "Dükkân adına gir" panelde henüz oturum açmaz; panel kendi girişini ister. Destek ekranlarındaki siparişler mock verisidir.
+
 ## Örnek veri ve derleme
 
-- Örnek dükkânlar `api/src/main/resources/db/demo/R__demo_data.sql` içinde, yalnızca `demo` profiliyle yüklenir (yerel, önizleme, staging). Tekrar çalıştırılabilir; kayıt varsa günceller.
-- Örnek veri `web/lib/mock/data.ts` ile aynı id'leri kullanır. Geçiş süresince mock'ta kalan akışlar (sipariş, panel, destek) API'deki ürün, bölge ve aralıklarla bu id'ler üzerinden birleşir.
+- Örnek dükkânlar, katalog, teslimat ve müşteriler `api/src/main/resources/db/demo/R__demo_data.sql` içinde, yalnızca `demo` profiliyle yüklenir (yerel, önizleme, staging). Tekrar çalıştırılabilir; kayıt varsa günceller.
+- Örnek siparişler `api/src/main/resources/demo/orders.json` dosyasından her açılışta silinip yeniden yüklenir (`DemoOrders`); tarihler tasarımın taban gününden (22 Ekim) bugüne kaydırılır. Tasarımdaki teslimat ekranının doluluğu (sabah dolu, öğle 3 yer) günün ilk açılışında yazılır.
+- Örnek veri `web/lib/mock/data.ts` ile aynı id'leri kullanır. Geçiş süresince mock'ta kalan akışlar (panel, destek) API'deki ürün, bölge ve aralıklarla bu id'ler üzerinden birleşir.
 - Frontend derlemesi API'ye bağlanmaz. Image bir kez build edilip her ortamda çalıştığı için dükkân verisi derlemede sayfaya gömülmez: vitrin rotaları derlemede yalnızca kabuk (`SHELL_SLUG`) ile doğrulanır, dükkân sayfaları ilk ziyarette üretilip önbelleğe alınır.
 
 ## Testler
@@ -98,8 +119,10 @@ Frontend'de `web/lib/api/impl.ts` geçiş boyunca mock ile HTTP uygulamasını b
 Kapsam bilerek dar tutulur; geliştirme hızı önce gelir.
 
 - `ModularityTests`: modül sınırları (`ApplicationModules.verify()`).
-- Aşama 3: ödeme callback'inin iki kez gelmesi, aynı aralığa eşzamanlı sipariş, sipariş durum geçişleri, "bugün" hesabında saat dilimi.
-- Aşama 4: başka dükkânın verisine erişim denemesi.
+- Aşama 3 (`CheckoutTests`, `DeliveryScheduleTests`): ödeme callback'inin iki kez gelmesi, aynı idempotency anahtarı, aynı aralığa 20 eşzamanlı rezervasyon (kapasite 6), süresi dolan rezervasyon, "bugün" ve son sipariş saatinde saat dilimi, başka dükkânın takip kodu.
+- Aşama 4 (`PanelTests`): oturumsuz istek 401, yanlış şifrede hangi alanın yanlış olduğu söylenmez, durum geçişleri (atlanan ve geri giden reddedilir), çalışan iptal edemez (403), başka dükkânın siparişi ve müşterisi bulunamaz.
+
+Testlerde saat `MutableClock` ile sabitlenir, zamanlanmış işler kapalıdır (`tomurcuk.jobs.enabled=false`).
 
 Testler tek bir paylaşılan Postgres container'ı kullanır (`@ServiceConnection`).
 
@@ -112,4 +135,4 @@ cd api && ./mvnw spring-boot:run      # Postgres'i compose.yaml'dan kaldırır, 
 cd web && pnpm dev                    # http://localhost:3000; API adresi TOMURCUK_API_URL (varsayılan localhost:8080)
 ```
 
-Vitrin sayfaları API çalışmadan açılmaz; panel ve destek ekranları kendi aşamalarına kadar mock'la çalışır.
+Vitrin, sipariş ve panel sayfaları API çalışmadan açılmaz; destek ekranları kendi aşamasına kadar mock'la çalışır. Demo panel kullanıcıları (şifre `tomurcuk-demo`): `ayla@nergiscicek.com` (sahip), `kemal@nergiscicek.com` (çalışan), `leyla@lalebahcesi.com` (başka dükkânın sahibi). Frontend başka bir portta çalışıyorsa API'nin ödeme dönüş adresi `TOMURCUK_WEBURL` ortam değişkeniyle verilir (varsayılan `http://localhost:3000`).

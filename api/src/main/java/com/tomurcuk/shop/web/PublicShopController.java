@@ -1,5 +1,6 @@
 package com.tomurcuk.shop.web;
 
+import com.tomurcuk.shop.ShopView;
 import com.tomurcuk.shop.internal.ShopRepository;
 import com.tomurcuk.shop.internal.ShopSlugHistory;
 import com.tomurcuk.shop.internal.ShopSlugHistoryRepository;
@@ -30,7 +31,7 @@ class PublicShopController {
 	@Transactional(readOnly = true)
 	ShopLookupResponse lookup(@PathVariable String slug) {
 		return shops.findBySlug(slug)
-			.map(shop -> ShopLookupResponse.found(ShopResponse.of(shop)))
+			.map(shop -> ShopLookupResponse.found(ShopView.of(shop)))
 			.or(() -> slugHistory.findById(slug)
 				.map(ShopSlugHistory::getShopId)
 				.flatMap(shops::findById)

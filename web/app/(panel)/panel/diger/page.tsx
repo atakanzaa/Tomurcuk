@@ -2,6 +2,8 @@ import { CaretRight } from "@phosphor-icons/react/dist/ssr";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
+import { Button } from "@/components/ui/Button";
+import { logout } from "@/lib/panel/auth-actions";
 import panel from "../_components/panel.module.css";
 import styles from "../_components/simple.module.css";
 import { panelSession } from "../_lib";
@@ -32,7 +34,25 @@ export default function MorePage() {
           <ShopPageLink />
         </Suspense>
       </nav>
+      <Suspense>
+        <SignedIn />
+      </Suspense>
     </>
+  );
+}
+
+async function SignedIn() {
+  const { user, impersonation } = await panelSession();
+  if (impersonation) return null;
+  return (
+    <section aria-label="Oturum" className={panel.section}>
+      <p className={styles.signedIn}>{user.name} olarak giriş yaptınız.</p>
+      <form action={logout}>
+        <Button type="submit" variant="secondary">
+          Çıkış yap
+        </Button>
+      </form>
+    </section>
   );
 }
 

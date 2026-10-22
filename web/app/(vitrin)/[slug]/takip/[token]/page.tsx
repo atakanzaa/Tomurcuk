@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/Button";
 import { GiftTag } from "@/components/ui/GiftTag";
 import { KraftBand } from "@/components/ui/KraftBand";
 import { findShop, getOrderTracking } from "@/lib/api";
-import { ShopLookupKind } from "@/lib/api/types";
+import { PaymentMethod, ShopLookupKind } from "@/lib/api/types";
 import { phoneHref, whatsappHref, withDativeSuffix } from "@/lib/format";
 import { shopPath } from "@/lib/routes";
 import { buildTrackingView } from "@/lib/tracking";
@@ -52,8 +52,17 @@ async function Tracking({ params }: { params: Promise<{ slug: string; token: str
 
         {view.paymentPending && (
           <KraftBand>
-            <strong>Ödeme bekleniyor.</strong> Havale açıklamasına {order.number} yazın; ödeme dükkânın hesabına
-            geçince sipariş hazırlanır.
+            {order.paymentMethod === PaymentMethod.Card ? (
+              <>
+                <strong>Ödeme onayı bekleniyor.</strong> Kart ödemeniz onaylanınca sipariş hazırlanır. Ödeme 30 dakika
+                içinde tamamlanmazsa sipariş iptal edilir.
+              </>
+            ) : (
+              <>
+                <strong>Ödeme bekleniyor.</strong> Havale açıklamasına {order.number} yazın; ödeme dükkânın hesabına
+                geçince sipariş hazırlanır.
+              </>
+            )}
           </KraftBand>
         )}
 

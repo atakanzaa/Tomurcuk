@@ -1,4 +1,6 @@
 # Örnek dükkânlarla çalışan ortamlar: yerel geliştirme, PR önizleme, staging. Prod'da açılmaz.
+# Dükkân, katalog, teslimat ve müşteriler Flyway'den (db/demo); örnek siparişler her açılışta
+# bugüne kaydırılarak demo/orders.json'dan yüklenir (DemoOrders).
 spring:
   flyway:
     locations: classpath:db/migration,classpath:db/demo
