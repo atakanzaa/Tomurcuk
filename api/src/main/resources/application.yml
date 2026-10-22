@@ -22,6 +22,8 @@ spring:
   modulith:
     events:
       republish-outstanding-events-on-restart: true
+      # Tamamlanan olay kayıtları silinir; tamamlanmayanlar yeniden işlenmek üzere kalır.
+      completion-mode: delete
 
 tomurcuk:
   # Alıcının ödeme sonrası döndüğü frontend adresi (callback). Ortama göre değişir.
@@ -29,6 +31,20 @@ tomurcuk:
   payment:
     # fake: geliştirme ve önizleme; iyzico: staging ve prod.
     provider: fake
+    iyzico:
+      # Sandbox; prod'da TOMURCUK_PAYMENT_IYZICO_BASEURL=https://api.iyzipay.com. Anahtarlar
+      # ortamın secret'larından: TOMURCUK_PAYMENT_IYZICO_APIKEY, TOMURCUK_PAYMENT_IYZICO_SECRETKEY.
+      base-url: https://sandbox-api.iyzipay.com
+      # Alıcıdan e-posta alınmaz; iyzico zorunlu tuttuğu için dükkânın sipariş adresi yazılır.
+      buyer-email: siparis@tomurcuk.local
+      # true: pazaryeri (alt üye işyeri) hesabı; dükkânın anahtarı shop_payment_account'tan.
+      marketplace: false
+  sms:
+    # log: SMS gönderilmez, log'a yazılır (yerel, önizleme). netgsm: staging (yalnızca ekip
+    # numaraları) ve prod; kullanıcı kodu, şifre ve başlık ortamın secret'larından gelir.
+    provider: log
+  email:
+    provider: log
   jobs:
     enabled: true
 

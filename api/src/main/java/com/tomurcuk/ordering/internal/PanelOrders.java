@@ -115,8 +115,10 @@ public class PanelOrders {
 		if (next == OrderStatus.CANCELLED && order.timeSlotId() != null) {
 			schedule.release(order.shopId(), order.deliveryDate(), order.timeSlotId());
 		}
-		events.publishEvent(new OrderStatusChanged(orderId, order.shopId(), order.status(), next));
-		return orders.find(user.shopId(), orderId).orElseThrow();
+		Order changed = orders.find(user.shopId(), orderId).orElseThrow();
+		events.publishEvent(new OrderStatusChanged(orderId, order.shopId(), order.status(), next,
+				changed.events().size(), Notices.of(changed)));
+		return changed;
 	}
 
 	/** Havale ve kapıda ödemede dükkân işaretler. Zaten ödenmişse sipariş olduğu gibi döner. */

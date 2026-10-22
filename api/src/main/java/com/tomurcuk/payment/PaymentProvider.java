@@ -14,8 +14,27 @@ public interface PaymentProvider {
 	/** Token'ın son durumunu sağlayıcıdan sorar; callback'te ve zamanlanmış sorguda kullanılır. */
 	Result fetch(String token);
 
-	/** Tutar kuruş. `conversationId` siparişin id'sidir. */
-	record Request(String conversationId, String shopId, long amount, String description, String callbackUrl) {
+	/**
+	 * Tutar kuruş. `conversationId` siparişin id'sidir. Sepet tek satırdır (ürün ve teslimat
+	 * toplamı); sağlayıcı satır toplamının tutara eşit olmasını ister.
+	 */
+	record Request(String conversationId, String shopId, long amount, String description, String callbackUrl,
+			Buyer buyer) {
+	}
+
+	/**
+	 * Ödeyen kişi: gönderen. Sağlayıcı ad, telefon, adres, şehir ve IP ister; alıcı üye olmadan
+	 * sipariş verdiği için e-posta ve kimlik numarası alınmaz.
+	 */
+	record Buyer(String id, String name, String phone, String address, String city, String ip) {
+	}
+
+	/** Ödeme sayfası açılamadı (sağlayıcı hatası, yapılandırma eksik). */
+	class Unavailable extends RuntimeException {
+
+		public Unavailable(String message) {
+			super(message);
+		}
 	}
 
 	record Session(String token, String pageUrl) {

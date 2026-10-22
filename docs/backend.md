@@ -11,7 +11,7 @@
 | Build | Maven (wrapper ile, `api/mvnw`) |
 | Veritabanı | PostgreSQL 17, Flyway. Basit okuma tabloları (dükkân, katalog, teslimat ayarları) Spring Data JPA (`open-in-view` kapalı); sipariş, kapasite ve ödeme `JdbcClient` ile açık SQL (atomik güncellemeler, JSONB) |
 | Ödeme | iyzico, pazaryeri modeli (alt üye işyeri) ve Checkout Form; `PaymentProvider` arayüzünün arkasında |
-| SMS | `SmsSender` arayüzü; yerelde log'a yazar, sağlayıcı seçimi bildirim aşamasında |
+| SMS | Netgsm (REST v2); `SmsSender` arayüzünün arkasında, yerelde log'a yazar |
 | API sözleşmesi | springdoc ile OpenAPI; frontend tipleri `openapi-typescript` ile üretilir |
 | Testler | Az ve kritik: modül sınırı doğrulaması ve CLAUDE.md'deki beş senaryo. Testcontainers ile gerçek Postgres |
 | CI | GitHub Actions: `web` için lint ve build, `api` için `mvnw verify` |
@@ -85,7 +85,7 @@ Frontend'de `web/lib/api/impl.ts` geçiş boyunca mock ile HTTP uygulamasını b
 | 2. Vitrin (bitti) | `shop`, `catalog`, `delivery` okuma uçları, örnek veri | `findShop`, `getCategories`, `getProducts`, `getProduct`, `getDeliveryZones`, `getTimeSlots`; `listFeaturedShopSlugs` kaldırıldı |
 | 3. Sipariş ve ödeme (bitti, iyzico adapter'ı hariç) | kapalı gün, günlük kapasite, taslak, rezervasyon, sipariş, ödeme kaydı, sahte sağlayıcı, ödeme dönüşü, zamanlanmış işler, takip | `getDeliveryDays`, `createDraft`, `getDraft`, `saveDelivery`, `saveCard`, `placeOrder`, `getOrderTracking`, `findTrackingToken`; yeni `completePayment` |
 | 4. Giriş ve panel (bitti) | dükkân girişi ve oturum, siparişler, durum geçişleri, ödendi işareti, elle sipariş, müşteriler, özel günler ve hatırlatmalar | `getPanelSession`, `getOrders`, `getOrder`, `updateOrderStatus`, `markOrderPaid`, `getCustomers`, `getCustomer`, `findCustomerByPhone`, `getReminders`, `createManualOrder`; `/giris` eklendi. Panelden açılan talepler (`getShopTickets`, `createTicket`) destek aşamasında |
-| 5. Bildirim | bildirim kaydı, `SmsSender`, yeni sipariş e-postası | — |
+| 5. Bildirim (bitti, gerçek sağlayıcılar hariç) | `notification_log`, `SmsSender` ve `EmailSender` (yerelde log'a yazar), onay ve durum SMS'leri, yeni sipariş e-postası, yeniden deneme | — (arayüzde bildirim yok; destek panelindeki bildirim listesi 6. aşamada API'ye geçer) |
 | 6. Destek | platform girişi ve TOTP, talepler, dükkân adına oturum, telefon açma, denetim kaydı | destek fonksiyonları; giriş ekranı eklenir |
 | 7. Yayın | Dockerfile, compose dosyaları, PR önizleme, staging, onaylı prod | `lib/mock` tamamen silinir |
 
@@ -103,9 +103,27 @@ Frontend'de `web/lib/api/impl.ts` geçiş boyunca mock ile HTTP uygulamasını b
 
 Sağlayıcılar:
 - `fake` (varsayılan): ödeme sayfası frontend'deki `/{slug}/siparis/odeme/deneme`; "Ödemeyi onayla" ve "Ödemeyi yarıda bırak" ile iki sonuç da denenebilir.
-- `iyzico`: Checkout Form ve pazaryeri (alt üye işyeri anahtarı dükkânda). Sandbox anahtarları gelince yazılacak; anahtarlar repoya değil ortamın secret'larına girer.
+- `iyzico` (yazıldı, sandbox'ta henüz denenmedi): Checkout Form. `POST /payment/iyzipos/checkoutform/initialize/auth/ecom` ödeme sayfasını açar, `POST /payment/iyzipos/checkoutform/auth/ecom/detail` token'ın sonucunu döner (`paymentStatus` SUCCESS, FAILURE ya da henüz yok). Kimlik doğrulaması IYZWSv2 (HMAC-SHA256). Sepet tek satır (ürün + teslimat), tek çekim. Alıcı üye olmadan sipariş verdiği için e-posta yerine `tomurcuk.payment.iyzico.buyer-email`, kimlik numarası yerine iyzico'nun misafir değeri yazılır; alıcının IP'sini Next iletir. Pazaryeri modelinde (`marketplace: true`) satıra dükkânın alt üye işyeri anahtarı (`shop_payment_account`) yazılır; anahtarı yalnızca dükkân sahibi değiştirir. Ödeme sayfası açılamazsa sipariş açık kalır ve alıcıya `payment_unavailable` gösterilir.
+- Anahtarlar repoya değil ortamın secret'larına girer: `TOMURCUK_PAYMENT_IYZICO_APIKEY`, `TOMURCUK_PAYMENT_IYZICO_SECRETKEY`. Sandbox denemesi için ortamın ağ ayarlarında `sandbox-api.iyzipay.com` izinli olmalı.
 
 Geçiş notu: destek paneli 6. aşamaya kadar mock'ta. Destekten "Dükkân adına gir" panelde henüz oturum açmaz; panel kendi girişini ister. Destek ekranlarındaki siparişler mock verisidir.
+
+## Bildirimler
+
+| Olay | Kime | Kanal |
+| --- | --- | --- |
+| `OrderConfirmed`: havalede sipariş anında, kartla ödemede ödeme ilk kez onaylanınca | gönderen (onay ve takip linki), dükkân sahipleri (yeni sipariş) | SMS, e-posta |
+| `OrderStatusChanged` → Yolda | alıcı | SMS |
+| → Teslim edildi | gönderen | SMS |
+| → Teslim edilemedi | gönderen ve alıcı | SMS |
+
+- Panelden elle girilen sipariş ve "Hazırlanıyor" geçişi bildirim göndermez.
+- Dinleyiciler `@ApplicationModuleListener`: işlem tamamlandıktan sonra ayrı iş parçacığında çalışır, olay kaydı veritabanında durur. Sipariş akışı SMS sağlayıcısını beklemez; uygulama yeniden başlarsa yarım kalan olay yeniden işlenir.
+- Bildirim önce `notification_log`'a yazılır, sonra gönderilir. `dedupe_key` (sipariş + tür + olay sırası + alıcı) tekildir; aynı olay iki kez işlense de bildirim bir kez gider. Teslim edilemeyen sipariş yeniden yola çıkınca olay sırası farklı olduğu için yeni SMS gider.
+- Gönderilemeyen bildirim 1, 5, 30 dakika ve 2 saat arayla yeniden denenir; beşinci denemeden sonra bırakılır ve sağlayıcının yanıtıyla kayıtta kalır.
+- Metinlerde alıcıya ve gönderene dükkân konuşur, dükkân adı başta yazılır; isimsiz gönderimde gönderen hiç geçmez. Bütün mesajlar işlem mesajıdır; pazarlama mesajı (09:00–21:00 kuralı, İYS izni) MVP'de otomatik gönderilmez.
+- SMS sağlayıcısı Netgsm (`tomurcuk.sms.provider=netgsm`): `POST https://api.netgsm.com.tr/sms/rest/v2/send`, Basic auth, `encoding: TR`, `iysfilter: "0"` (bilgilendirme mesajı). Yanıttaki `code` "00" başarılıdır, `jobid` kayda yazılır. Kalıcı hatalar (20 metin, 30 kimlik, 40/41 başlık, 50/51 İYS, 70 parametre) yeniden denenmez; 85 ve 100 denenir. Kullanıcı kodu, şifre ve onaylı mesaj başlığı ortamın secret'larındadır: `TOMURCUK_SMS_NETGSM_USERCODE`, `TOMURCUK_SMS_NETGSM_PASSWORD`, `TOMURCUK_SMS_NETGSM_HEADER`. İstek biçimi Netgsm hesabıyla ilk gönderimde doğrulanmalı.
+- Yerelde ve önizlemede `log`: SMS gönderilmez, log'a yazılır. E-posta sağlayıcısı (SMTP ya da servis) seçilince `EmailSender` adapter'ı eklenir.
 
 ## Örnek veri ve derleme
 
@@ -121,6 +139,9 @@ Kapsam bilerek dar tutulur; geliştirme hızı önce gelir.
 - `ModularityTests`: modül sınırları (`ApplicationModules.verify()`).
 - Aşama 3 (`CheckoutTests`, `DeliveryScheduleTests`): ödeme callback'inin iki kez gelmesi, aynı idempotency anahtarı, aynı aralığa 20 eşzamanlı rezervasyon (kapasite 6), süresi dolan rezervasyon, "bugün" ve son sipariş saatinde saat dilimi, başka dükkânın takip kodu.
 - Aşama 4 (`PanelTests`): oturumsuz istek 401, yanlış şifrede hangi alanın yanlış olduğu söylenmez, durum geçişleri (atlanan ve geri giden reddedilir), çalışan iptal edemez (403), başka dükkânın siparişi ve müşterisi bulunamaz.
+
+- Adapter'lar (`NetgsmSmsSenderTests`, `IyzicoPaymentProviderTests`): istek biçimi, imza ve yanıt kodları, sağlayıcıya bağlanmadan.
+- Aşama 5 (`NotificationTests`): aynı olay iki kez işlense de tek SMS, isimsiz gönderimde gönderen metinde yok.
 
 Testlerde saat `MutableClock` ile sabitlenir, zamanlanmış işler kapalıdır (`tomurcuk.jobs.enabled=false`).
 
