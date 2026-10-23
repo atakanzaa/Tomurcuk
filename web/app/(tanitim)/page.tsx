@@ -5,6 +5,7 @@ import { Suspense } from "react";
 import { renderPhoto } from "@/components/ProductPhoto";
 import { Button } from "@/components/ui/Button";
 import { GiftTag } from "@/components/ui/GiftTag";
+import { Logo, LogoMark } from "@/components/ui/Logo";
 import { ProductItem } from "@/components/ui/ProductItem";
 import { discoverShops, getAreas, getShopPicks } from "@/lib/api";
 import { Availability, type Area, type IsoDate, type ProductCard, type ShopMatch } from "@/lib/api/types";
@@ -50,9 +51,7 @@ export default function HomePage({ searchParams }: PageProps<"/">) {
   return (
     <>
       <header className={`${styles.wrap} ${styles.header}`}>
-        <Link href="/" className={home.logo}>
-          Tomurcuk
-        </Link>
+        <Logo href="/" className={home.logo} />
         <nav aria-label="Sayfa" className={styles.nav}>
           <a className={`${styles.navLink} ${styles.navOptional}`} href="#nasil">
             Nasıl çalışır
@@ -133,6 +132,7 @@ export default function HomePage({ searchParams }: PageProps<"/">) {
 
         <section className={home.florists} aria-labelledby="cicekci-baslik">
           <div className={`${styles.wrap} ${home.floristsInner}`}>
+            <LogoMark className={home.floristsMark} />
             <div className={home.floristsText}>
               <h2 id="cicekci-baslik" className={styles.h2}>
                 Çiçekçi misiniz?
@@ -150,7 +150,7 @@ export default function HomePage({ searchParams }: PageProps<"/">) {
 
       <footer className={`${styles.wrap} ${styles.footer}`}>
         <span>
-          <span className={styles.footerLogo}>Tomurcuk</span> Mahallenin çiçekçisinden sipariş.
+          <Logo className={styles.footerLogo} /> Mahallenin çiçekçisinden sipariş.
         </span>
         <span className={styles.footerLinks}>
           <Link href="/cicekciler">Çiçekçiler için</Link>

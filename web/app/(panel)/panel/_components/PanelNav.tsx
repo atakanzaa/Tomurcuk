@@ -4,6 +4,7 @@ import { DotsThree, ListBullets, Sun, UsersThree } from "@phosphor-icons/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/Button";
+import { Logo } from "@/components/ui/Logo";
 import styles from "./panel.module.css";
 
 interface PanelNavProps {
@@ -56,6 +57,7 @@ export function PanelSidebar({ shopName, shopShortName, shopSlug, todayCount, re
       <Link className={`${styles.navLink} ${styles.navQuiet}`} href="/panel/yardim" aria-current={current("/panel/yardim")}>
         <span>Yardım ve destek</span>
       </Link>
+      <Logo className={styles.sideLogo} />
     </aside>
   );
 }

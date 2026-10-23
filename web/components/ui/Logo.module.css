@@ -1,0 +1,39 @@
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.36em;
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-weight: 400;
+  text-decoration: none;
+}
+
+a.logo:hover {
+  color: var(--ink);
+}
+
+.mark {
+  flex: none;
+  width: 1.15em;
+  height: 1.15em;
+}
+
+.markBg {
+  fill: var(--mark-bg, var(--kraft));
+}
+
+.markStem {
+  fill: var(--mark-stem, var(--stem));
+}
+
+.markBud {
+  fill: var(--mark-bud, var(--peony));
+}
+
+.note {
+  margin-left: 0.15em;
+  color: var(--ink-muted);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 400;
+}

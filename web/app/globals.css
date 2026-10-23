@@ -9,6 +9,24 @@
   color-scheme: dark;
 }
 
+/* Kraft ambalaj kâğıdının dokusu: hafif lekelenme ve seyrek lif. Yalnızca kraft zeminlerde,
+   rengin üstüne desen olarak; renk yine --kraft'tan gelir. */
+:root,
+[data-theme="light"] {
+  --kraft-fiber: url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27300%27 height=%27300%27%3E%3Cfilter id=%27m%27 x=%270%27 y=%270%27 width=%27100%25%27 height=%27100%25%27%3E%3CfeTurbulence type=%27fractalNoise%27 baseFrequency=%270.02%27 numOctaves=%273%27 seed=%275%27 stitchTiles=%27stitch%27/%3E%3CfeColorMatrix values=%270 0 0 0 0.3 0 0 0 0 0.22 0 0 0 0 0.1 0 0 0 0.22 -0.07%27/%3E%3C/filter%3E%3Cfilter id=%27s%27 x=%270%27 y=%270%27 width=%27100%25%27 height=%27100%25%27%3E%3CfeTurbulence type=%27fractalNoise%27 baseFrequency=%270.75 0.32%27 numOctaves=%272%27 seed=%279%27 stitchTiles=%27stitch%27/%3E%3CfeColorMatrix values=%270 0 0 0 0.3 0 0 0 0 0.22 0 0 0 0 0.1 0 0 0 1.5 -0.95%27/%3E%3C/filter%3E%3Crect width=%27100%25%27 height=%27100%25%27 filter=%27url%28%23m%29%27/%3E%3Crect width=%27100%25%27 height=%27100%25%27 filter=%27url%28%23s%29%27/%3E%3C/svg%3E");
+}
+
+[data-theme="dark"] {
+  --kraft-fiber: url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27300%27 height=%27300%27%3E%3Cfilter id=%27m%27 x=%270%27 y=%270%27 width=%27100%25%27 height=%27100%25%27%3E%3CfeTurbulence type=%27fractalNoise%27 baseFrequency=%270.02%27 numOctaves=%273%27 seed=%275%27 stitchTiles=%27stitch%27/%3E%3CfeColorMatrix values=%270 0 0 0 1 0 0 0 0 0.94 0 0 0 0 0.82 0 0 0 0.14 -0.045%27/%3E%3C/filter%3E%3Cfilter id=%27s%27 x=%270%27 y=%270%27 width=%27100%25%27 height=%27100%25%27%3E%3CfeTurbulence type=%27fractalNoise%27 baseFrequency=%270.75 0.32%27 numOctaves=%272%27 seed=%279%27 stitchTiles=%27stitch%27/%3E%3CfeColorMatrix values=%270 0 0 0 1 0 0 0 0 0.94 0 0 0 0 0.82 0 0 0 1.0 -0.64%27/%3E%3C/filter%3E%3Crect width=%27100%25%27 height=%27100%25%27 filter=%27url%28%23m%29%27/%3E%3Crect width=%27100%25%27 height=%27100%25%27 filter=%27url%28%23s%29%27/%3E%3C/svg%3E");
+}
+
+/* Kart notu etiketi, kraft bant ve fotoğrafı olmayan ürünün yer tutucusu ekrandaki kâğıt nesnelerdir. */
+.tm-gifttag,
+.tm-product__photo,
+.tm-band:not(.tm-band--peony) {
+  background-image: var(--kraft-fiber);
+}
+
 html {
   background: var(--paper);
   -webkit-text-size-adjust: 100%;

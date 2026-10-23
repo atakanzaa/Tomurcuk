@@ -1,11 +1,8 @@
 /* Alıcı ana sayfası. Ortak parçalar (wrap, başlık, adımlar) landing.module.css'te. */
 
 .logo {
-  font-family: var(--font-display);
   font-size: 26px;
   line-height: 32px;
-  color: var(--ink);
-  text-decoration: none;
 }
 
 .hero {
@@ -89,6 +86,7 @@
   padding: var(--space-5);
   border-radius: var(--radius-l);
   background: var(--kraft);
+  background-image: var(--kraft-fiber);
   font-family: var(--font-display);
   font-size: 23px;
   line-height: 28px;
@@ -248,6 +246,7 @@
   overflow: hidden;
   border-radius: var(--radius-m);
   background: var(--kraft);
+  background-image: var(--kraft-fiber);
 }
 
 .thumbName {
@@ -326,6 +325,7 @@
   padding: var(--space-6);
   border-radius: var(--radius-l);
   background: var(--kraft);
+  background-image: var(--kraft-fiber);
   scroll-margin-top: var(--space-4);
 }
 
@@ -383,6 +383,15 @@
   justify-content: space-between;
   gap: var(--space-5) var(--space-7);
   padding-block: var(--space-8);
+}
+
+/* Bandın başında büyük işaret; zemini bandın koyu tonu, sapı bant üstü metin rengi. */
+.floristsMark {
+  --mark-bg: var(--stem-hover);
+  --mark-stem: var(--on-stem);
+  width: 96px;
+  height: 96px;
+  flex: none;
 }
 
 .floristsText {

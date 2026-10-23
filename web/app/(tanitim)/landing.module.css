@@ -21,7 +21,6 @@
 }
 
 .logo {
-  font-family: var(--font-display);
   font-size: 26px;
   line-height: 32px;
 }
@@ -382,6 +381,7 @@
 
 .apply {
   background: var(--kraft);
+  background-image: var(--kraft-fiber);
 }
 
 .form {
@@ -425,9 +425,9 @@
 }
 
 .footerLogo {
-  color: var(--ink);
-  font-family: var(--font-display);
+  margin-right: var(--space-2);
   font-size: 18px;
+  vertical-align: -3px;
 }
 
 .footerLinks {
@@ -462,13 +462,8 @@
 /* Çiçekçiler sayfasının başlığında adın yanındaki not; ad ana sayfaya döner. */
 .brand {
   display: inline-flex;
-  align-items: baseline;
-  gap: var(--space-2);
-}
-
-.brand .logo {
-  color: var(--ink);
-  text-decoration: none;
+  align-items: center;
+  gap: var(--space-3);
 }
 
 .brandNote {
@@ -561,6 +556,7 @@
   padding: var(--space-2);
   border-radius: var(--radius-m);
   background: var(--kraft);
+  background-image: var(--kraft-fiber);
   font-family: var(--font-display);
   font-size: 13px;
   line-height: 16px;

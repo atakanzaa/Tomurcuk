@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { Suspense, type ReactNode } from "react";
 import { Button } from "@/components/ui/Button";
+import { Logo } from "@/components/ui/Logo";
 import { getShopSummaries, getSupportUser, getTickets } from "@/lib/api";
 import { TicketStatus } from "@/lib/api/types";
 import { supportLogout } from "@/lib/auth/actions";
@@ -33,9 +33,7 @@ async function SupportFrame({ children }: { children: ReactNode }) {
   return (
     <>
       <header className={styles.topbar}>
-        <Link href="/destek" className={styles.brand}>
-          Tomurcuk <span className={styles.brandSub}>Destek</span>
-        </Link>
+        <Logo href="/destek" note="Destek" className={styles.brand} />
         <form action="/destek/ara" role="search" className={styles.search}>
           <label>
             <span className="visually-hidden">Ara</span>

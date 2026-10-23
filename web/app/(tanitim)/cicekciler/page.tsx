@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { GiftTag } from "@/components/ui/GiftTag";
+import { Logo } from "@/components/ui/Logo";
 import { OrderList } from "@/components/ui/OrderRow";
 import { StatusTag } from "@/components/ui/StatusTag";
 import { PLANS } from "@/lib/marketing";
@@ -80,9 +81,7 @@ export default function FloristsPage() {
     <>
       <header className={`${styles.wrap} ${styles.header}`}>
         <span className={styles.brand}>
-          <Link href="/" className={styles.logo}>
-            Tomurcuk
-          </Link>
+          <Logo href="/" className={styles.logo} />
           <span className={styles.brandNote}>çiçekçiler için</span>
         </span>
         <nav aria-label="Sayfa" className={styles.nav}>
@@ -323,7 +322,7 @@ export default function FloristsPage() {
 
       <footer className={`${styles.wrap} ${styles.footer}`}>
         <span>
-          <span className={styles.footerLogo}>Tomurcuk</span> Küçük çiçekçilerin sipariş sayfası, paneli ve müşteri defteri.
+          <Logo className={styles.footerLogo} /> Küçük çiçekçilerin sipariş sayfası, paneli ve müşteri defteri.
         </span>
         <span className={styles.footerLinks}>
           <Link href="/">Alıcılar için</Link>

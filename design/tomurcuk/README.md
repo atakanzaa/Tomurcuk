@@ -48,6 +48,7 @@ Tomurcuk, küçük çiçekçilerin kendi sipariş sayfası, sipariş paneli ve m
 - Ürün fotoğrafları çiçekçinin kendi çektikleridir; stok görsel kullanılmaz. Oran 4:5.
 - Fotoğraf yoksa yer tutucu `kraft` zemin üzerinde ürün adıdır.
 - İllüstrasyon, maskot, 3B görsel ve degrade yok.
+- Kraft nesneler kâğıt gibi görünür: kart notu etiketi, kraft bant, fotoğraf yer tutucusu ve giriş ekranının sol yüzü hafif lif dokusu taşır (`--kraft-fiber`, `web/app/globals.css`). Doku renk değildir, rengi yine `kraft` verir. Seçili satır ve üzerine gelme gibi durum yüzeyleri düz kalır.
 
 ## Hareket
 
@@ -69,4 +70,7 @@ Tomurcuk, küçük çiçekçilerin kendi sipariş sayfası, sipariş paneli ve m
 
 ## Logo
 
-- Henüz logo yok. Ad, `display` ailesinde düz yazıyla "Tomurcuk" olarak yazılır, `ink` renginde.
+- İşaret sap üstünde bir tomurcuktur: `kraft` kare zemin, `stem` sap, `peony` tomurcuk. Favicon (`web/app/icon.svg`) ile aynı çizim; kodda `Logo` ve `LogoMark` (`web/components/ui/Logo.tsx`), renkleri temadan alır.
+- Ad `display` ailesinde "Tomurcuk", `ink` renginde; işaret adın solunda durur ve yazı boyutuyla büyür.
+- Alıcı vitrininde Tomurcuk yalnızca altbilgide, küçük işaretle görünür. Satıcı panelinde menünün dibindedir; panelde öne çıkan ad dükkânınkidir.
+- Büyük işaret yalnızca iki yerde: ana sayfadaki çiçekçilere bandı ve giriş ekranının kraft yüzü. Başka zeminde `--mark-bg`, `--mark-stem`, `--mark-bud` ile renkleri değişir.
