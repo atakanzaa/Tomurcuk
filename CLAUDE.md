@@ -16,6 +16,7 @@ Küçük çiçekçiler için sipariş sayfası, sipariş paneli ve müşteri def
 - **Frontend:** Next.js (React, TypeScript, App Router). Alıcı vitrini sunucu tarafında render edilir. Satıcı ve destek panelleri aynı projede ayrı route grupları: `(vitrin)`, `(panel)`, `(destek)`. Thymeleaf/HTMX kullanılmıyor.
 - **Backend:** Java 21, Spring Boot 4, Maven, modüler monolit (Spring Modulith), PostgreSQL + Flyway. Frontend'e REST API sunar; tarayıcı API'yi doğrudan çağırmaz.
 - **Ödeme:** iyzico (pazaryeri, Checkout Form).
+- **Alıcı ana sayfası:** `/` alıcıya açılır, "önce dükkân": alıcı semti ve günü seçer, o gün oraya teslim eden dükkânlar listelenir, sipariş dükkânın kendi sayfasında verilir. Tek sepet yok; sıra teslim edebilmeye göredir, ücretle öne çıkma yok. Bu sayfa Tomurcuk'un adıyla açılır, dükkân sayfaları dükkânın adıyla kalır. Çiçekçilere tanıtım `/cicekciler`.
 - **CI/CD:** GitHub Actions. Ortama göre dal yok: sadece `main` ve kısa ömürlü feature dalları. PR açılınca önizleme ortamı, `main`'e merge sonrası staging, prod'a tag ve onayla çıkılır. Image bir kez build edilir.
 - **Testler:** dar kapsam, geliştirme hızı önce gelir. Modül sınırı testi ve şu beş senaryo: ödeme callback'inin iki kez gelmesi, aynı saat aralığına eşzamanlı sipariş, başka dükkânın verisine erişim denemesi, sipariş durum geçişleri, "bugün" hesabında saat dilimi. Testcontainers ile gerçek Postgres.
 

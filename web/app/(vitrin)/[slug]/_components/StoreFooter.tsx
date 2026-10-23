@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/Button";
+import { LogoMark } from "@/components/ui/Logo";
 import type { DeliveryZone, Shop } from "@/lib/api/types";
 import { cx } from "@/lib/cx";
 import { formatPriceRange, phoneHref, whatsappHref } from "@/lib/format";
@@ -44,6 +45,7 @@ export function StoreFooter({ shop, zones }: { shop: Shop; zones: DeliveryZone[]
         </div>
       </div>
       <p className={cx(container.container, styles.credit)}>
+        <LogoMark className={styles.creditMark} />
         Tomurcuk ile hazırlandı
       </p>
     </footer>

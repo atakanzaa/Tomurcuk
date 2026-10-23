@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Ürün düzenle</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/tomurcuk/tokens.css">
+<link rel="stylesheet" href="ds/tomurcuk/components/bundle.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&amp;family=Young+Serif&amp;display=swap">
+<style>
+body{margin:0}
+a{color:var(--stem)}a:hover{color:var(--stem-hover)}
+.nav-a{display:flex;align-items:center;justify-content:space-between;height:40px;padding:0 12px;border-radius:var(--radius-m);color:var(--ink);font-size:15px;font-weight:500;text-decoration:none}
+.nav-a[aria-current="page"]{background:var(--kraft);font-weight:600}
+.grp{margin:0;padding:18px 0 4px;display:flex;justify-content:space-between;font-size:13px;line-height:18px;font-weight:500;color:var(--ink-muted)}
+.prow{display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line);color:var(--ink);text-decoration:none}
+.prow--sel{background:var(--kraft);margin:0 -12px;padding:10px 12px;border-radius:var(--radius-m);border-bottom-color:transparent}
+.pth{aspect-ratio:4/5;width:40px;border-radius:var(--radius-s);background:var(--kraft);border:1px solid var(--line)}
+.sec-t{margin:0;font-size:18px;line-height:24px;font-weight:600}
+.help{font-size:12px;line-height:16px;color:var(--ink-muted)}
+.photo{aspect-ratio:4/5;border-radius:var(--radius-m);background:var(--kraft);display:flex;flex-direction:column;justify-content:space-between;padding:10px;box-sizing:border-box;font-family:var(--font-display);font-size:15px;line-height:19px}
+.photo-add{aspect-ratio:4/5;border-radius:var(--radius-m);border:1.5px dashed var(--line-strong);background:transparent;display:grid;place-content:center;justify-items:center;gap:6px;color:var(--ink);font:500 14px/20px var(--font-sans);cursor:pointer}
+.opt{display:grid;grid-template-columns:minmax(0,1fr) 140px 44px;gap:12px;align-items:end}
+.icon-btn{width:44px;height:44px;display:grid;place-items:center;background:none;border:0;border-radius:var(--radius-m);color:var(--ink-muted);cursor:pointer}
+.switch{position:relative;width:52px;height:32px;flex:none;border:0;border-radius:var(--radius-pill);background:var(--line-strong);cursor:pointer;padding:0}
+.switch[aria-checked="true"]{background:var(--stem)}
+.switch::after{content:"";position:absolute;top:4px;left:4px;width:24px;height:24px;border-radius:50%;background:var(--paper-raised)}
+.switch[aria-checked="true"]::after{left:24px}
+</style>
+</helmet>
+<div data-theme="{{theme}}" style="min-height: 100vh; background: var(--paper); color: var(--ink); font-family: var(--font-sans); display: flex; flex-wrap: wrap;">
+  <aside style="flex: 1 1 200px; max-width: 100%; box-sizing: border-box; padding: 24px 16px; border-right: 1px solid var(--line); display: flex; flex-direction: column; gap: 24px;">
+    <div style="display: grid; gap: 2px; padding: 0 12px;">
+      <span style="font-family: var(--font-display); font-size: 22px; line-height: 28px;">Nergis</span>
+      <span style="font-size: 13px; color: var(--ink-muted);">Çiçek Atölyesi</span>
+    </div>
+    <nav aria-label="Ana menü" style="display: grid; gap: 2px;">
+      <a class="nav-a" href="#"><span>Bugün</span><span style="font-weight: 400; color: var(--ink-muted);">14</span></a>
+      <a class="nav-a" href="#"><span>Siparişler</span></a>
+      <a class="nav-a" href="#"><span>Müşteriler</span><span style="font-size: 13px; font-weight: 500; color: var(--peony-ink);">5 özel gün</span></a>
+      <a class="nav-a" href="#" aria-current="page"><span>Ürünler</span><span style="font-weight: 400; color: var(--ink-muted);">9</span></a>
+      <a class="nav-a" href="#"><span>Teslimat ayarları</span></a>
+      <a class="nav-a" href="#"><span>Dükkân sayfası</span></a>
+    </nav>
+    <a class="tm-btn tm-btn--primary" href="#" style="margin: 0 4px;">Sipariş ekle</a>
+    <a class="nav-a" href="#" style="color: var(--ink-muted); font-weight: 400;"><span>Yardım ve destek</span></a>
+  </aside>
+
+  <main style="flex: 999 1 640px; min-width: 0; box-sizing: border-box; padding: 28px 32px 40px; display: flex; flex-direction: column; gap: 20px;">
+    <header style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px;">
+      <div style="display: grid; gap: 2px;">
+        <span style="font-size: 14px; color: var(--ink-muted);">9 ürün, 8'i vitrinde</span>
+        <h1 style="margin: 0; font-family: var(--font-display); font-weight: 400; font-size: 36px; line-height: 42px;">Ürünler</h1>
+      </div>
+      <div style="display: flex; flex-wrap: wrap; gap: 8px; flex: 0 1 520px; justify-content: flex-end;">
+        <label style="position: relative; flex: 1 1 220px;">
+          <span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0);">Ürün ara</span>
+          <input class="tm-field__control" placeholder="Ürün adı" style="width: 100%; height: 40px; font-size: 15px;">
+        </label>
+        <a class="tm-btn tm-btn--primary" href="#" style="height: 40px;">Ürün ekle</a>
+      </div>
+    </header>
+
+    <div style="display: flex; flex-wrap: wrap; gap: 40px; align-items: flex-start;">
+      <section aria-label="Ürün listesi" style="flex: 1 1 320px; max-width: 420px; min-width: 0;">
+        <h2 class="grp"><span>Buketler</span><span>6</span></h2>
+        <a class="prow" href="#"><span class="pth"></span><span style="display: grid; min-width: 0;"><span style="font-weight: 600;">Bu haftanın lalesi</span><span style="font-size: 14px; color: var(--ink-muted);">720 TL</span></span><span class="tm-status tm-status--delivered">Satışta</span></a>
+        <a class="prow prow--sel" href="#" aria-current="true"><span class="pth"></span><span style="display: grid; min-width: 0;"><span style="font-weight: 600;">Mevsim buketi</span><span style="font-size: 14px; color: var(--ink-muted);">850 TL'den, 3 boy</span></span><span class="tm-status tm-status--delivered">Satışta</span></a>
+        <a class="prow" href="#"><span class="pth"></span><span style="display: grid; min-width: 0;"><span style="font-weight: 600;">Beyaz güller</span><span style="font-size: 14px; color: var(--ink-muted);">980 TL</span></span><span class="tm-status tm-status--delivered">Satışta</span></a>
+        <a class="prow" href="#"><span class="pth"></span><span style="display: grid; min-width: 0;"><span style="font-weight: 600;">Pembe şakayık</span><span style="font-size: 14px; color: var(--ink-muted);">1.350 TL</span></span><span class="tm-status tm-status--muted">Satışta değil</span></a>
+        <a class="prow" href="#"><span class="pth"></span><span style="display: grid; min-width: 0;"><span style="font-weight: 600;">Kır buketi</span><span style="font-size: 14px; color: var(--ink-muted);">650 TL</span></span><span class="tm-status tm-status--delivered">Satışta</span></a>
+        <a class="prow" href="#"><span class="pth"></span><span style="display: grid; min-width: 0;"><span style="font-weight: 600;">Papatya kutusu</span><span style="font-size: 14px; color: var(--ink-muted);">540 TL</span></span><span class="tm-status tm-status--delivered">Satışta</span></a>
+        <h2 class="grp"><span>Orkide ve saksı</span><span>2</span></h2>
+        <a class="prow" href="#"><span class="pth"></span><span style="display: grid; min-width: 0;"><span style="font-weight: 600;">Mor orkide</span><span style="font-size: 14px; color: var(--ink-muted);">1.600 TL</span></span><span class="tm-status tm-status--delivered">Satışta</span></a>
+        <a class="prow" href="#"><span class="pth"></span><span style="display: grid; min-width: 0;"><span style="font-weight: 600;">Monstera</span><span style="font-size: 14px; color: var(--ink-muted);">1.100 TL</span></span><span class="tm-status tm-status--delivered">Satışta</span></a>
+        <h2 class="grp"><span>Çelenk</span><span>1</span></h2>
+        <a class="prow" href="#"><span class="pth"></span><span style="display: grid; min-width: 0;"><span style="font-weight: 600;">Ayaklı çelenk</span><span style="font-size: 14px; color: var(--ink-muted);">2.400 TL</span></span><span class="tm-status tm-status--delivered">Satışta</span></a>
+      </section>
+
+      <form aria-label="Mevsim buketi" style="flex: 2 1 520px; min-width: 0; display: grid; gap: 28px; padding-left: 40px; border-left: 1px solid var(--line);">
+        <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px 16px;">
+          <h2 style="margin: 0; font-family: var(--font-display); font-weight: 400; font-size: 30px; line-height: 36px;">Mevsim buketi</h2>
+          <a href="#" style="font-size: 15px; font-weight: 500;">Vitrinde gör</a>
+        </div>
+
+        <section style="display: grid; gap: 12px;">
+          <h3 class="sec-t">Fotoğraflar</h3>
+          <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; max-width: 560px;">
+            <div class="photo"><span style="align-self: flex-start; padding: 2px 8px; border-radius: var(--radius-pill); background: var(--paper-raised); font: 500 12px/16px var(--font-sans);">Kapak</span><span>Önden</span></div>
+            <div class="photo"><span></span><span>Yandan</span></div>
+            <div class="photo"><span></span><span>Kart notuyla</span></div>
+            <button type="button" class="photo-add">
+              <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" style="fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round;"><path d="M4 8h3l2-3h6l2 3h3v11H4z"></path><circle cx="12" cy="13" r="3.5"></circle></svg>
+              Fotoğraf ekle
+            </button>
+          </div>
+          <span class="help">En fazla 4 fotoğraf, 4:5 oranında kırpılır. Sürükleyerek sıralayın; ilk fotoğraf kapak olur.</span>
+        </section>
+
+        <section style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px;">
+          <label class="tm-field"><span class="tm-field__label">Ürün adı</span><input class="tm-field__control" value="Mevsim buketi"></label>
+          <label class="tm-field"><span class="tm-field__label">Kategori</span><select class="tm-field__control"><option>Buketler</option><option>Orkide ve saksı</option><option>Çelenk</option></select></label>
+          <label class="tm-field" style="grid-column: 1 / -1;"><span class="tm-field__label">Kısa açıklama</span><input class="tm-field__control" value="Mevsimin çiçekleri, kraft sarımlı"><span class="tm-field__meta"><span>Listede ürün adının altında görünür.</span><span class="tm-field__count">34/80</span></span></label>
+          <label class="tm-field" style="grid-column: 1 / -1;"><span class="tm-field__label">Açıklama <span style="font-weight: 400; color: var(--ink-muted);">(isteğe bağlı)</span></span><textarea class="tm-field__control" rows="3">Haldeki o haftanın çiçekleriyle hazırlanır; renkler mevsime göre değişir. Vazoda 5–7 gün dayanır.</textarea></label>
+        </section>
+
+        <div style="display: flex; flex-wrap: wrap; gap: 32px;">
+          <section style="flex: 1 1 320px; min-width: 0; display: grid; gap: 12px; align-content: start;">
+            <h3 class="sec-t">Boylar ve fiyat</h3>
+            <div class="opt"><label class="tm-field"><span class="tm-field__label">Boy</span><input class="tm-field__control" value="Küçük, 10 dal"></label><label class="tm-field"><span class="tm-field__label">Fiyat (TL)</span><input class="tm-field__control" inputmode="numeric" value="850"></label><button type="button" class="icon-btn" aria-label="Küçük boyu kaldır"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" style="fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round;"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div>
+            <div class="opt"><label class="tm-field"><span class="tm-field__label">Boy</span><input class="tm-field__control" value="Orta, 15 dal"></label><label class="tm-field"><span class="tm-field__label">Fiyat (TL)</span><input class="tm-field__control" inputmode="numeric" value="1100"></label><button type="button" class="icon-btn" aria-label="Orta boyu kaldır"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" style="fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round;"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div>
+            <div class="opt"><label class="tm-field"><span class="tm-field__label">Boy</span><input class="tm-field__control" value="Büyük, 25 dal"></label><label class="tm-field"><span class="tm-field__label">Fiyat (TL)</span><input class="tm-field__control" inputmode="numeric" value="1450"></label><button type="button" class="icon-btn" aria-label="Büyük boyu kaldır"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" style="fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round;"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div>
+            <button type="button" class="tm-btn tm-btn--quiet" style="justify-self: start; padding-left: 0;">Boy ekle</button>
+          </section>
+          <section style="flex: 1 1 320px; min-width: 0; display: grid; gap: 12px; align-content: start;">
+            <h3 class="sec-t">Ek seçenekler</h3>
+            <div class="opt"><label class="tm-field"><span class="tm-field__label">Seçenek</span><input class="tm-field__control" value="Cam vazo"></label><label class="tm-field"><span class="tm-field__label">Ek ücret (TL)</span><input class="tm-field__control" inputmode="numeric" value="180"></label><button type="button" class="icon-btn" aria-label="Cam vazoyu kaldır"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" style="fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round;"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div>
+            <div class="opt"><label class="tm-field"><span class="tm-field__label">Seçenek</span><input class="tm-field__control" value="Çikolata kutusu"></label><label class="tm-field"><span class="tm-field__label">Ek ücret (TL)</span><input class="tm-field__control" inputmode="numeric" value="240"></label><button type="button" class="icon-btn" aria-label="Çikolata kutusunu kaldır"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" style="fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round;"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div>
+            <button type="button" class="tm-btn tm-btn--quiet" style="justify-self: start; padding-left: 0;">Seçenek ekle</button>
+          </section>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 16px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);">
+          <span style="display: grid; gap: 2px;"><span style="font-size: 16px; font-weight: 600;" id="satista-m">Satışta</span><span style="font-size: 14px; line-height: 20px; color: var(--ink-muted);">Kapatırsanız vitrinden ve alıcı sayfasından kalkar; geçmiş siparişler etkilenmez.</span></span>
+          <button type="button" class="switch" role="switch" aria-checked="{{onSale}}" aria-labelledby="satista-m" onClick="{{toggle}}"></button>
+        </div>
+
+        <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px;">
+          <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px;">
+            <button type="submit" class="tm-btn tm-btn--primary" style="height: 48px; padding: 0 24px;">Değişiklikleri kaydet</button>
+            <span style="font-size: 13px; color: var(--ink-muted);">Son değişiklik: bugün 09:12, Ayla Er</span>
+          </div>
+          <button type="button" class="tm-btn tm-btn--quiet" style="color: var(--danger);">Ürünü sil</button>
+        </div>
+      </form>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":1440,"height":1180}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { onSale: true };
+  }
+  renderVals() {
+    return {
+      theme: this.props.theme ?? 'light',
+      onSale: this.state.onSale ? 'true' : 'false',
+      toggle: () => this.setState({ onSale: !this.state.onSale })
+    };
+  }
+}
+</script>
+</body>
+</html>

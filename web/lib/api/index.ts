@@ -118,3 +118,22 @@ export const endImpersonation = write("endImpersonation");
 
 // Tanıtım sitesi
 export const submitPilotApplication = write("submitPilotApplication");
+
+// Alıcı ana sayfası. Semt listesi ve seçki herkes için aynıdır, önbelleğe alınır; teslim
+// durumu saate ve doluluğa bağlı olduğu için her istekte sorulur.
+export async function getAreas() {
+  "use cache";
+  cacheLife("minutes");
+  cacheTag("discover");
+  return impl.getAreas();
+}
+
+export async function getShopPicks() {
+  "use cache";
+  cacheLife("minutes");
+  cacheTag("discover");
+  return impl.getShopPicks();
+}
+
+export const discoverShops = read("discoverShops");
+export const findOrder = write("findOrder");

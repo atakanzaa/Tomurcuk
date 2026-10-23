@@ -1,0 +1,428 @@
+/* Alıcı ana sayfası. Ortak parçalar (wrap, başlık, adımlar) landing.module.css'te. */
+
+.logo {
+  font-size: 26px;
+  line-height: 32px;
+}
+
+.hero {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-7);
+  padding-block: var(--space-6) var(--space-8);
+}
+
+.heroText {
+  flex: 1 1 480px;
+  min-width: 0;
+  display: grid;
+  gap: var(--space-5);
+}
+
+.h1 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(40px, 5.2vw, 64px);
+  line-height: 1.05;
+  letter-spacing: -1px;
+}
+
+/* Arama formu: gerçek bir form yüzeyi, paper-raised. */
+.search {
+  display: grid;
+  gap: var(--space-4);
+  max-width: 560px;
+  padding: var(--space-5);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-l);
+  background: var(--paper-raised);
+}
+
+.searchPlaceholder {
+  max-width: 560px;
+  min-height: 300px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-l);
+  background: var(--paper-raised);
+}
+
+.dayField {
+  display: grid;
+  gap: var(--space-2);
+}
+
+/* Üç gün seçeneği telefonda da tek satıra sığar. */
+.dayField :global(.tm-slot) {
+  min-width: 0;
+}
+
+.searchButton {
+  height: 52px;
+  font-size: 16px;
+}
+
+/* Fotoğraf yerine kraft zemin üzerinde ürün adı; dükkânların gerçek fotoğrafları vitrinlerinde. */
+.heroArt {
+  flex: 1 1 380px;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: end;
+  gap: var(--space-4);
+}
+
+.heroStack {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.heroPhoto {
+  display: flex;
+  align-items: flex-end;
+  aspect-ratio: 4 / 5;
+  box-sizing: border-box;
+  padding: var(--space-5);
+  border-radius: var(--radius-l);
+  background: var(--kraft);
+  background-image: var(--kraft-fiber);
+  font-family: var(--font-display);
+  font-size: 23px;
+  line-height: 28px;
+}
+
+.heroPhotoSquare {
+  aspect-ratio: 1;
+}
+
+.heroTag {
+  margin: 0 0 0 var(--space-2);
+  transform: rotate(-3deg);
+}
+
+@media (max-width: 720px) {
+  .heroArt {
+    display: none;
+  }
+}
+
+/* Sonuçlar: satırlar, kart yok. */
+.results {
+  display: grid;
+  gap: var(--space-2);
+  padding-bottom: var(--space-7);
+  scroll-margin-top: var(--space-4);
+}
+
+.resultsHead {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-2) var(--space-5);
+  padding-bottom: var(--space-4);
+}
+
+.resultsMeta {
+  color: var(--ink-muted);
+  font-size: 15px;
+}
+
+.empty {
+  margin: 0;
+  padding-block: var(--space-5);
+  border-top: 1px solid var(--line);
+  color: var(--ink-muted);
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.shops {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-bottom: 1px solid var(--line);
+}
+
+.shop {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-6);
+  padding-block: var(--space-6);
+  border-top: 1px solid var(--line);
+}
+
+.shopInfo {
+  display: grid;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.shopName {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 26px;
+  line-height: 32px;
+}
+
+.shopName a {
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.shopName a:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.shopDescription {
+  margin: 0;
+  max-width: 520px;
+  color: var(--ink-muted);
+  font-size: 15px;
+  line-height: 22px;
+}
+
+.shopFacts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+  color: var(--ink-muted);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.open,
+.closed {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+}
+
+.open {
+  color: var(--stem-ink);
+}
+
+.open::before,
+.closed::before {
+  content: "";
+  flex: none;
+  box-sizing: border-box;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.open::before {
+  background: var(--stem);
+}
+
+.closed::before {
+  border: 1.5px solid var(--line-strong);
+}
+
+.thumbs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.thumb {
+  display: grid;
+  gap: 6px;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.thumbPhoto {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border-radius: var(--radius-m);
+  background: var(--kraft);
+  background-image: var(--kraft-fiber);
+}
+
+.thumbName {
+  padding: 10px;
+  font-family: var(--font-display);
+  font-size: 15px;
+  line-height: 19px;
+}
+
+.thumbPrice {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.thumb:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+  border-radius: var(--radius-m);
+}
+
+.shopAction {
+  height: 48px;
+  padding-inline: 22px;
+}
+
+.rankNote {
+  max-width: 640px;
+  margin: var(--space-3) 0 0;
+  color: var(--ink-muted);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+@media (max-width: 900px) {
+  .shop {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-4);
+  }
+
+  .shopAction {
+    justify-self: start;
+  }
+}
+
+/* Seçki */
+.picks {
+  border-block: 1px solid var(--line);
+  background: var(--paper-raised);
+}
+
+.picksInner {
+  display: grid;
+  gap: var(--space-6);
+  padding-block: var(--space-8);
+}
+
+.picksGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-5);
+}
+
+@media (max-width: 900px) {
+  .picksGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Sipariş bulma: tek kraft bant. */
+.lookup {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-6) var(--space-7);
+  margin-bottom: var(--space-8);
+  padding: var(--space-6);
+  border-radius: var(--radius-l);
+  background: var(--kraft);
+  background-image: var(--kraft-fiber);
+  scroll-margin-top: var(--space-4);
+}
+
+.lookupText {
+  flex: 1 1 320px;
+  display: grid;
+  gap: var(--space-2);
+}
+
+.lookupTitle {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(28px, 3vw, 34px);
+  line-height: 1.15;
+}
+
+.lookupNote {
+  max-width: 420px;
+  margin: 0;
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.lookupForm {
+  flex: 2 1 520px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  align-items: end;
+  gap: var(--space-3);
+}
+
+.lookupError {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: var(--danger-ink);
+  font-size: 15px;
+  line-height: 22px;
+}
+
+.lookupButton {
+  height: 44px;
+}
+
+/* Çiçekçilere bant */
+.florists {
+  background: var(--stem);
+  color: var(--on-stem);
+}
+
+.floristsInner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-5) var(--space-7);
+  padding-block: var(--space-8);
+}
+
+/* Bandın başında büyük işaret; zemini bandın koyu tonu, sapı bant üstü metin rengi. */
+.floristsMark {
+  --mark-bg: var(--stem-hover);
+  --mark-stem: var(--on-stem);
+  width: 96px;
+  height: 96px;
+  flex: none;
+}
+
+.floristsText {
+  flex: 1 1 480px;
+  display: grid;
+  gap: var(--space-3);
+}
+
+.floristsLead {
+  max-width: 560px;
+  margin: 0;
+  font-size: 18px;
+  line-height: 28px;
+}
+
+.floristsButton {
+  height: 52px;
+  padding-inline: 26px;
+  font-size: 16px;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.floristsButton:hover {
+  background: var(--paper-raised);
+  color: var(--ink);
+}
+
+@media (max-width: 640px) {
+  .lookup,
+  .search {
+    padding: var(--space-4);
+  }
+}

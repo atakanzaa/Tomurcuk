@@ -21,7 +21,6 @@
 }
 
 .logo {
-  font-family: var(--font-display);
   font-size: 26px;
   line-height: 32px;
 }
@@ -382,6 +381,7 @@
 
 .apply {
   background: var(--kraft);
+  background-image: var(--kraft-fiber);
 }
 
 .form {
@@ -425,9 +425,9 @@
 }
 
 .footerLogo {
-  color: var(--ink);
-  font-family: var(--font-display);
+  margin-right: var(--space-2);
   font-size: 18px;
+  vertical-align: -3px;
 }
 
 .footerLinks {
@@ -456,5 +456,149 @@
   .cmp th,
   .cmp td {
     padding-inline: var(--space-4);
+  }
+}
+
+/* Çiçekçiler sayfasının başlığında adın yanındaki not; ad ana sayfaya döner. */
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.brandNote {
+  color: var(--ink-muted);
+  font-size: 15px;
+}
+
+/* "Yeni müşteri, kendi kapınızdan girer": alıcı sayfasındaki dükkân satırının bir örneği. */
+.reach {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-7);
+  padding-block: var(--space-8);
+}
+
+.reachText {
+  flex: 1 1 380px;
+  display: grid;
+  gap: var(--space-4);
+}
+
+.reachPreview {
+  flex: 1 1 440px;
+  min-width: 0;
+  display: grid;
+  gap: var(--space-1);
+}
+
+.reachCaption {
+  color: var(--ink-muted);
+  font-size: 13px;
+}
+
+.reachRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 220px);
+  gap: var(--space-5);
+  align-items: center;
+  padding-block: var(--space-5);
+  border-block: 1px solid var(--line);
+}
+
+.reachShop {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.reachName {
+  font-family: var(--font-display);
+  font-size: 23px;
+  line-height: 28px;
+}
+
+.reachWhere {
+  color: var(--ink-muted);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.reachOpen {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--stem-ink);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.reachOpen::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--stem);
+}
+
+.reachThumbs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-2);
+}
+
+.reachThumb {
+  display: flex;
+  align-items: flex-end;
+  aspect-ratio: 4 / 5;
+  box-sizing: border-box;
+  padding: var(--space-2);
+  border-radius: var(--radius-m);
+  background: var(--kraft);
+  background-image: var(--kraft-fiber);
+  font-family: var(--font-display);
+  font-size: 13px;
+  line-height: 16px;
+}
+
+@media (max-width: 520px) {
+  .reachRow {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* "Telefonunuzdan yönetirsiniz": başlık ve açıklama satırları. */
+.features {
+  flex: 2 1 560px;
+  margin: 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.feature {
+  display: grid;
+  grid-template-columns: minmax(0, 220px) minmax(0, 1fr);
+  gap: var(--space-2) var(--space-6);
+  padding-block: var(--space-5);
+  border-top: 1px solid var(--line);
+}
+
+.featureTitle {
+  font-size: 18px;
+  line-height: 26px;
+  font-weight: 600;
+}
+
+.featureBody {
+  max-width: 600px;
+  margin: 0;
+  color: var(--ink-muted);
+  font-size: 16px;
+  line-height: 26px;
+}
+
+@media (max-width: 720px) {
+  .feature {
+    grid-template-columns: minmax(0, 1fr);
   }
 }

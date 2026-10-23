@@ -5,7 +5,7 @@ import { Field } from "@/components/ui/Field";
 import { initialFormState } from "@/lib/checkout/form-state";
 import { applyForPilot } from "@/lib/marketing-actions";
 import { useFormStatus } from "react-dom";
-import styles from "./landing.module.css";
+import styles from "../landing.module.css";
 
 function Submit() {
   const { pending } = useFormStatus();

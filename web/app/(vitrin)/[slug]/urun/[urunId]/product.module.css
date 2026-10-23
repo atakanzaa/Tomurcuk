@@ -38,6 +38,7 @@
   aspect-ratio: 390 / 440;
   overflow: hidden;
   background: var(--kraft);
+  background-image: var(--kraft-fiber);
 }
 
 .photo > svg {

@@ -19,3 +19,10 @@
   margin: 0;
   color: var(--ink-muted);
 }
+
+.logo {
+  justify-self: center;
+  margin-bottom: var(--space-5);
+  font-size: 22px;
+  line-height: 28px;
+}

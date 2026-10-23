@@ -1,8 +1,17 @@
 .page {
+  display: grid;
   min-height: 100dvh;
   background: var(--paper);
   color: var(--ink);
-  padding: var(--space-7) var(--space-4);
+}
+
+/* Telefonda yalnızca form; kraft yüz masaüstünde. */
+.side {
+  display: none;
+}
+
+.content {
+  padding: var(--space-6) var(--space-4) var(--space-7);
 }
 
 .column {
@@ -11,11 +20,9 @@
 }
 
 .brand {
-  margin: 0 0 var(--space-6);
-  font-family: var(--font-display);
-  font-size: 22px;
-  line-height: 28px;
-  color: var(--ink);
+  margin: 0 0 var(--space-7);
+  font-size: 24px;
+  line-height: 30px;
 }
 
 .title {
@@ -39,7 +46,47 @@
 }
 
 @media (min-width: 640px) {
-  .page {
+  .content {
     padding: var(--space-8) var(--space-6);
+  }
+}
+
+@media (min-width: 960px) {
+  .page {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+  }
+
+  .side {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: var(--space-7);
+    padding: var(--space-7);
+    background: var(--kraft);
+    background-image: var(--kraft-fiber);
+  }
+
+  /* Kraft üstünde işaretin zemini kâğıt rengi. */
+  .sideMark {
+    --mark-bg: var(--paper-raised);
+    width: 112px;
+    height: 112px;
+  }
+
+  .sideText {
+    max-width: 420px;
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 30px;
+    line-height: 38px;
+  }
+
+  .content {
+    display: flex;
+    align-items: center;
+  }
+
+  .column {
+    flex: 1;
   }
 }

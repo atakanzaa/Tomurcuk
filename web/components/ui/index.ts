@@ -2,6 +2,7 @@ export { Button, type ButtonProps, type ButtonSize, type ButtonVariant } from ".
 export { Field, type FieldProps } from "./Field";
 export { GiftTag, CARD_NOTE_MAX_LENGTH } from "./GiftTag";
 export { KraftBand } from "./KraftBand";
+export { Logo, LogoMark } from "./Logo";
 export { OrderList, OrderRow } from "./OrderRow";
 export { ProductItem } from "./ProductItem";
 export { StatusTag, type StatusTone } from "./StatusTag";

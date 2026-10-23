@@ -21,6 +21,7 @@
   overflow: hidden;
   border-radius: var(--radius-l);
   background: var(--kraft);
+  background-image: var(--kraft-fiber);
 }
 
 .photo > svg {
