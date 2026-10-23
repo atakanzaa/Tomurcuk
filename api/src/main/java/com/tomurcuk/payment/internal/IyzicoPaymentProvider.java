@@ -16,6 +16,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 import com.tomurcuk.payment.PaymentProvider;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestClientResponseException;
@@ -37,6 +38,8 @@ class IyzicoPaymentProvider implements PaymentProvider {
 	static final String INITIALIZE = "/payment/iyzipos/checkoutform/initialize/auth/ecom";
 
 	static final String RETRIEVE = "/payment/iyzipos/checkoutform/auth/ecom/detail";
+
+	private static final MediaType JSON_UTF8 = new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8);
 
 	/** Üye olmadan sipariş veren alıcı için iyzico'nun kabul ettiği kimlik numarası. */
 	private static final String GUEST_IDENTITY_NUMBER = "11111111111";
@@ -137,15 +140,23 @@ class IyzicoPaymentProvider implements PaymentProvider {
 		String payload = json.writeValueAsString(body);
 		String rnd = randomKey.get();
 		try {
-			String response = http.post()
+			ResponseEntity<String> response = http.post()
 				.uri(path)
-				.contentType(MediaType.APPLICATION_JSON)
+				.contentType(JSON_UTF8)
 				.header("Authorization", authorization(rnd, path, payload))
 				.header("x-iyzi-rnd", rnd)
-				.body(payload)
+				// İmza bu baytların üzerinden hesaplanır; gövde aynen bu baytlarla gider.
+				.body(payload.getBytes(StandardCharsets.UTF_8))
 				.retrieve()
-				.body(String.class);
-			return json.readTree(response == null ? "{}" : response);
+				.toEntity(String.class);
+			// 3xx hata sayılmaz ve gövdesi boştur; iyzico her cevabında JSON döner.
+			if (!response.getStatusCode().is2xxSuccessful() || response.getBody() == null
+					|| response.getBody().isBlank()) {
+				throw new Unavailable("iyzico " + response.getStatusCode().value() + " döndü, gövde boş"
+						+ (response.getHeaders().getLocation() == null ? ""
+								: ", yönlendirme: " + response.getHeaders().getLocation()));
+			}
+			return json.readTree(response.getBody());
 		}
 		catch (RestClientResponseException ex) {
 			throw new Unavailable("iyzico " + ex.getStatusCode().value() + " döndü: " + ex.getResponseBodyAsString());
