@@ -110,7 +110,7 @@ class IyzicoPaymentProvider implements PaymentProvider {
 		JsonNode response = post(INITIALIZE, body);
 		if (!"success".equals(text(response, "status")) || text(response, "token") == null) {
 			throw new Unavailable("iyzico ödeme sayfası açılamadı: " + text(response, "errorCode") + " "
-					+ text(response, "errorMessage"));
+					+ text(response, "errorMessage") + ", cevap: " + abbreviate(response.toString()));
 		}
 		return new Session(text(response, "token"), text(response, "paymentPageUrl"));
 	}
@@ -168,6 +168,11 @@ class IyzicoPaymentProvider implements PaymentProvider {
 		catch (NoSuchAlgorithmException | InvalidKeyException ex) {
 			throw new IllegalStateException(ex);
 		}
+	}
+
+	/** Log'a yazılan iyzico cevabı; ödeme sayfasının HTML'i gibi uzun alanlar kesilir. */
+	private static String abbreviate(String raw) {
+		return raw.length() <= 600 ? raw : raw.substring(0, 600) + "…";
 	}
 
 	/** 137000 kuruş → "1370.00" */
