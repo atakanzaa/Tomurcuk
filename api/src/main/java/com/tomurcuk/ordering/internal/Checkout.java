@@ -34,6 +34,8 @@ import com.tomurcuk.shared.Texts;
 import com.tomurcuk.shared.ValidationException;
 import com.tomurcuk.shop.ShopDirectory;
 import com.tomurcuk.shop.ShopInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DuplicateKeyException;
@@ -48,6 +50,8 @@ import org.springframework.web.util.UriComponentsBuilder;
  */
 @Service
 public class Checkout {
+
+	private static final Logger log = LoggerFactory.getLogger(Checkout.class);
 
 	static final Duration DRAFT_TTL = Duration.ofHours(2);
 
@@ -320,6 +324,7 @@ public class Checkout {
 		}
 		catch (PaymentProvider.Unavailable ex) {
 			// Sipariş açık kalır; alıcı biraz sonra yeniden deneyebilir ya da havaleyi seçebilir.
+			log.warn("Ödeme sayfası açılamadı: sipariş {}: {}", order.number(), ex.getMessage());
 			throw ValidationException.of("draft", FieldError.of("payment_unavailable"));
 		}
 	}
