@@ -18,6 +18,7 @@ import com.tomurcuk.payment.PaymentProvider;
 import org.springframework.http.MediaType;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestClientResponseException;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.json.JsonMapper;
 
@@ -145,6 +146,9 @@ class IyzicoPaymentProvider implements PaymentProvider {
 				.retrieve()
 				.body(String.class);
 			return json.readTree(response == null ? "{}" : response);
+		}
+		catch (RestClientResponseException ex) {
+			throw new Unavailable("iyzico " + ex.getStatusCode().value() + " döndü: " + ex.getResponseBodyAsString());
 		}
 		catch (RestClientException ex) {
 			throw new Unavailable("iyzico'ya ulaşılamadı: " + ex.getMessage());
