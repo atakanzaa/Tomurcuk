@@ -1,5 +1,6 @@
 package com.tomurcuk.payment.internal;
 
+import java.time.Duration;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -8,6 +9,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.web.client.RestClient;
 import tools.jackson.databind.json.JsonMapper;
@@ -36,7 +40,23 @@ class IyzicoConfig {
 			.or(() -> {
 				throw new PaymentProvider.Unavailable("Dükkânın iyzico alt üye işyeri anahtarı yok: " + shopId);
 			}) : shopId -> Optional.empty();
-		return new IyzicoPaymentProvider(RestClient.builder().baseUrl(baseUrl).build(), json, apiKey, secretKey,
+		return new IyzicoPaymentProvider(client(baseUrl), json, apiKey, secretKey,
 				buyerEmail, subMerchants, () -> System.currentTimeMillis() + UUID.randomUUID().toString().substring(0, 8));
+	}
+
+	/**
+	 * HttpURLConnection, curl'ün gönderdiğine en yakın istek: HTTP/1.1, sıkıştırma istemez. JDK
+	 * HttpClient'la (HTTP/2, gzip, "Java-http-client" kimliği) iyzico sandbox'ı boş gövde döndü.
+	 */
+	static RestClient client(String baseUrl) {
+		SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+		factory.setConnectTimeout(Duration.ofSeconds(10));
+		factory.setReadTimeout(Duration.ofSeconds(30));
+		return RestClient.builder()
+			.baseUrl(baseUrl)
+			.requestFactory(factory)
+			.defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+			.defaultHeader(HttpHeaders.USER_AGENT, "Tomurcuk")
+			.build();
 	}
 }
