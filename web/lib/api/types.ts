@@ -610,3 +610,56 @@ export interface PilotApplicationInput {
   district: string;
   instagram: string;
 }
+
+// Alıcı ana sayfası (api: discovery modülü)
+
+/** Teslim edilen semt; `neighborhood` boşsa ilçenin tamamı. */
+export interface Area {
+  district: string;
+  neighborhood: string | null;
+}
+
+/** Dükkânın seçilen gün o semte teslim edip edemeyeceği. */
+export const Availability = {
+  Open: "open",
+  SameDayClosed: "same_day_closed",
+  Full: "full",
+  Closed: "closed",
+} as const;
+export type Availability = ValueOf<typeof Availability>;
+
+/** Ana sayfada dükkân satırındaki ürün. `price` en küçük boyla en düşük fiyat; `priceFrom` birden çok boy var. */
+export interface ProductCard {
+  id: string;
+  name: string;
+  price: Kurus;
+  priceFrom: boolean;
+  photoUrl: string | null;
+}
+
+/** Seçilen semte teslim eden dükkân. `cutoff` yalnızca bugün ve sipariş verilebilirken dolu. */
+export interface ShopMatch {
+  slug: string;
+  name: string;
+  address: string;
+  descriptionShort: string;
+  deliveryFee: Kurus;
+  availability: Availability;
+  cutoff: ClockTime | null;
+  slots: { start: ClockTime; end: ClockTime }[];
+  /** Sipariş verilemiyorsa ilk müsait gün ve aralık. */
+  next: { date: IsoDate; start: ClockTime; end: ClockTime } | null;
+  products: ProductCard[];
+}
+
+export interface ShopPick {
+  shopSlug: string;
+  shopName: string;
+  product: ProductCard;
+}
+
+/** Dükkân bilinmeden bulunan siparişin takip adresi. */
+export interface OrderRef {
+  slug: string;
+  token: string;
+}

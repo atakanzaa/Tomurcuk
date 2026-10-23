@@ -145,6 +145,23 @@ public class OrderStore {
 			.optional();
 	}
 
+	/** Bütün dükkânlarda; aynı numara ve telefon birden çok dükkânda varsa en yeni sipariş. */
+	Optional<TrackingRef> findTrackingRef(String number, String senderPhone) {
+		return jdbc.sql("""
+				SELECT shop_id, tracking_token FROM orders
+				WHERE number = :number AND sender_phone = :phone
+				ORDER BY created_at DESC
+				LIMIT 1
+				""")
+			.param("number", number)
+			.param("phone", senderPhone)
+			.query((rs, n) -> new TrackingRef(rs.getString("shop_id"), rs.getString("tracking_token")))
+			.optional();
+	}
+
+	public record TrackingRef(String shopId, String token) {
+	}
+
 	/** Ödendi işaretler; zaten ödenmişse 0 döner. */
 	int markPaid(String orderId) {
 		return jdbc.sql("UPDATE orders SET payment_status = 'paid' WHERE id = :id AND payment_status <> 'paid'")

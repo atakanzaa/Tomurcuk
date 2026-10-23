@@ -186,3 +186,75 @@ UPDATE shop SET created_at = '2025-09-12T09:00:00+03:00' WHERE id = 'shop_lale';
 UPDATE shop SET created_at = '2026-01-20T09:00:00+03:00' WHERE id = 'shop_papatya';
 UPDATE shop SET created_at = '2026-03-02T09:00:00+03:00' WHERE id = 'shop_begonvil';
 UPDATE shop SET created_at = '2025-11-15T09:00:00+03:00' WHERE id = 'shop_orkide';
+
+-- Alıcı ana sayfasında Nergis'in yanında görünen iki dükkân: Kadıköy'e de teslim ederler.
+-- Begonvil aynı gün akşam aralığına, Lale Bahçesi karşı yakaya ertesi günden itibaren.
+UPDATE shop SET
+    description = 'Ataşehir''de saksı bitkileri ve kuru çiçek aranjmanları. Kadıköy ve Ataşehir''e aynı gün teslim ediyoruz.',
+    description_short = 'Saksı bitkileri ve kuru çiçek aranjmanları.',
+    featured_product_id = 'p_bg_monstera'
+WHERE id = 'shop_begonvil';
+UPDATE shop SET
+    description = 'Beşiktaş''ta mevsim lalesi ve kır buketleri. Anadolu yakasına ertesi gün teslim ediyoruz.',
+    description_short = 'Mevsim lalesi ve kır buketleri; Anadolu yakasına ertesi gün.',
+    featured_product_id = 'p_lb_lale'
+WHERE id = 'shop_lale';
+
+INSERT INTO category (id, shop_id, slug, name, position)
+VALUES
+    ('c_bg_saksi', 'shop_begonvil', 'saksi-bitkileri', 'Saksı bitkileri', 1),
+    ('c_bg_kuru', 'shop_begonvil', 'kuru-cicek', 'Kuru çiçek', 2),
+    ('c_lb_buket', 'shop_lale', 'buketler', 'Buketler', 1)
+ON CONFLICT (id) DO UPDATE SET
+    shop_id = EXCLUDED.shop_id,
+    slug = EXCLUDED.slug,
+    name = EXCLUDED.name,
+    position = EXCLUDED.position;
+
+INSERT INTO product (id, shop_id, category_id, name, description, summary, price, photo_url, active, position)
+VALUES
+    ('p_bg_monstera', 'shop_begonvil', 'c_bg_saksi', 'Monstera', 'Seramik saksıda, 60 cm. Bakım kartıyla gelir.', 'Saksıda, 60 cm', 110000, NULL, TRUE, 1),
+    ('p_bg_kuru', 'shop_begonvil', 'c_bg_kuru', 'Kuru çiçek kutusu', 'Lavanta, pampas ve kuru güller; kutuda aylarca durur.', 'Kutuda, aylarca durur', 76000, NULL, TRUE, 2),
+    ('p_bg_kir', 'shop_begonvil', 'c_bg_kuru', 'Kır buketi', 'Mevsimin kır çiçekleri, kraft sarımlı.', 'Aynı gün', 65000, NULL, TRUE, 3),
+    ('p_lb_lale', 'shop_lale', 'c_lb_buket', 'Beyaz lale', 'Hollanda beyaz lalesi, 20 dal.', '20 dal', 69000, NULL, TRUE, 1),
+    ('p_lb_papatya', 'shop_lale', 'c_lb_buket', 'Papatya kutusu', 'Papatya ve okaliptüs, kutuda.', 'Kutuda', 54000, NULL, TRUE, 2),
+    ('p_lb_kir', 'shop_lale', 'c_lb_buket', 'Kır buketi', 'Mevsimin kır çiçekleri.', 'Mevsiminde', 62000, NULL, TRUE, 3)
+ON CONFLICT (id) DO UPDATE SET
+    shop_id = EXCLUDED.shop_id,
+    category_id = EXCLUDED.category_id,
+    name = EXCLUDED.name,
+    description = EXCLUDED.description,
+    summary = EXCLUDED.summary,
+    price = EXCLUDED.price,
+    photo_url = EXCLUDED.photo_url,
+    active = EXCLUDED.active,
+    position = EXCLUDED.position;
+
+INSERT INTO delivery_zone (id, shop_id, district, neighborhood, fee, active, position)
+VALUES
+    ('z_bg_atasehir', 'shop_begonvil', 'Ataşehir', NULL, 6000, TRUE, 1),
+    ('z_bg_kadikoy', 'shop_begonvil', 'Kadıköy', NULL, 12000, TRUE, 2),
+    ('z_lb_besiktas', 'shop_lale', 'Beşiktaş', NULL, 5000, TRUE, 1),
+    ('z_lb_caferaga', 'shop_lale', 'Kadıköy', 'Caferağa', 15000, TRUE, 2),
+    ('z_lb_moda', 'shop_lale', 'Kadıköy', 'Moda', 15000, TRUE, 3)
+ON CONFLICT (id) DO UPDATE SET
+    shop_id = EXCLUDED.shop_id,
+    district = EXCLUDED.district,
+    neighborhood = EXCLUDED.neighborhood,
+    fee = EXCLUDED.fee,
+    active = EXCLUDED.active,
+    position = EXCLUDED.position;
+
+-- Lale Bahçesi'nin aynı gün son saati 08:00: Anadolu yakasına bugün teslim etmez.
+UPDATE shop SET same_day_cutoff = '08:00' WHERE id = 'shop_lale';
+
+INSERT INTO time_slot (id, shop_id, start_time, end_time, capacity)
+VALUES
+    ('s_bg_aksam', 'shop_begonvil', '16:00', '19:00', 6),
+    ('s_lb_sabah', 'shop_lale', '10:00', '13:00', 4),
+    ('s_lb_ogle', 'shop_lale', '13:00', '16:00', 4)
+ON CONFLICT (id) DO UPDATE SET
+    shop_id = EXCLUDED.shop_id,
+    start_time = EXCLUDED.start_time,
+    end_time = EXCLUDED.end_time,
+    capacity = EXCLUDED.capacity;

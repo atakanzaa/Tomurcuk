@@ -1,5 +1,9 @@
 import type {
+  Area,
   AuditEntry,
+  OrderRef,
+  ShopMatch,
+  ShopPick,
   CannedReply,
   CardInput,
   CustomerDetail,
@@ -127,4 +131,12 @@ export interface TomurcukApi {
 
   // Tanıtım sitesi
   submitPilotApplication(input: PilotApplicationInput): Promise<Result<true, keyof PilotApplicationInput>>;
+
+  // Alıcı ana sayfası: semt ve güne göre dükkânlar. Sipariş dükkânın kendi sayfasında verilir.
+  getAreas(): Promise<Area[]>;
+  /** Sıra backend'de: o gün teslim edebilenler önce, ilk müsait aralığa göre. */
+  discoverShops(input: { district: string; neighborhood: string | null; date: IsoDate }): Promise<ShopMatch[]>;
+  getShopPicks(): Promise<ShopPick[]>;
+  /** Sipariş numarası ve gönderen telefonu bütün dükkânlarda eşleşirse takip adresi. */
+  findOrder(input: { number: string; phone: string }): Promise<OrderRef | null>;
 }

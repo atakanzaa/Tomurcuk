@@ -4,7 +4,7 @@ export const PLANS: { name: string; monthlyPrice: number | null; summary: string
   {
     name: "Başlangıç",
     monthlyPrice: null,
-    summary: "Sipariş sayfası, sipariş paneli, müşteri defteri ve ayda 100 SMS. Tek dükkân, iki kullanıcı.",
+    summary: "Sipariş sayfası, alıcı sayfasında yer, sipariş paneli, müşteri defteri ve ayda 100 SMS. Tek dükkân, iki kullanıcı.",
   },
   {
     name: "Pro",

@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Tomurcuk, alıcı ana sayfası</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/tomurcuk/tokens.css">
+<link rel="stylesheet" href="ds/tomurcuk/components/bundle.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&amp;family=Young+Serif&amp;display=swap">
+<style>
+body{margin:0}
+a{color:var(--stem)}a:hover{color:var(--stem-hover)}
+.wrap{max-width:1200px;margin:0 auto;padding:0 32px;box-sizing:border-box}
+.h2{margin:0;font-family:var(--font-display);font-weight:400;font-size:clamp(30px,3.6vw,40px);line-height:1.12;letter-spacing:-0.25px}
+.lead{margin:0;font-size:18px;line-height:28px;color:var(--ink-muted);max-width:560px}
+.shop{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr) auto;gap:32px;align-items:center;padding:28px 0;border-top:1px solid var(--line)}
+.thumbs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.thumb{display:grid;gap:6px;color:var(--ink);text-decoration:none}
+.ph{aspect-ratio:4/5;border-radius:var(--radius-m);background:var(--kraft);display:flex;align-items:flex-end;padding:10px;box-sizing:border-box;font-family:var(--font-display);font-size:15px;line-height:19px;color:var(--ink)}
+.ph-l{aspect-ratio:4/5;border-radius:var(--radius-l);background:var(--kraft);display:flex;align-items:flex-end;padding:20px;box-sizing:border-box;font-family:var(--font-display);font-size:23px;line-height:28px;color:var(--ink)}
+.step{display:grid;grid-template-columns:48px minmax(0,1fr);column-gap:20px;padding:28px 0;border-top:1px solid var(--line)}
+.step-n{font-family:var(--font-display);font-size:30px;line-height:36px;color:var(--peony)}
+.step-t{margin:0 0 6px;font-size:20px;line-height:28px;font-weight:600}
+.step-b{margin:0;font-size:16px;line-height:26px;color:var(--ink-muted);max-width:520px}
+.picks{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px}
+@media (max-width:900px){.shop{grid-template-columns:minmax(0,1fr);gap:16px}.picks{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:720px){.wrap{padding:0 16px}.nav-l{display:none !important}.hero-art{display:none !important}}
+</style>
+</helmet>
+<div data-theme="{{theme}}" style="min-height: 100vh; background: var(--paper); color: var(--ink); font-family: var(--font-sans);">
+
+  <header class="wrap" style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px; padding-top: 20px; padding-bottom: 20px;">
+    <a href="Main.dc.html" style="font-family: var(--font-display); font-size: 26px; line-height: 32px; color: var(--ink); text-decoration: none;">Tomurcuk</a>
+    <nav aria-label="Sayfa" style="display: flex; flex-wrap: wrap; align-items: center; gap: 24px; font-size: 15px; font-weight: 500;">
+      <a class="nav-l" href="#nasil" style="color: var(--ink); text-decoration: none;">Nasıl çalışır</a>
+      <a href="#takip" style="color: var(--ink); text-decoration: none;">Siparişimi bul</a>
+      <a class="tm-btn tm-btn--secondary tm-btn--s" href="../tanitim/Main.dc.html">Çiçekçiler için</a>
+    </nav>
+  </header>
+
+  <section class="wrap" style="display: flex; flex-wrap: wrap; gap: 56px; align-items: center; padding-top: 48px; padding-bottom: 80px;">
+    <div style="flex: 1 1 480px; min-width: 0; display: grid; gap: 24px;">
+      <h1 style="margin: 0; font-family: var(--font-display); font-weight: 400; font-size: clamp(40px, 5.2vw, 64px); line-height: 1.05; letter-spacing: -1px;">Semtinizdeki çiçekçiden, bugün kapıda.</h1>
+      <p class="lead">Tomurcuk'taki çiçekler mahallenin çiçekçisinden gelir. Teslim edilecek semti ve günü seçin, o gün oraya teslim eden dükkânları görün, siparişi doğrudan dükkândan verin.</p>
+
+      <form aria-label="Çiçekçi ara" style="display: grid; gap: 16px; padding: 24px; background: var(--paper-raised); border: 1px solid var(--line); border-radius: var(--radius-l); max-width: 560px;">
+        <label class="tm-field">
+          <span class="tm-field__label">Nereye gönderiyorsunuz?</span>
+          <select class="tm-field__control">
+            <option>Caferağa, Kadıköy</option>
+            <option>Moda, Kadıköy</option>
+            <option>Kuzguncuk, Üsküdar</option>
+          </select>
+        </label>
+        <div style="display: grid; gap: 8px;">
+          <span class="tm-field__label" id="gun-etiketi">Ne zaman?</span>
+          <div class="tm-slots" role="radiogroup" aria-labelledby="gun-etiketi">
+            <sc-for list="{{days}}" as="day" hint-placeholder-count="3">
+              <button type="button" class="tm-slot" role="radio" aria-checked="{{day.checked}}" onClick="{{day.pick}}" style="font: 500 16px/20px var(--font-sans); color: inherit; cursor: pointer;">{{day.label}}<small>{{day.date}}</small></button>
+            </sc-for>
+          </div>
+        </div>
+        <a class="tm-btn tm-btn--primary tm-btn--block" href="#sonuc" style="height: 52px; font-size: 16px;">Çiçekçileri göster</a>
+      </form>
+    </div>
+
+    <div class="hero-art" aria-hidden="true" style="flex: 1 1 380px; min-width: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; align-items: end;">
+      <div class="ph-l">Bu haftanın lalesi</div>
+      <div style="display: grid; gap: 16px;">
+        <figure class="tm-gifttag" style="margin: 0 0 0 8px; transform: rotate(-3deg);">
+          <p class="tm-gifttag__text" style="font-size: 19px; line-height: 26px;">Yeni evin hayırlı olsun, ilk çiçekler bizden.</p>
+          <figcaption class="tm-gifttag__from">Deniz ve Ali</figcaption>
+        </figure>
+        <div class="ph-l" style="aspect-ratio: 4 / 4;">Pembe şakayık</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="sonuc" class="wrap" style="padding-bottom: 72px; display: grid; gap: 8px;">
+    <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px 24px; padding-bottom: 16px;">
+      <h2 class="h2">Bugün Caferağa'ya teslim eden çiçekçiler</h2>
+      <span style="font-size: 15px; color: var(--ink-muted);">23 Ekim Perşembe, 3 dükkân</span>
+    </div>
+
+    <article class="shop">
+      <div style="display: grid; gap: 8px; min-width: 0;">
+        <h3 style="margin: 0; font-family: var(--font-display); font-weight: 400; font-size: 26px; line-height: 32px;"><a href="#" style="color: var(--ink); text-decoration: none;">Nergis Çiçek Atölyesi</a></h3>
+        <span style="font-size: 15px; line-height: 22px; color: var(--ink-muted);">Moda, Kadıköy. Moda'da 2009'dan beri; buketler her sabah halden gelen çiçeklerle hazırlanır.</span>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: 14px; line-height: 20px;">
+          <span style="display: inline-flex; align-items: center; gap: 6px; font-weight: 600; color: var(--stem-ink);"><span aria-hidden="true" style="width: 8px; height: 8px; border-radius: 50%; background: var(--stem);"></span>Bugün 15:00'e kadar sipariş</span>
+          <span style="color: var(--ink-muted);">Teslimat 90 TL</span>
+          <span style="color: var(--ink-muted);">13:00–16:00 ve 16:00–19:00 müsait</span>
+        </div>
+      </div>
+      <div class="thumbs">
+        <a class="thumb" href="#"><span class="ph">Mevsim buketi</span><span style="font-size: 14px; font-weight: 500;">850 TL'den</span></a>
+        <a class="thumb" href="#"><span class="ph">Beyaz güller</span><span style="font-size: 14px; font-weight: 500;">980 TL</span></a>
+        <a class="thumb" href="#"><span class="ph">Mor orkide</span><span style="font-size: 14px; font-weight: 500;">1.600 TL</span></a>
+      </div>
+      <a class="tm-btn tm-btn--primary" href="#" style="height: 48px; padding: 0 22px;">Dükkânı açın</a>
+    </article>
+
+    <article class="shop">
+      <div style="display: grid; gap: 8px; min-width: 0;">
+        <h3 style="margin: 0; font-family: var(--font-display); font-weight: 400; font-size: 26px; line-height: 32px;"><a href="#" style="color: var(--ink); text-decoration: none;">Begonvil Atölye</a></h3>
+        <span style="font-size: 15px; line-height: 22px; color: var(--ink-muted);">Atatürk Mah., Ataşehir. Saksı bitkileri ve kuru çiçek aranjmanları.</span>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: 14px; line-height: 20px;">
+          <span style="display: inline-flex; align-items: center; gap: 6px; font-weight: 600; color: var(--stem-ink);"><span aria-hidden="true" style="width: 8px; height: 8px; border-radius: 50%; background: var(--stem);"></span>Bugün 14:00'e kadar sipariş</span>
+          <span style="color: var(--ink-muted);">Teslimat 120 TL</span>
+          <span style="color: var(--ink-muted);">16:00–19:00 müsait</span>
+        </div>
+      </div>
+      <div class="thumbs">
+        <a class="thumb" href="#"><span class="ph">Monstera</span><span style="font-size: 14px; font-weight: 500;">1.100 TL</span></a>
+        <a class="thumb" href="#"><span class="ph">Kuru çiçek kutusu</span><span style="font-size: 14px; font-weight: 500;">760 TL</span></a>
+        <a class="thumb" href="#"><span class="ph">Kır buketi</span><span style="font-size: 14px; font-weight: 500;">650 TL</span></a>
+      </div>
+      <a class="tm-btn tm-btn--primary" href="#" style="height: 48px; padding: 0 22px;">Dükkânı açın</a>
+    </article>
+
+    <article class="shop" style="border-bottom: 1px solid var(--line);">
+      <div style="display: grid; gap: 8px; min-width: 0;">
+        <h3 style="margin: 0; font-family: var(--font-display); font-weight: 400; font-size: 26px; line-height: 32px;"><a href="#" style="color: var(--ink); text-decoration: none;">Lale Bahçesi</a></h3>
+        <span style="font-size: 15px; line-height: 22px; color: var(--ink-muted);">Sinanpaşa Mah., Beşiktaş. Karşı yakaya ertesi gün teslim eder.</span>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: 14px; line-height: 20px;">
+          <span style="display: inline-flex; align-items: center; gap: 6px; font-weight: 600; color: var(--ink-muted);"><span aria-hidden="true" style="width: 8px; height: 8px; border-radius: 50%; border: 1.5px solid var(--line-strong); box-sizing: border-box;"></span>Bugün için siparişler kapandı</span>
+          <span style="color: var(--ink-muted);">Yarın 10:00–13:00'ten itibaren</span>
+        </div>
+      </div>
+      <div class="thumbs">
+        <a class="thumb" href="#"><span class="ph">Beyaz lale</span><span style="font-size: 14px; font-weight: 500;">690 TL</span></a>
+        <a class="thumb" href="#"><span class="ph">Papatya kutusu</span><span style="font-size: 14px; font-weight: 500;">540 TL</span></a>
+        <a class="thumb" href="#"><span class="ph">Ayaklı çelenk</span><span style="font-size: 14px; font-weight: 500;">2.400 TL</span></a>
+      </div>
+      <a class="tm-btn tm-btn--secondary" href="#" style="height: 48px; padding: 0 22px;">Yarın için bakın</a>
+    </article>
+    <span style="padding-top: 12px; font-size: 14px; line-height: 20px; color: var(--ink-muted); max-width: 640px;">Sıra, bugün teslim edebilme durumuna ve son sipariş saatine göredir. Dükkânlar öne çıkmak için ücret ödemez.</span>
+  </section>
+
+  <section style="background: var(--paper-raised); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);">
+    <div class="wrap" style="display: grid; gap: 32px; padding-top: 72px; padding-bottom: 72px;">
+      <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px 24px;">
+        <h2 class="h2">Bu hafta çiçekçilerin tezgâhından</h2>
+        <a href="#sonuc" style="font-size: 15px; font-weight: 500;">Bütün dükkânlar</a>
+      </div>
+      <div class="picks">
+        <a class="tm-product" href="#"><div class="tm-product__photo ph-l" style="border-radius: var(--radius-l);">Bu haftanın lalesi</div><h3 class="tm-product__name">Bu haftanın lalesi</h3><div class="tm-product__meta"><span>Nergis Çiçek Atölyesi</span><span class="tm-product__price">720 TL</span></div></a>
+        <a class="tm-product" href="#"><div class="tm-product__photo ph-l" style="border-radius: var(--radius-l);">Pembe şakayık</div><h3 class="tm-product__name">Pembe şakayık</h3><div class="tm-product__meta"><span>Nergis Çiçek Atölyesi</span><span class="tm-product__price">1.350 TL</span></div></a>
+        <a class="tm-product" href="#"><div class="tm-product__photo ph-l" style="border-radius: var(--radius-l);">Kuru çiçek kutusu</div><h3 class="tm-product__name">Kuru çiçek kutusu</h3><div class="tm-product__meta"><span>Begonvil Atölye</span><span class="tm-product__price">760 TL</span></div></a>
+        <a class="tm-product" href="#"><div class="tm-product__photo ph-l" style="border-radius: var(--radius-l);">Beyaz lale</div><h3 class="tm-product__name">Beyaz lale</h3><div class="tm-product__meta"><span>Lale Bahçesi</span><span class="tm-product__price">690 TL</span></div></a>
+      </div>
+    </div>
+  </section>
+
+  <section id="nasil" class="wrap" style="display: flex; flex-wrap: wrap; gap: 56px; padding-top: 88px; padding-bottom: 88px;">
+    <div style="flex: 1 1 340px; display: grid; gap: 16px; align-content: start;">
+      <h2 class="h2">Sipariş nasıl ilerler?</h2>
+      <p class="lead">Tomurcuk sizi dükkâna götürür; buketi hazırlayan, saati veren ve kapıya getiren çiçekçinin kendisidir.</p>
+    </div>
+    <ol style="flex: 2 1 520px; list-style: none; margin: 0; padding: 0;">
+      <li class="step"><span class="step-n">1</span><div><h3 class="step-t">Semti ve günü seçin</h3><p class="step-b">Yalnızca o gün o adrese teslim edebilen çiçekçiler listelenir. Son sipariş saati ve müsait saat aralıkları her dükkânın satırında yazar.</p></div></li>
+      <li class="step"><span class="step-n">2</span><div><h3 class="step-t">Siparişi dükkândan verin</h3><p class="step-b">Ürünü, teslim saatini ve kart notunu dükkânın kendi sayfasında seçersiniz. Ödeme iyzico ile alınır; kart bilgileriniz ne çiçekçiye ne Tomurcuk'a ulaşır.</p></div></li>
+      <li class="step" style="border-bottom: 1px solid var(--line);"><span class="step-n">3</span><div><h3 class="step-t">Yola çıkınca haber alın</h3><p class="step-b">Çiçekçi siparişi yola çıkardığında alıcıya SMS gider, teslim edildiğinde size. Sipariş numaranız ve telefonunuzla durumu her an görebilirsiniz.</p></div></li>
+    </ol>
+  </section>
+
+  <section id="takip" class="wrap" style="padding-bottom: 88px;">
+    <div style="display: flex; flex-wrap: wrap; gap: 32px 48px; align-items: flex-end; padding: 40px; background: var(--kraft); border-radius: var(--radius-l);">
+      <div style="flex: 1 1 320px; display: grid; gap: 10px;">
+        <h2 class="h2" style="font-size: clamp(28px, 3vw, 34px);">Siparişinizi bulun</h2>
+        <p style="margin: 0; font-size: 16px; line-height: 24px; max-width: 420px;">Sipariş numarası onay SMS'inde yazar, T ile başlar. Siparişi verirken yazdığınız telefonla birlikte girin.</p>
+      </div>
+      <form aria-label="Sipariş bul" style="flex: 2 1 520px; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; align-items: end;">
+        <label class="tm-field"><span class="tm-field__label">Sipariş numarası</span><input class="tm-field__control" placeholder="T-4821"></label>
+        <label class="tm-field"><span class="tm-field__label">Telefonunuz</span><input class="tm-field__control" inputmode="tel" placeholder="05xx xxx xx xx"></label>
+        <button type="submit" class="tm-btn tm-btn--primary" style="height: 44px;">Siparişi bul</button>
+      </form>
+    </div>
+  </section>
+
+  <section style="background: var(--stem); color: var(--on-stem);">
+    <div class="wrap" style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 24px 48px; padding-top: 64px; padding-bottom: 64px;">
+      <div style="flex: 1 1 480px; display: grid; gap: 12px;">
+        <h2 class="h2">Çiçekçi misiniz?</h2>
+        <p style="margin: 0; font-size: 18px; line-height: 28px; max-width: 560px;">Kendi sipariş sayfanızı açın; semtinizdeki alıcılar sizi burada bulsun, siparişler tek ekrana düşsün. Sipariş başına komisyon yok.</p>
+      </div>
+      <a class="tm-btn" href="../tanitim/Main.dc.html" style="height: 52px; padding: 0 26px; font-size: 16px; background: var(--paper); color: var(--ink);">Çiçekçiler için</a>
+    </div>
+  </section>
+
+  <footer class="wrap" style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; padding-top: 32px; padding-bottom: 40px; font-size: 14px; color: var(--ink-muted);">
+    <span><span style="font-family: var(--font-display); font-size: 18px; color: var(--ink);">Tomurcuk</span> Mahallenin çiçekçisinden sipariş.</span>
+    <span style="display: flex; flex-wrap: wrap; gap: 20px;"><a href="../tanitim/Main.dc.html" style="color: var(--ink-muted);">Çiçekçiler için</a><a href="#" style="color: var(--ink-muted);">KVKK aydınlatma metni</a><a href="#" style="color: var(--ink-muted);">Kullanım koşulları</a><a href="#" style="color: var(--ink-muted);">İletişim</a></span>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":1440,"height":3560}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { day: 'bugun' };
+  }
+  renderVals() {
+    const days = [
+      { id: 'bugun', label: 'Bugün', date: '23 Ekim' },
+      { id: 'yarin', label: 'Yarın', date: '24 Ekim' },
+      { id: 'baska', label: 'Başka gün', date: 'Takvimden' }
+    ];
+    return {
+      theme: this.props.theme ?? 'light',
+      days: days.map((d) => ({ ...d, checked: d.id === this.state.day ? 'true' : 'false', pick: () => this.setState({ day: d.id }) }))
+    };
+  }
+}
+</script>
+</body>
+</html>

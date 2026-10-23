@@ -45,8 +45,9 @@ docker build -f web/Dockerfile -t tomurcuk-web .
 
 ## Ekranlar
 
-**Tanıtım sitesi**
-- `/`: tanıtım ve pilot başvuru formu
+**Alıcı ana sayfası ve tanıtım sitesi**
+- `/`: semt ve gün seçimi, o gün teslim eden çiçekçiler (`/?semt=Kadıköy|Caferağa&gun=2026-10-23`), bu haftanın seçkisi, sipariş bulma
+- `/cicekciler`: çiçekçilere tanıtım ve pilot başvuru formu
 
 **Alıcı (vitrin ve sipariş akışı)**
 - `/nergis`: dükkân vitrini; `/nergis/urun/p_lale` ürün detayı, buradan sipariş akışı başlar

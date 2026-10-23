@@ -39,6 +39,7 @@ Tomurcuk, küçük çiçekçilerin kendi sipariş sayfası, sipariş paneli ve m
 - Kenar boşluğu mobilde `space-4`, masaüstünde `space-6`. Metin içeriği sola hizalıdır; ortalanmış metin yalnızca tek satırlık boş ekran mesajlarında.
 - Arayüzlerin yoğunluğu farklıdır:
   - **Alıcı vitrini:** mobil öncelikli, tek sütun akış, ferah. Dükkânın adı ve fotoğrafları öne çıkar; Tomurcuk geri planda kalır ("Tomurcuk ile" yazısı yalnızca altbilgide).
+  - **Alıcı ana sayfası (`/`):** Tomurcuk'un adıyla açılır; semt ve gün seçimi, o gün teslim eden dükkânlar satır satır. Dükkân satırına tıklayınca dükkânın kendi vitrinine geçilir.
   - **Satıcı paneli:** telefonda tek elle kullanılır. Ana ekran "Bugün": saat sütunlu sipariş satırları. Masaüstünde liste solda, seçili siparişin detayı sağda.
   - **Destek paneli:** masaüstü, yoğun. Satır yüksekliği 40px, tablolar ve zaman çizelgeleri; aynı renk ve tipografi.
 

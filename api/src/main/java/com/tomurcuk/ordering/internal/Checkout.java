@@ -263,6 +263,15 @@ public class Checkout {
 		return Phones.normalize(phone).flatMap(p -> orders.findTrackingToken(shopId, "T-" + digits, p));
 	}
 
+	/** Alıcı ana sayfasından: dükkân bilinmeden, sipariş numarası ve gönderen telefonuyla. */
+	public Optional<OrderStore.TrackingRef> findTrackingRef(String number, String phone) {
+		String digits = number == null ? "" : number.strip().toUpperCase().replaceFirst("^T-?", "");
+		if (digits.isEmpty()) {
+			return Optional.empty();
+		}
+		return Phones.normalize(phone).flatMap(p -> orders.findTrackingRef("T-" + digits, p));
+	}
+
 	private Order create(ShopInfo shop, Draft draft, PaymentMethod method, String idempotencyKey) {
 		Draft locked = drafts.findLive(shop.id(), draft.id(), true).orElseThrow(() -> incomplete("draft"));
 		if (locked.orderId() != null) {

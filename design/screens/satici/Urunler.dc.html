@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Ürünler</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/tomurcuk/tokens.css">
+<link rel="stylesheet" href="ds/tomurcuk/components/bundle.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&amp;family=Young+Serif&amp;display=swap">
+<style>
+body{margin:0}
+a{color:var(--stem)}a:hover{color:var(--stem-hover)}
+.prow{display:grid;grid-template-columns:48px minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line);color:var(--ink);text-decoration:none}
+.pth{aspect-ratio:4/5;width:48px;border-radius:var(--radius-s);background:var(--kraft);display:flex;align-items:flex-end;padding:3px;box-sizing:border-box;font-family:var(--font-display);font-size:8px;line-height:9px}
+.pname{font-size:16px;line-height:22px;font-weight:600}
+.pmeta{font-size:14px;line-height:20px;color:var(--ink-muted)}
+.pside{display:grid;justify-items:end;gap:4px;font-size:15px;font-weight:500}
+.grp{margin:0;padding:20px 0 4px;display:flex;justify-content:space-between;font-size:13px;line-height:18px;font-weight:500;color:var(--ink-muted)}
+.chip{height:36px;padding:0 14px;border:1px solid var(--line-strong);border-radius:var(--radius-pill);background:transparent;color:var(--ink);font:500 14px/20px var(--font-sans);cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+</style>
+</helmet>
+<div data-theme="{{theme}}" style="position: relative; width: 390px; height: 1100px; box-sizing: border-box; background: var(--paper); color: var(--ink); font-family: var(--font-sans); overflow: hidden;">
+  <header style="display: flex; justify-content: space-between; align-items: flex-start; padding: 20px 16px 0;">
+    <div style="display: grid; gap: 2px;">
+      <span style="font-size: 14px; line-height: 20px; color: var(--ink-muted);">9 ürün, 8'i vitrinde</span>
+      <h1 style="margin: 0; font-family: var(--font-display); font-weight: 400; font-size: 32px; line-height: 38px;">Ürünler</h1>
+    </div>
+    <a href="#" style="height: 44px; display: inline-flex; align-items: center; font-size: 15px; font-weight: 500;">Vitrini aç</a>
+  </header>
+
+  <div role="group" aria-label="Süz" style="display: flex; gap: 8px; padding: 16px 16px 0;">
+    <button type="button" class="chip" aria-pressed="true">Tümü</button>
+    <button type="button" class="chip" aria-pressed="false">Satışta</button>
+    <button type="button" class="chip" aria-pressed="false">Satışta değil 1</button>
+  </div>
+
+  <section style="padding: 4px 16px 0;">
+    <h2 class="grp"><span>Buketler</span><span>6</span></h2>
+    <a class="prow" href="UrunFormu.dc.html"><span class="pth">Bu haftanın lalesi</span><span style="display: grid; min-width: 0;"><span class="pname">Bu haftanın lalesi</span><span class="pmeta">15 dal, kraft sarımlı, 2 seçenek</span></span><span class="pside">720 TL<span class="tm-status tm-status--delivered">Satışta</span></span></a>
+    <a class="prow" href="UrunFormu.dc.html"><span class="pth">Mevsim buketi</span><span style="display: grid; min-width: 0;"><span class="pname">Mevsim buketi</span><span class="pmeta">3 boy, 2 ek seçenek</span></span><span class="pside">850 TL'den<span class="tm-status tm-status--delivered">Satışta</span></span></a>
+    <a class="prow" href="UrunFormu.dc.html"><span class="pth">Beyaz güller</span><span style="display: grid; min-width: 0;"><span class="pname">Beyaz güller</span><span class="pmeta">12 dal</span></span><span class="pside">980 TL<span class="tm-status tm-status--delivered">Satışta</span></span></a>
+    <a class="prow" href="UrunFormu.dc.html"><span class="pth">Pembe şakayık</span><span style="display: grid; min-width: 0;"><span class="pname">Pembe şakayık</span><span class="pmeta">7 dal, mevsiminde</span></span><span class="pside">1.350 TL<span class="tm-status tm-status--muted">Satışta değil</span></span></a>
+    <a class="prow" href="UrunFormu.dc.html"><span class="pth">Kır buketi</span><span style="display: grid; min-width: 0;"><span class="pname">Kır buketi</span><span class="pmeta">Aynı gün</span></span><span class="pside">650 TL<span class="tm-status tm-status--delivered">Satışta</span></span></a>
+    <a class="prow" href="UrunFormu.dc.html"><span class="pth">Papatya kutusu</span><span style="display: grid; min-width: 0;"><span class="pname">Papatya kutusu</span><span class="pmeta">Aynı gün</span></span><span class="pside">540 TL<span class="tm-status tm-status--delivered">Satışta</span></span></a>
+
+    <h2 class="grp"><span>Orkide ve saksı</span><span>2</span></h2>
+    <a class="prow" href="UrunFormu.dc.html"><span class="pth">Mor orkide</span><span style="display: grid; min-width: 0;"><span class="pname">Mor orkide</span><span class="pmeta">Saksıda, çift dal</span></span><span class="pside">1.600 TL<span class="tm-status tm-status--delivered">Satışta</span></span></a>
+    <a class="prow" href="UrunFormu.dc.html"><span class="pth">Monstera</span><span style="display: grid; min-width: 0;"><span class="pname">Monstera</span><span class="pmeta">Saksıda, 60 cm</span></span><span class="pside">1.100 TL<span class="tm-status tm-status--delivered">Satışta</span></span></a>
+
+    <h2 class="grp"><span>Çelenk</span><span>1</span></h2>
+    <a class="prow" href="UrunFormu.dc.html"><span class="pth">Ayaklı çelenk</span><span style="display: grid; min-width: 0;"><span class="pname">Ayaklı çelenk</span><span class="pmeta">1 gün önceden</span></span><span class="pside">2.400 TL<span class="tm-status tm-status--delivered">Satışta</span></span></a>
+  </section>
+
+  <a href="UrunFormu.dc.html" class="tm-btn tm-btn--primary" style="position: absolute; right: 16px; bottom: 100px; height: 52px; padding: 0 22px; border-radius: var(--radius-pill); box-shadow: var(--shadow-lift);">
+    <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" style="fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round;"><path d="M12 5v14M5 12h14"></path></svg>
+    Ürün ekle
+  </a>
+
+  <nav aria-label="Ana menü" style="position: absolute; left: 0; right: 0; bottom: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); padding: 8px 8px 24px; background: var(--paper-raised); border-top: 1px solid var(--line);">
+    <a href="#" style="display: grid; justify-items: center; gap: 4px; padding: 6px 0; color: var(--ink-muted); font-size: 12px; font-weight: 500; text-decoration: none;">
+      <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" style="fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round;"><rect x="4" y="5" width="16" height="15" rx="2"></rect><path d="M4 10h16M9 3v4M15 3v4"></path></svg>
+      Bugün
+    </a>
+    <a href="#" style="display: grid; justify-items: center; gap: 4px; padding: 6px 0; color: var(--ink-muted); font-size: 12px; font-weight: 500; text-decoration: none;">
+      <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" style="fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round;"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"></path></svg>
+      Siparişler
+    </a>
+    <a href="#" style="display: grid; justify-items: center; gap: 4px; padding: 6px 0; color: var(--ink-muted); font-size: 12px; font-weight: 500; text-decoration: none;">
+      <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" style="fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round;"><circle cx="12" cy="8" r="4"></circle><path d="M4 20c1.5-4 4.5-6 8-6s6.5 2 8 6"></path></svg>
+      Müşteriler
+    </a>
+    <a href="#" aria-current="page" style="display: grid; justify-items: center; gap: 4px; padding: 6px 0; color: var(--stem); font-size: 12px; font-weight: 600; text-decoration: none;">
+      <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" style="fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round;"><circle cx="5" cy="12" r="1.2"></circle><circle cx="12" cy="12" r="1.2"></circle><circle cx="19" cy="12" r="1.2"></circle></svg>
+      Diğer
+    </a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":390,"height":1100}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { theme: this.props.theme ?? 'light' };
+  }
+}
+</script>
+</body>
+</html>
