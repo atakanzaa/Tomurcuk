@@ -69,6 +69,29 @@ public class Shop {
 	protected Shop() {
 	}
 
+	/** Destekten açılan dükkân; bilgilerin geri kalanını sahibi panelden doldurur. */
+	public Shop(String id, String slug, String name, String shortName, String phone, String address, ShopPlan plan,
+			LocalTime sameDayCutoff, String timeZone, java.time.Instant createdAt) {
+		this.id = id;
+		this.slug = slug;
+		this.name = name;
+		this.shortName = shortName;
+		this.phone = phone;
+		this.address = address;
+		this.active = true;
+		this.plan = plan;
+		this.sameDayCutoff = sameDayCutoff;
+		this.timeZone = timeZone;
+		this.description = "";
+		this.descriptionShort = "";
+		this.openingHours = "";
+		this.legalName = "";
+		this.taxOffice = "";
+		this.taxNumber = "";
+		this.email = "";
+		this.createdAt = createdAt;
+	}
+
 	public String getId() {
 		return id;
 	}

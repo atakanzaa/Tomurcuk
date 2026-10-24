@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Suspense, type ReactNode } from "react";
 import { Button } from "@/components/ui/Button";
 import { Logo } from "@/components/ui/Logo";
-import { getShopSummaries, getSupportUser, getTickets } from "@/lib/api";
+import { getPilotApplications, getShopSummaries, getSupportUser, getTickets } from "@/lib/api";
 import { TicketStatus } from "@/lib/api/types";
 import { supportLogout } from "@/lib/auth/actions";
 import { supportRoleLabel } from "@/lib/permissions";
@@ -24,7 +24,12 @@ export default function SupportLayout({ children }: LayoutProps<"/destek">) {
 }
 
 async function SupportFrame({ children }: { children: ReactNode }) {
-  const [user, tickets, shops] = await Promise.all([getSupportUser(), getTickets(), getShopSummaries()]);
+  const [user, tickets, shops, applications] = await Promise.all([
+    getSupportUser(),
+    getTickets(),
+    getShopSummaries(),
+    getPilotApplications(),
+  ]);
   const initials = user.name
     .split(" ")
     .map((p) => p[0])
@@ -56,7 +61,11 @@ async function SupportFrame({ children }: { children: ReactNode }) {
         </div>
       </header>
       <div className={styles.frame}>
-        <SupportNav counts={{ tickets: tickets.filter((t) => t.status !== TicketStatus.Resolved).length, shops: shops.length }} />
+        <SupportNav counts={{
+            tickets: tickets.filter((t) => t.status !== TicketStatus.Resolved).length,
+            shops: shops.length,
+            applications: applications.filter((a) => !a.shopId).length,
+          }} />
         <main className={styles.main}>{children}</main>
       </div>
     </>

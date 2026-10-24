@@ -22,7 +22,7 @@ public class Category {
 	protected Category() {
 	}
 
-	Category(String id, String shopId, String slug, String name, int position) {
+	public Category(String id, String shopId, String slug, String name, int position) {
 		this.id = id;
 		this.shopId = shopId;
 		this.slug = slug;

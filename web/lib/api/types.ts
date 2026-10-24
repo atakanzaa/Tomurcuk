@@ -136,6 +136,45 @@ export interface Product {
   options: ProductOption[];
 }
 
+/** Tanıtım sitesinden gelen pilot başvurusu; `shopId` doluysa dükkân açılmıştır. */
+export interface PilotApplication {
+  id: string;
+  shopName: string;
+  phone: string;
+  district: string;
+  instagram: string | null;
+  createdAt: string;
+  shopId: string | null;
+}
+
+/** Destek panelinden dükkân açma; `applicationId` başvurudan açılıyorsa. */
+export interface OpenShopInput {
+  applicationId: string;
+  name: string;
+  shortName: string;
+  slug: string;
+  phone: string;
+  address: string;
+  ownerName: string;
+  ownerEmail: string;
+}
+
+/** Sahibin şifre belirleme bağlantısı; yalnızca oluşturulduğu yanıtta görünür, 7 gün geçerli. */
+export interface PasswordLink {
+  shopId: string;
+  slug: string;
+  ownerName: string;
+  ownerEmail: string;
+  url: string;
+}
+
+/** Şifre belirleme sayfasında bağlantının sahibi. */
+export interface PasswordHolder {
+  name: string;
+  email: string;
+  shopName: string;
+}
+
 /** Panelde dükkân ve teslimat ayarları. Saat aralığı ve bölge satırında `id` yeni satırda null. */
 export interface PanelSettings {
   profile: { shop: Shop; notifyPhone: string | null; notifySms: boolean };
@@ -420,6 +459,12 @@ export const CheckoutError = {
   ZoneDuplicate: "zone_duplicate",
   TaxNumberInvalid: "tax_number_invalid",
   EmailInvalid: "email_invalid",
+  // Destek: dükkân açma, şifre belirleme.
+  SlugInvalid: "slug_invalid",
+  SlugTaken: "slug_taken",
+  EmailTaken: "email_taken",
+  PasswordShort: "password_short",
+  LinkInvalid: "link_invalid",
 } as const;
 export type CheckoutError = ValueOf<typeof CheckoutError>;
 

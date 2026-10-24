@@ -10,6 +10,7 @@ const RESERVED_SEGMENTS = new Set([
   "foto",
   "gizlilik",
   "kullanim-kosullari",
+  "sifre",
 ]);
 
 /** Satıcı panelinin giriş sayfası. */

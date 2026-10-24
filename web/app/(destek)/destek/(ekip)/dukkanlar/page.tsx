@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 import { StatusTag } from "@/components/ui/StatusTag";
-import { getShopSummaries } from "@/lib/api";
+import { Button } from "@/components/ui/Button";
+import { getShopSummaries, getSupportUser } from "@/lib/api";
+import { Permission, supportCan } from "@/lib/permissions";
 import { formatDayMonth, relativeDayName } from "@/lib/dates";
 import { zonedNow } from "@/lib/format";
 import { planLabel } from "@/lib/shop";
@@ -19,13 +21,18 @@ export default function ShopsPage() {
 }
 
 async function Shops() {
-  const shops = await getShopSummaries();
+  const [shops, user] = await Promise.all([getShopSummaries(), getSupportUser()]);
   const today = zonedNow(new Date(), "Europe/Istanbul").date;
   return (
     <>
       <div className={styles.pageHead}>
         <h1 className={styles.title}>Dükkânlar</h1>
         <span className={styles.muted}>{shops.length} dükkân</span>
+        {supportCan(user.role, Permission.ShopOnboard) && (
+          <Button size="s" href="/destek/dukkanlar/yeni">
+            Dükkân aç
+          </Button>
+        )}
       </div>
       <div className={styles.tableWrap}>
         <table className={styles.table}>

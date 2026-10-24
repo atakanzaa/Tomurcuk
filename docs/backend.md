@@ -47,8 +47,8 @@ Her modül `com.tomurcuk.<modül>` paketidir. Kökteki sınıflar modülün dı�
 | `payment` | iyzico adapter'ı, callback ve webhook, 15 dakikalık durum sorgusu, 30 dakikada terk edilen ödemenin iptali |
 | `customer` | müşteri kartı, özel günler, hatırlatma listesi, pazarlama izni |
 | `notification` | bildirim kaydı (sipariş + tür tekil), `SmsSender`, yeniden deneme |
-| `identity` | dükkân ve platform kullanıcıları, rol, izin, oturum, TOTP |
-| `support` | talepler, mesajlar, hazır cevaplar, dahili notlar, dükkân adına oturum, maskeli veri |
+| `identity` | dükkân ve platform kullanıcıları, rol, izin, oturum, TOTP, şifre belirleme bağlantısı (7 gün, tek kullanım, token'ın yalnızca SHA-256 özeti saklanır) |
+| `support` | talepler, mesajlar, hazır cevaplar, dahili notlar, dükkân adına oturum, maskeli veri, başvurudan dükkân açma (`SHOP_ONBOARD`: sahip ve lider) |
 | `audit` | yalnızca eklenen denetim kaydı |
 | `marketing` | pilot başvuruları |
 | `settings` | satıcı panelinde dükkân ve teslimat ayarları; shop, delivery ve catalog servislerini çağırır, yetki burada (identity shop'a bağlı olduğu için ayrı modül) |
@@ -65,7 +65,7 @@ Modüller arası yan etkiler Modulith olaylarıyla taşınır, olay yayınları 
 - Dükkâna ait her sorgu `shop_id` ile filtrelenir. Başka dükkânın kaydı 404 döner, 403 değil.
 - Silme yerine `active = false` (bölge, ürün). Siparişe ad, fiyat ve bölge ücreti kopyalanır.
 
-`docs/mvp.md` veri modeline frontend yapılırken çıkan eklemeler: `category`, `shop_slug_history`, `shop_order_counter`, `order_draft`, `slot_hold` (10 dakikalık rezervasyon), `slot_capacity` (gün + aralık başına `taken`), `order_event`, `order.number`, `order.tracking_token`, `order.idempotency_key`, `shop_note`, `pilot_application`, `product.photos` (sırayla en çok dört fotoğraf; `photo_url` kapağın kopyası), `product.updated_at`/`updated_by`, `product.deleted_at`, `shop.legal_name`/`tax_office`/`tax_number`/`email` (sözleşmelerde satıcı), `shop.notify_phone`/`notify_sms`, `orders.terms_version` (alıcının onayladığı sözleşme sürümü; `ordering/Terms.VERSION` ile `web/lib/legal/version.ts` aynı). Sipariş tablosunun adı `orders` (`order` SQL'de ayrılmış kelime).
+`docs/mvp.md` veri modeline frontend yapılırken çıkan eklemeler: `category`, `shop_slug_history`, `shop_order_counter`, `order_draft`, `slot_hold` (10 dakikalık rezervasyon), `slot_capacity` (gün + aralık başına `taken`), `order_event`, `order.number`, `order.tracking_token`, `order.idempotency_key`, `shop_note`, `pilot_application`, `product.photos` (sırayla en çok dört fotoğraf; `photo_url` kapağın kopyası), `product.updated_at`/`updated_by`, `product.deleted_at`, `shop.legal_name`/`tax_office`/`tax_number`/`email` (sözleşmelerde satıcı), `shop.notify_phone`/`notify_sms`, `orders.terms_version` (alıcının onayladığı sözleşme sürümü; `ordering/Terms.VERSION` ile `web/lib/legal/version.ts` aynı), `password_token`, `pilot_application.shop_id` (başvurudan açılan dükkân). Sipariş tablosunun adı `orders` (`order` SQL'de ayrılmış kelime).
 
 ## API kuralları
 
@@ -74,7 +74,8 @@ Modüller arası yan etkiler Modulith olaylarıyla taşınır, olay yayınları 
 | Vitrin ve sipariş akışı | `/api/public/shop-lookup/{slug}`, `/api/public/shops/{shopId}/...` (takip linkinden sözleşmeler: `/tracking/{token}/contract`) | yok |
 | Alıcı ana sayfası | `/api/public/discover/areas`, `/api/public/discover/shops?district&neighborhood&date`, `/api/public/discover/picks`, `/api/public/order-lookup` | yok |
 | Satıcı paneli | `/api/panel/...` (ürünler: `GET/POST /api/panel/products`, `GET/PUT/DELETE /api/panel/products/{id}`, `POST /api/panel/photos`) | dükkân kullanıcısı ya da dükkân adına oturum; ürün yazma `CATALOG_EDIT` |
-| Destek paneli | `/api/support/...` | platform kullanıcısı |
+| Destek paneli | `/api/support/...` (dükkân açma: `GET /pilot-applications`, `POST /shops`, `POST /shops/{shopId}/password-link`) | platform kullanıcısı; dükkân açma `SHOP_ONBOARD` |
+| Şifre belirleme | `GET /api/public/password-setup/{token}`, `POST /api/public/password-setup` (web `/sifre/{token}`) | yok; bağlantı token'ı |
 | Panel ayarları | `GET /api/panel/settings`, `PUT .../profile`, `.../same-day-cutoff`, `.../slots`, `.../zones`, `POST/DELETE .../closed-days` | dükkân kullanıcısı; yazma `CATALOG_EDIT` |
 | İstanbul ilçe ve mahalleleri | `/api/public/places/istanbul` (`resources/places/istanbul.json`, kaynağı `NOTICE.txt`) | yok |
 | Diskteki ürün fotoğrafı | `/api/public/photos/{ad}` (web `/foto/{ad}` yolunda aktarır) | yok |
@@ -154,6 +155,7 @@ Kapsam bilerek dar tutulur; geliştirme hızı önce gelir.
 - Adapter'lar (`NetgsmSmsSenderTests`, `IyzicoPaymentProviderTests`, `R2PhotoStoreTests`): istek biçimi, imza ve yanıt kodları, sağlayıcıya bağlanmadan; staging'de SMS'in yalnızca ekip numaralarına gitmesi.
 - Aşama 6 (`SupportTests`): şifre ve TOTP birlikte; dükkân oturumuyla panele destek girişi yok; telefon maskeli, gerekçesiz açılmaz, açılış kayda geçer; dükkân adına oturum çalışan yetkisinde (iptal 403), işlem kayda geçer, 30 dakikada biter; denetim kaydı güncellenemez ve silinemez.
 - Ayarlar (`PanelSettingsTests`): çalışan ayar değiştiremez (403), bölge İstanbul listesinden (kayıtlı eski ad değişmedikçe kalır), kapasite düşünce dolu yer korunur, kaldırılan aralık takvimden çıkar ve kaydı durur, çakışan aralık reddedilir, kapalı güne sipariş verilemez.
+- Dükkân açma (`OnboardingTests`): lider dükkân açar, sahip bağlantıyla şifre belirleyip girer; bağlantı ikinci kez ve süresi geçince çalışmaz, yeni bağlantı eskisini geçersiz kılar; temsilci açamaz (403); alınmış ya da ayrılmış slug ve başka hesaptaki e-posta reddedilir, hata olunca dükkân açılmaz.
 - Ürün yönetimi (`PanelCatalogTests`): boyların tam fiyatı ürün fiyatı ve ek fiyata çevrilir, satıştan kalkan ürün vitrinde yok, fotoğraf 4:5 kırpılır ve yalnızca yüklenen adres kabul edilir, çalışan ürün değiştiremez (403), başka dükkânın ürünü bulunamaz.
 - Alıcı ana sayfası (`DiscoveryTests`): o gün teslim edebilen dükkânlar önce, ilk müsait aralığa göre; aynı gün son saati geçen dükkân sonda ve ilk müsait günüyle.
 - Aşama 5 (`NotificationTests`): aynı olay iki kez işlense de tek SMS, isimsiz gönderimde gönderen metinde yok.

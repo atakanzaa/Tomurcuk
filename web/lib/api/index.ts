@@ -135,6 +135,13 @@ export const revealPhone = write("revealPhone");
 export const addShopNote = write("addShopNote");
 export const startImpersonation = write("startImpersonation");
 export const endImpersonation = write("endImpersonation");
+export const getPilotApplications = read("getPilotApplications");
+export const openShop = write("openShop");
+export const createPasswordLink = write("createPasswordLink");
+
+// Şifre belirleme bağlantısı
+export const getPasswordHolder = read("getPasswordHolder");
+export const setPassword = write("setPassword");
 
 // Tanıtım sitesi
 export const submitPilotApplication = write("submitPilotApplication");

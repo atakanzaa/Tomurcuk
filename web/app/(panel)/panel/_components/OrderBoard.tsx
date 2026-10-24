@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { KraftBand } from "@/components/ui/KraftBand";
 import { OrderList, OrderRow } from "@/components/ui/OrderRow";
-import { getCustomer, getOrders } from "@/lib/api";
+import { getCustomer, getDeliveryZones, getOrders, getProducts } from "@/lib/api";
 import { OrderStatus, type Order, type PanelSession } from "@/lib/api/types";
 import { cx } from "@/lib/cx";
 import { formatDayMonth, formatLongDate, relativeDayName } from "@/lib/dates";
@@ -42,11 +42,19 @@ function groupOrders(orders: Order[], view: DayView, today: string) {
 export async function OrderBoard({ session, view, selected }: OrderBoardProps) {
   const { shop, user } = session;
   const { now, today, from, to } = dayRange(view, shop.timeZone);
-  const [orders, counts, customer] = await Promise.all([
+  const [orders, counts, customer, products, zones] = await Promise.all([
     getOrders(shop.id, { from, to }),
     panelCounts(shop.id, shop.timeZone),
     selected ? getCustomer(shop.id, selected.customerId) : null,
+    getProducts(shop.id),
+    getDeliveryZones(shop.id),
   ]);
+  // Yeni açılan dükkânın eksikleri; hepsi tamamlanınca bant kalkar.
+  const steps = [
+    products.length === 0 && { href: "/panel/urunler/yeni", label: "ürün ekleyin" },
+    zones.length === 0 && { href: "/panel/teslimat", label: "teslim bölgesi ekleyin" },
+    !shop.legalName && { href: "/panel/ayarlar", label: "sözleşmelerdeki bilgilerinizi girin" },
+  ].filter((s): s is { href: string; label: string } => Boolean(s));
   const active = orders.filter((o) => o.status !== OrderStatus.Cancelled);
   const delay = (o: Order) => (o.deliveryDate === today ? orderDelayMinutes(o, now.time) : 0);
   const newOrders = active.filter((o) => o.status === OrderStatus.New);
@@ -83,6 +91,20 @@ export async function OrderBoard({ session, view, selected }: OrderBoardProps) {
           </form>
         </header>
 
+        {steps.length > 0 && (
+          <div className={styles.band}>
+            <KraftBand>
+              <strong>Alıcıların sipariş verebilmesi için</strong>{" "}
+              {steps.map((step, i) => (
+                <span key={step.href}>
+                  {i > 0 && (i === steps.length - 1 ? " ve " : ", ")}
+                  <Link href={step.href}>{step.label}</Link>
+                </span>
+              ))}
+              .
+            </KraftBand>
+          </div>
+        )}
         {newOrders.length > 0 && (
           <div className={cx(styles.band, styles.bandMobile)}>
             <KraftBand

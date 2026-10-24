@@ -4,8 +4,11 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
+import com.tomurcuk.catalog.internal.Category;
+import com.tomurcuk.catalog.internal.CategoryRepository;
 import com.tomurcuk.catalog.internal.Product;
 import com.tomurcuk.catalog.internal.ProductRepository;
+import com.tomurcuk.shared.Ids;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,8 +18,11 @@ public class Catalog {
 
 	private final ProductRepository products;
 
-	Catalog(ProductRepository products) {
+	private final CategoryRepository categories;
+
+	Catalog(ProductRepository products, CategoryRepository categories) {
 		this.products = products;
+		this.categories = categories;
 	}
 
 	/**
@@ -40,6 +46,12 @@ public class Catalog {
 			.toList();
 		long lowest = product.getPrice() + sizes.stream().mapToLong(Long::longValue).min().orElse(0);
 		return new ProductCard(product.getId(), product.getName(), lowest, sizes.size() > 1, product.getPhotoUrl());
+	}
+
+	/** Yeni dükkânın ilk kategorisi; ürün eklerken başka kategori de açılabilir. */
+	@Transactional
+	public void createDefaultCategory(String shopId) {
+		categories.save(new Category(Ids.newId(), shopId, "buketler", "Buketler", 1));
 	}
 
 	/** Pasif ürün ve başka dükkânın ürünü boş döner. */

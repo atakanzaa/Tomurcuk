@@ -86,6 +86,16 @@ export function checkoutErrorMessage(
       return "Vergi numarası 10, T.C. kimlik numarası 11 hane olmalı; yalnızca rakam yazın.";
     case CheckoutError.EmailInvalid:
       return "E-posta adresi eksik ya da hatalı görünüyor, ör. merhaba@dukkan.com.";
+    case CheckoutError.SlugInvalid:
+      return "Adres 3–40 karakter olmalı; yalnızca küçük harf, rakam ve tire. Panel, destek gibi ayrılmış kelimeler kullanılamaz.";
+    case CheckoutError.SlugTaken:
+      return "Bu adres başka bir dükkânın. Sonuna semt adı ekleyin, ör. nergis-moda.";
+    case CheckoutError.EmailTaken:
+      return "Bu e-postayla açılmış bir hesap var. Başka bir e-posta yazın.";
+    case CheckoutError.PasswordShort:
+      return `Şifre en az ${meta.min} karakter olmalı.`;
+    case CheckoutError.LinkInvalid:
+      return "Bu bağlantının süresi geçmiş ya da kullanılmış. Tomurcuk ekibinden yeni bağlantı isteyin.";
   }
 }
 

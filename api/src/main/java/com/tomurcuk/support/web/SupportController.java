@@ -7,6 +7,8 @@ import com.tomurcuk.audit.AuditLog;
 import com.tomurcuk.identity.Impersonation;
 import com.tomurcuk.identity.Impersonations;
 import com.tomurcuk.identity.PlatformPrincipal;
+import com.tomurcuk.marketing.PilotApplications;
+import com.tomurcuk.support.internal.Onboarding;
 import com.tomurcuk.support.internal.SupportDesk;
 import com.tomurcuk.support.internal.Views;
 import org.springframework.http.HttpStatus;
@@ -31,9 +33,35 @@ class SupportController {
 
 	private final Impersonations impersonations;
 
-	SupportController(SupportDesk desk, Impersonations impersonations) {
+	private final Onboarding onboarding;
+
+	private final PilotApplications applications;
+
+	SupportController(SupportDesk desk, Impersonations impersonations, Onboarding onboarding,
+			PilotApplications applications) {
 		this.desk = desk;
 		this.impersonations = impersonations;
+		this.onboarding = onboarding;
+		this.applications = applications;
+	}
+
+	@GetMapping("/pilot-applications")
+	List<PilotApplications.View> pilotApplications() {
+		return applications.list();
+	}
+
+	/** Dükkân, sahibinin hesabı ve şifre bağlantısı; bağlantı yalnızca bu yanıtta döner. */
+	@PostMapping("/shops")
+	@ResponseStatus(HttpStatus.CREATED)
+	Onboarding.PasswordLink openShop(@AuthenticationPrincipal PlatformPrincipal user,
+			@RequestBody Onboarding.OpenShopInput body) {
+		return onboarding.open(user, body);
+	}
+
+	@PostMapping("/shops/{shopId}/password-link")
+	Onboarding.PasswordLink passwordLink(@AuthenticationPrincipal PlatformPrincipal user,
+			@PathVariable String shopId) {
+		return onboarding.newPasswordLink(user, shopId).orElseThrow(SupportController::notFound);
 	}
 
 	@GetMapping("/tickets")

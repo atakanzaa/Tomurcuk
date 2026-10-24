@@ -33,6 +33,10 @@ import type {
   OrderContract,
   PanelProduct,
   PanelSettings,
+  PasswordHolder,
+  PasswordLink,
+  PilotApplication,
+  OpenShopInput,
   Places,
   ShopProfileInput,
   SlotSetting,
@@ -161,6 +165,16 @@ export interface TomurcukApi {
   getAuditLog(): Promise<AuditEntry[]>;
   getCannedReplies(): Promise<CannedReply[]>;
   getSupportOrders(): Promise<(SupportOrderView & { shopName: string })[]>;
+
+  getPilotApplications(): Promise<PilotApplication[]>;
+  /** Dükkân, sahibinin hesabı ve şifre bağlantısı tek işlemde; platform sahibi ve lider. */
+  openShop(input: OpenShopInput): Promise<Result<PasswordLink, keyof OpenShopInput>>;
+  /** Sahibe yeni şifre bağlantısı; eskisi geçersiz olur. Sahibi olmayan dükkânda null. */
+  createPasswordLink(shopId: string): Promise<PasswordLink | null>;
+
+  // Şifre belirleme bağlantısı (/sifre/<token>); oturumsuz.
+  getPasswordHolder(token: string): Promise<PasswordHolder | null>;
+  setPassword(token: string, password: string): Promise<Result<true, "token" | "password">>;
 
   // Tanıtım sitesi
   submitPilotApplication(input: PilotApplicationInput): Promise<Result<true, keyof PilotApplicationInput>>;
