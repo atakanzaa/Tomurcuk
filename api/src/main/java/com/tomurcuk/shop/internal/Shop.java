@@ -46,6 +46,20 @@ public class Shop {
 
 	private String featuredProductId;
 
+	/** Sözleşmelerde satıcı: unvan ya da ad soyad, vergi dairesi ve numarası, e-posta. */
+	private String legalName;
+
+	private String taxOffice;
+
+	private String taxNumber;
+
+	private String email;
+
+	/** Yeni siparişte SMS'in gittiği cep telefonu; `notifySms` kapalıysa kullanılmaz. */
+	private String notifyPhone;
+
+	private boolean notifySms;
+
 	private java.time.Instant createdAt;
 
 	@OneToMany
@@ -53,6 +67,29 @@ public class Shop {
 	private List<ShopSlugHistory> previousSlugs = new ArrayList<>();
 
 	protected Shop() {
+	}
+
+	/** Destekten açılan dükkân; bilgilerin geri kalanını sahibi panelden doldurur. */
+	public Shop(String id, String slug, String name, String shortName, String phone, String address, ShopPlan plan,
+			LocalTime sameDayCutoff, String timeZone, java.time.Instant createdAt) {
+		this.id = id;
+		this.slug = slug;
+		this.name = name;
+		this.shortName = shortName;
+		this.phone = phone;
+		this.address = address;
+		this.active = true;
+		this.plan = plan;
+		this.sameDayCutoff = sameDayCutoff;
+		this.timeZone = timeZone;
+		this.description = "";
+		this.descriptionShort = "";
+		this.openingHours = "";
+		this.legalName = "";
+		this.taxOffice = "";
+		this.taxNumber = "";
+		this.email = "";
+		this.createdAt = createdAt;
 	}
 
 	public String getId() {
@@ -113,6 +150,54 @@ public class Shop {
 
 	public String getFeaturedProductId() {
 		return featuredProductId;
+	}
+
+	/** Panelden dükkân bilgileri; slug panelden değişmez. */
+	public void updateProfile(String name, String shortName, String phone, String address, String descriptionShort,
+			String description, String openingHours, String featuredProductId, String legalName, String taxOffice,
+			String taxNumber, String email, String notifyPhone, boolean notifySms) {
+		this.name = name;
+		this.shortName = shortName;
+		this.phone = phone;
+		this.address = address;
+		this.descriptionShort = descriptionShort;
+		this.description = description;
+		this.openingHours = openingHours;
+		this.featuredProductId = featuredProductId;
+		this.legalName = legalName;
+		this.taxOffice = taxOffice;
+		this.taxNumber = taxNumber;
+		this.email = email;
+		this.notifyPhone = notifyPhone;
+		this.notifySms = notifySms;
+	}
+
+	public void updateSameDayCutoff(LocalTime cutoff) {
+		this.sameDayCutoff = cutoff;
+	}
+
+	public String getLegalName() {
+		return legalName;
+	}
+
+	public String getTaxOffice() {
+		return taxOffice;
+	}
+
+	public String getTaxNumber() {
+		return taxNumber;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public String getNotifyPhone() {
+		return notifyPhone;
+	}
+
+	public boolean isNotifySms() {
+		return notifySms;
 	}
 
 	public java.time.Instant getCreatedAt() {

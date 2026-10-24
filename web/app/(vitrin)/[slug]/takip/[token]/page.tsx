@@ -10,7 +10,7 @@ import { KraftBand } from "@/components/ui/KraftBand";
 import { findShop, getOrderTracking } from "@/lib/api";
 import { PaymentMethod, ShopLookupKind } from "@/lib/api/types";
 import { phoneHref, whatsappHref, withDativeSuffix } from "@/lib/format";
-import { shopPath } from "@/lib/routes";
+import { shopPath, trackingOrderPath } from "@/lib/routes";
 import { buildTrackingView } from "@/lib/tracking";
 import { renderPhoto } from "@/components/ProductPhoto";
 import styles from "./tracking.module.css";
@@ -115,7 +115,8 @@ async function Tracking({ params }: { params: Promise<{ slug: string; token: str
             </Button>
           </div>
           <span className={styles.smallPrint}>
-            Bu sayfanın linki {order.senderPhone} numarasına SMS ile gönderildi.
+            Bu sayfanın linki {order.senderPhone} numarasına SMS ile gönderildi.{" "}
+            <Link href={`${trackingOrderPath(shop.slug, order.token)}/sozlesmeler`}>Sözleşmeleriniz</Link>
           </span>
         </section>
       </main>

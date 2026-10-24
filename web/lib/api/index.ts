@@ -77,6 +77,7 @@ function write<K extends keyof Api>(name: K): Api[K] {
 export const getDeliveryDays = read("getDeliveryDays");
 export const getDraft = read("getDraft");
 export const getOrderTracking = read("getOrderTracking");
+export const getOrderContract = read("getOrderContract");
 export const createDraft = write("createDraft");
 export const saveDelivery = write("saveDelivery");
 export const saveCard = write("saveCard");
@@ -87,6 +88,7 @@ export const completePayment = write("completePayment");
 // Satıcı paneli
 export const getPanelSession = read("getPanelSession");
 export const getOrders = read("getOrders");
+export const getNewOrders = read("getNewOrders");
 export const getOrder = read("getOrder");
 export const getCustomers = read("getCustomers");
 export const getCustomer = read("getCustomer");
@@ -94,12 +96,27 @@ export const findCustomerByPhone = read("findCustomerByPhone");
 export const getReminders = read("getReminders");
 export const updateOrderStatus = write("updateOrderStatus");
 export const markOrderPaid = write("markOrderPaid");
+export const uploadDeliveryPhoto = write("uploadDeliveryPhoto");
 export const createManualOrder = write("createManualOrder");
 export const getPanelProducts = read("getPanelProducts");
 export const getPanelProduct = read("getPanelProduct");
 export const saveProduct = write("saveProduct");
 export const deleteProduct = write("deleteProduct");
 export const uploadProductPhoto = write("uploadProductPhoto");
+export const getPanelSettings = read("getPanelSettings");
+export const saveShopProfile = write("saveShopProfile");
+export const saveSameDayCutoff = write("saveSameDayCutoff");
+export const saveTimeSlots = write("saveTimeSlots");
+export const saveDeliveryZones = write("saveDeliveryZones");
+export const addClosedDay = write("addClosedDay");
+export const removeClosedDay = write("removeClosedDay");
+
+/** İlçe ve mahalle listesi uygulamayla gelir, değişmez. */
+export async function getIstanbulPlaces() {
+  "use cache";
+  cacheLife("days");
+  return impl.getIstanbulPlaces();
+}
 export const getShopTickets = read("getShopTickets");
 export const createTicket = write("createTicket");
 
@@ -120,6 +137,13 @@ export const revealPhone = write("revealPhone");
 export const addShopNote = write("addShopNote");
 export const startImpersonation = write("startImpersonation");
 export const endImpersonation = write("endImpersonation");
+export const getPilotApplications = read("getPilotApplications");
+export const openShop = write("openShop");
+export const createPasswordLink = write("createPasswordLink");
+
+// Şifre belirleme bağlantısı
+export const getPasswordHolder = read("getPasswordHolder");
+export const setPassword = write("setPassword");
 
 // Tanıtım sitesi
 export const submitPilotApplication = write("submitPilotApplication");

@@ -6,5 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface TimeSlotRepository extends JpaRepository<TimeSlot, String> {
 
-	List<TimeSlot> findByShopIdOrderByStart(String shopId);
+	/** Vitrin ve takvim yalnızca aktif aralıkları kullanır. */
+	List<TimeSlot> findByShopIdAndActiveTrueOrderByStart(String shopId);
 }

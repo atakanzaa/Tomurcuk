@@ -1,9 +1,17 @@
 package com.tomurcuk.ordering;
 
+import static org.hamcrest.Matchers.startsWith;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
 
 import com.jayway.jsonpath.JsonPath;
 import com.tomurcuk.TestcontainersConfiguration;
@@ -14,6 +22,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -89,6 +98,41 @@ class PanelTests {
 			.andExpect(jsonPath("$.length()").value(0));
 		changeStatus(session, "o_4822", "preparing").andExpect(status().isUnprocessableContent());
 		mvc.perform(get("/api/panel/orders/o_4822").cookie(owner)).andExpect(jsonPath("$.status").value(before));
+	}
+
+	/** Teslim fotoğrafı yalnızca yoldaki ya da teslim edilen siparişe; başka dükkânınkine hiç. */
+	@Test
+	void deliveryPhotoNeedsOwnOrderOnTheWay() throws Exception {
+		Cookie owner = login("ayla@nergiscicek.com");
+		Cookie other = login("leyla@lalebahcesi.com");
+		deliveryPhoto(other, "o_4816").andExpect(status().isNotFound());
+		deliveryPhoto(owner, "o_4823").andExpect(status().isUnprocessableContent())
+			.andExpect(jsonPath("$.errors.photo.code").value("delivery_photo_status"));
+		deliveryPhoto(owner, "o_4816").andExpect(status().isOk())
+			.andExpect(jsonPath("$.deliveryPhotoUrl").value(startsWith("/foto/")));
+	}
+
+	/** Sesli uyarının sorduğu özet yalnızca kendi dükkânının yeni siparişlerini sayar. */
+	@Test
+	void newOrdersSummaryIsPerShop() throws Exception {
+		mvc.perform(get("/api/panel/orders/new").cookie(login("ayla@nergiscicek.com")))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.latestOrderId").isNotEmpty());
+		mvc.perform(get("/api/panel/orders/new").cookie(login("leyla@lalebahcesi.com")))
+			.andExpect(jsonPath("$.count").value(0))
+			.andExpect(jsonPath("$.latestOrderId").isEmpty());
+	}
+
+	private ResultActions deliveryPhoto(Cookie session, String orderId) throws Exception {
+		return mvc.perform(multipart("/api/panel/orders/{id}/delivery-photo", orderId)
+			.file(new MockMultipartFile("file", "teslim.png", "image/png", png(640, 480)))
+			.cookie(session));
+	}
+
+	private static byte[] png(int width, int height) throws IOException {
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		ImageIO.write(new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB), "png", out);
+		return out.toByteArray();
 	}
 
 	private ResultActions changeStatus(Cookie session, String orderId, String next) throws Exception {

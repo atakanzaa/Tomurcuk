@@ -25,7 +25,31 @@ public class TimeSlot {
 
 	private int capacity;
 
+	/** Kaldırılan aralık pasiftir; eski siparişler ve günlük doluluk ona bağlı kalır. */
+	private boolean active;
+
 	protected TimeSlot() {
+	}
+
+	public TimeSlot(String id, String shopId) {
+		this.id = id;
+		this.shopId = shopId;
+		this.active = true;
+	}
+
+	public void update(LocalTime start, LocalTime end, int capacity) {
+		this.start = start;
+		this.end = end;
+		this.capacity = capacity;
+		this.active = true;
+	}
+
+	public void deactivate() {
+		this.active = false;
+	}
+
+	public boolean isActive() {
+		return active;
 	}
 
 	public String getId() {

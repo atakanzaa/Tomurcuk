@@ -4,7 +4,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { StatusTag } from "@/components/ui/StatusTag";
-import { getShopOverview } from "@/lib/api";
+import { getShopOverview, getSupportUser } from "@/lib/api";
+import { Permission, supportCan } from "@/lib/permissions";
 import { ShopRole, TicketPriority } from "@/lib/api/types";
 import { cx } from "@/lib/cx";
 import { formatDayMonth, relativeDayName } from "@/lib/dates";
@@ -14,6 +15,7 @@ import { orderStatusLabel, orderStatusTone } from "@/lib/order";
 import { planLabel } from "@/lib/shop";
 import { durationText, minutesSince } from "@/lib/support";
 import support from "../../_components/support.module.css";
+import { PasswordLinkButton } from "../../_components/PasswordLinkButton";
 import { ShopDialogs } from "./ShopDialogs";
 import styles from "./overview.module.css";
 
@@ -32,8 +34,9 @@ export default function ShopOverviewPage({ params }: PageProps<"/destek/dukkanla
 
 async function Overview({ params }: Pick<PageProps<"/destek/dukkanlar/[id]">, "params">) {
   const { id } = await params;
-  const shop = await getShopOverview(id);
+  const [shop, user] = await Promise.all([getShopOverview(id), getSupportUser()]);
   if (!shop) notFound();
+  const canOnboard = supportCan(user.role, Permission.ShopOnboard);
   const today = zonedNow(new Date(), TZ).date;
   const dayText = (iso: string) => {
     const when = zonedNow(new Date(iso), TZ);
@@ -58,6 +61,7 @@ async function Overview({ params }: Pick<PageProps<"/destek/dukkanlar/[id]">, "p
           </span>
         </div>
         <div className={styles.actions}>
+          {canOnboard && <PasswordLinkButton shopId={shop.shop.id} shopName={shop.shop.name} phone={shop.shop.phone} />}
           <ShopDialogs
             shopId={shop.shop.id}
             shopShortName={shop.shop.shortName}

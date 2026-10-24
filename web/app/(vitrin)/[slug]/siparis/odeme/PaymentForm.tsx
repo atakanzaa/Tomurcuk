@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { documentPath, ShopDocument } from "@/lib/legal/documents";
 import { useActionState, useState } from "react";
 import { PaymentMethod } from "@/lib/api/types";
 import { submitPayment } from "@/lib/checkout/actions";
@@ -78,9 +79,15 @@ function PaymentFields({
               aria-describedby={state.errors.consent ? "onay-hata" : undefined}
             />
             <span>
-              <Link href={`/${slug}/sozlesmeler/on-bilgilendirme`}>Ön bilgilendirme formunu</Link> ve{" "}
-              <Link href={`/${slug}/sozlesmeler/mesafeli-satis`}>mesafeli satış sözleşmesini</Link> okudum,
-              onaylıyorum.
+              {/* Yeni sekmede: formda seçilenler kaybolmasın. */}
+              <Link href={documentPath(slug, ShopDocument.PreInformation)} target="_blank">
+                Ön bilgilendirme formunu
+              </Link>{" "}
+              ve{" "}
+              <Link href={documentPath(slug, ShopDocument.DistanceSale)} target="_blank">
+                mesafeli satış sözleşmesini
+              </Link>{" "}
+              okudum, onaylıyorum.
             </span>
           </label>
           {state.errors.consent && (

@@ -90,6 +90,11 @@ export interface Shop {
   descriptionShort: string;
   openingHours: string;
   featuredProductId: string | null;
+  /** Sözleşmelerde satıcı: unvan ya da ad soyad. Boşsa dükkân ayarlarından doldurulmamıştır. */
+  legalName: string;
+  taxOffice: string;
+  taxNumber: string;
+  email: string;
 }
 
 /** Vitrindeki kategori menüsü. Veri modeline ek. */
@@ -130,6 +135,96 @@ export interface Product {
   order: number;
   options: ProductOption[];
 }
+
+/** Tanıtım sitesinden gelen pilot başvurusu; `shopId` doluysa dükkân açılmıştır. */
+export interface PilotApplication {
+  id: string;
+  shopName: string;
+  phone: string;
+  district: string;
+  instagram: string | null;
+  createdAt: string;
+  shopId: string | null;
+}
+
+/** Destek panelinden dükkân açma; `applicationId` başvurudan açılıyorsa. */
+export interface OpenShopInput {
+  applicationId: string;
+  name: string;
+  shortName: string;
+  slug: string;
+  phone: string;
+  address: string;
+  ownerName: string;
+  ownerEmail: string;
+}
+
+/** Sahibin şifre belirleme bağlantısı; yalnızca oluşturulduğu yanıtta görünür, 7 gün geçerli. */
+export interface PasswordLink {
+  shopId: string;
+  slug: string;
+  ownerName: string;
+  ownerEmail: string;
+  url: string;
+}
+
+/** Şifre belirleme sayfasında bağlantının sahibi. */
+export interface PasswordHolder {
+  name: string;
+  email: string;
+  shopName: string;
+}
+
+/** Panelde dükkân ve teslimat ayarları. Saat aralığı ve bölge satırında `id` yeni satırda null. */
+/** Bekleyen yeni siparişler; `latestOrderId` değişince panel sesli uyarı verir. */
+export interface NewOrders {
+  count: number;
+  latestOrderId: string | null;
+  latestNumber: string | null;
+}
+
+export interface PanelSettings {
+  profile: { shop: Shop; notifyPhone: string | null; notifySms: boolean };
+  slots: SlotSetting[];
+  zones: ZoneSetting[];
+  /** Bugünden sonraki kapalı günler; `reserved` o güne alınmış sipariş ve ayrılmış yer sayısı. */
+  closedDays: { date: IsoDate; reserved: number }[];
+}
+
+export interface SlotSetting {
+  id: string | null;
+  start: ClockTime;
+  end: ClockTime;
+  capacity: number | null;
+}
+
+/** Mahalle null ise bütün ilçe. */
+export interface ZoneSetting {
+  id: string | null;
+  district: string;
+  neighborhood: string | null;
+  fee: Kurus | null;
+}
+
+export interface ShopProfileInput {
+  name: string;
+  shortName: string;
+  phone: string;
+  address: string;
+  descriptionShort: string;
+  description: string;
+  openingHours: string;
+  featuredProductId: string;
+  legalName: string;
+  taxOffice: string;
+  taxNumber: string;
+  email: string;
+  notifyPhone: string;
+  notifySms: boolean;
+}
+
+/** İlçe → mahalleler (İstanbul). */
+export type Places = Record<string, string[]>;
 
 /** Panelde ürün: satışta olmayanlar da gelir; son değişikliğin zamanı ve yapanın adı. */
 export interface PanelProduct {
@@ -365,7 +460,20 @@ export const CheckoutError = {
   // Panel: ürün formu.
   PriceInvalid: "price_invalid",
   PhotoInvalid: "photo_invalid",
+  /** Teslim fotoğrafı sipariş yola çıkmadan eklenmez. */
+  DeliveryPhotoStatus: "delivery_photo_status",
   TooMany: "too_many",
+  // Panel: ayarlar.
+  SlotOverlap: "slot_overlap",
+  ZoneDuplicate: "zone_duplicate",
+  TaxNumberInvalid: "tax_number_invalid",
+  EmailInvalid: "email_invalid",
+  // Destek: dükkân açma, şifre belirleme.
+  SlugInvalid: "slug_invalid",
+  SlugTaken: "slug_taken",
+  EmailTaken: "email_taken",
+  PasswordShort: "password_short",
+  LinkInvalid: "link_invalid",
 } as const;
 export type CheckoutError = ValueOf<typeof CheckoutError>;
 
@@ -375,6 +483,27 @@ export type FieldErrors<F extends string = string> = Partial<
 >;
 
 export type Result<T, F extends string = string> = { ok: true; value: T } | { ok: false; errors: FieldErrors<F> };
+
+/**
+ * Takip linkinden açılan sözleşmelerde siparişe ait kısım. `termsVersion` alıcının onayladığı
+ * metnin sürümü (lib/legal/version.ts); panelden girilen siparişte null.
+ */
+export interface OrderContract {
+  number: string;
+  createdAt: string;
+  termsVersion: string | null;
+  paymentMethod: PaymentMethod;
+  items: OrderItem[];
+  subtotal: Kurus;
+  deliveryFee: Kurus;
+  total: Kurus;
+  deliveryDate: IsoDate;
+  slotStart: ClockTime;
+  slotEnd: ClockTime;
+  recipientName: string;
+  zoneName: string;
+  address: string;
+}
 
 /** Alıcıya gösterilen takip görünümü. İsimsiz gönderimde imza hiç gelmez. */
 export interface OrderTracking {

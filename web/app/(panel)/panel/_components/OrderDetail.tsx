@@ -1,13 +1,15 @@
 import { CaretLeft, MapPin, Phone, WhatsappLogo } from "@phosphor-icons/react/dist/ssr";
 import Link from "next/link";
 import { GiftTag } from "@/components/ui/GiftTag";
+import { renderPhoto } from "@/components/ProductPhoto";
 import { StatusTag } from "@/components/ui/StatusTag";
-import { OptionKind, PaymentStatus, type CustomerDetail, type Order, type ShopRole } from "@/lib/api/types";
+import { OptionKind, OrderStatus, PaymentStatus, type CustomerDetail, type Order, type ShopRole } from "@/lib/api/types";
 import { cx } from "@/lib/cx";
 import { formatDayMonth, relativeDayName } from "@/lib/dates";
 import { formatPrice, formatTimeRange, phoneHref, whatsappHref, zonedNow } from "@/lib/format";
 import { orderSourceLabel, orderStatusTag, paymentLabel } from "@/lib/order";
 import { Permission, shopCan } from "@/lib/permissions";
+import { DeliveryPhotoButton } from "./DeliveryPhotoButton";
 import { OrderActions, OrderMenu } from "./OrderControls";
 import styles from "./order.module.css";
 
@@ -141,6 +143,20 @@ export function OrderDetail({ order, customer, today, timeZone, role, backHref, 
           <section aria-label="Kart notu" className={styles.block}>
             <span className={styles.label}>Karta yazılacak</span>
             <GiftTag className={styles.tag} message={order.cardNote} from={order.senderName} anonymous={order.anonymous} />
+          </section>
+        )}
+
+        {(order.status === OrderStatus.OnWay || order.status === OrderStatus.Delivered) && (
+          <section aria-label="Teslim fotoğrafı" className={styles.block}>
+            <span className={styles.label}>Teslim fotoğrafı</span>
+            {order.deliveryPhotoUrl ? (
+              <div className={styles.deliveryPhoto}>{renderPhoto(order.deliveryPhotoUrl, "(min-width: 1024px) 400px, 100vw")}</div>
+            ) : (
+              <span className={styles.small}>Teslim ederken çekin; gönderen takip sayfasında görür.</span>
+            )}
+            <div>
+              <DeliveryPhotoButton orderId={order.id} hasPhoto={Boolean(order.deliveryPhotoUrl)} />
+            </div>
           </section>
         )}
 

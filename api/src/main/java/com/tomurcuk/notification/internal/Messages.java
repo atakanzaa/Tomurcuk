@@ -33,10 +33,11 @@ final class Messages {
 		return "%s: Size bir gönderi yolda. %s teslim edilecek.".formatted(shop.name(), when);
 	}
 
-	/** Gönderene: teslim edildi. */
-	static String delivered(ShopInfo shop, OrderNotice order) {
+	/** Gönderene: teslim edildi; takip sayfasında teslim fotoğrafı varsa görünür. */
+	static String delivered(ShopInfo shop, OrderNotice order, String trackingUrl) {
 		String time = order.deliveryTime() == null ? "" : ", saat " + order.deliveryTime();
-		return "%s: %s teslim edildi. Alıcı: %s%s.".formatted(shop.name(), order.number(), order.recipientName(), time);
+		return "%s: %s teslim edildi. Alıcı: %s%s. Ayrıntı: %s".formatted(shop.name(), order.number(),
+				order.recipientName(), time, trackingUrl);
 	}
 
 	/** Gönderene: teslim edilemedi. */
@@ -53,6 +54,12 @@ final class Messages {
 
 	static String newOrderSubject(OrderNotice order, LocalDate today) {
 		return "Yeni sipariş %s: %s %s".formatted(order.number(), day(order.deliveryDate(), today), range(order));
+	}
+
+	/** Çiçekçiye kısa yeni sipariş SMS'i: "T-4821 yeni sipariş, 14 Şubat 13:00–16:00, Moda. Panel: ...". */
+	static String newOrderSms(OrderNotice order, LocalDate today, String panelUrl) {
+		return "Tomurcuk: %s yeni sipariş, %s %s, %s. Panel: %s".formatted(order.number(),
+				day(order.deliveryDate(), today), range(order), order.zoneName(), panelUrl);
 	}
 
 	/** Dükkân sahibine yeni sipariş e-postası; çiçekçiye Tomurcuk konuşur. */

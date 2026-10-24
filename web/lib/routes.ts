@@ -1,5 +1,17 @@
 /** Kök düzeyde dükkân slug'ı olamayacak bölümler. Proxy bunlara dokunmaz. */
-const RESERVED_SEGMENTS = new Set(["_next", "api", "panel", "destek", "bilesenler", "giris", "cicekciler", "foto"]);
+const RESERVED_SEGMENTS = new Set([
+  "_next",
+  "api",
+  "panel",
+  "destek",
+  "bilesenler",
+  "giris",
+  "cicekciler",
+  "foto",
+  "gizlilik",
+  "kullanim-kosullari",
+  "sifre",
+]);
 
 /** Satıcı panelinin giriş sayfası. */
 export const LOGIN_PATH = "/giris";

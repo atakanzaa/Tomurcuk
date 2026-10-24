@@ -9,4 +9,6 @@ public interface ShopRepository extends JpaRepository<Shop, String> {
 
 	@EntityGraph(attributePaths = "previousSlugs")
 	Optional<Shop> findBySlug(String slug);
+
+	boolean existsBySlug(String slug);
 }

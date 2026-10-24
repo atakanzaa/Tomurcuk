@@ -7,6 +7,7 @@ import styles from "./support.module.css";
 const ITEMS = [
   { href: "/destek", label: "Talepler", key: "tickets" },
   { href: "/destek/dukkanlar", label: "Dükkânlar", key: "shops" },
+  { href: "/destek/basvurular", label: "Başvurular", key: "applications" },
   { href: "/destek/siparisler", label: "Siparişler", key: "orders" },
   { href: "/destek/denetim", label: "Denetim kaydı", key: "audit" },
   { href: "/destek/hazir-cevaplar", label: "Hazır cevaplar", key: "canned" },

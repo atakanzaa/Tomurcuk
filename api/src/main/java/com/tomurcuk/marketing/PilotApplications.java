@@ -1,6 +1,8 @@
 package com.tomurcuk.marketing;
 
+import java.time.Instant;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.tomurcuk.shared.FieldError;
@@ -45,5 +47,26 @@ public class PilotApplications {
 	}
 
 	public record Input(String shopName, String phone, String district, String instagram) {
+	}
+
+	/** Destek panelinde başvurular, yeniden eskiye; `shopId` doluysa dükkân açılmıştır. */
+	public List<View> list() {
+		return jdbc.sql("SELECT id, shop_name, phone, district, instagram, created_at, shop_id FROM pilot_application ORDER BY created_at DESC")
+			.query((rs, n) -> new View(rs.getString("id"), rs.getString("shop_name"), rs.getString("phone"),
+					rs.getString("district"), rs.getString("instagram"), rs.getTimestamp("created_at").toInstant(),
+					rs.getString("shop_id")))
+			.list();
+	}
+
+	public void markOpened(String applicationId, String shopId) {
+		jdbc.sql("UPDATE pilot_application SET shop_id = :shopId WHERE id = :id AND shop_id IS NULL")
+			.param("shopId", shopId)
+			.param("id", applicationId)
+			.update();
+	}
+
+	/** web/lib/api/types.ts `PilotApplication` */
+	public record View(String id, String shopName, String phone, String district, String instagram,
+			Instant createdAt, String shopId) {
 	}
 }

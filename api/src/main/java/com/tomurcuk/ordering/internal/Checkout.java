@@ -24,6 +24,7 @@ import com.tomurcuk.ordering.OrderSource;
 import com.tomurcuk.ordering.OrderStatus;
 import com.tomurcuk.ordering.PaymentMethod;
 import com.tomurcuk.ordering.PaymentStatus;
+import com.tomurcuk.ordering.Terms;
 import com.tomurcuk.payment.PaymentProvider;
 import com.tomurcuk.payment.Payments;
 import com.tomurcuk.shared.ClockTimes;
@@ -254,6 +255,12 @@ public class Checkout {
 		return orders.findByTrackingToken(shopId, token).map(Tracking::of);
 	}
 
+	/** Takip linkinden açılan sözleşmeler: siparişin onaylandığı andaki bilgileri ve sürümü. */
+	public Optional<Contract> contract(String shopId, String token) {
+		return orders.findByTrackingToken(shopId, token)
+			.map(order -> Contract.of(order, orders.termsVersion(order.id()).orElse(null)));
+	}
+
 	/** Sipariş numarası ("4821", "t4821", "T-4821") ve gönderen telefonu eşleşirse takip token'ı. */
 	public Optional<String> findTrackingToken(String shopId, String number, String phone) {
 		String digits = number == null ? "" : number.strip().toUpperCase().replaceFirst("^T-?", "");
@@ -302,7 +309,7 @@ public class Checkout {
 							.toList())),
 				draft.subtotal(), draft.deliveryFee(), draft.total(), null, now, Ids.token(16), card.senderPhone(),
 				null, List.of(new Order.Event(OrderStatus.NEW, now)));
-		orders.insert(order, blankToNull(idempotencyKey));
+		orders.insert(order, blankToNull(idempotencyKey), Terms.VERSION);
 		// Havalede sipariş hemen kesinleşir; kartla ödemede ödeme onaylanınca (PaymentListener).
 		if (method == PaymentMethod.TRANSFER) {
 			events.publishEvent(new OrderConfirmed(Notices.of(order)));

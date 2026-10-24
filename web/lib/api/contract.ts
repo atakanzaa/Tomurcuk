@@ -10,6 +10,7 @@ import type {
   CustomerSummary,
   Impersonation,
   ManualOrderInput,
+  NewOrders,
   OrderStatus,
   PanelSession,
   PilotApplicationInput,
@@ -30,7 +31,17 @@ import type {
   Order,
   OrderDraft,
   OrderTracking,
+  OrderContract,
   PanelProduct,
+  PanelSettings,
+  PasswordHolder,
+  PasswordLink,
+  PilotApplication,
+  OpenShopInput,
+  Places,
+  ShopProfileInput,
+  SlotSetting,
+  ZoneSetting,
   ProductInput,
   PlaceOrderInput,
   PlacedOrder,
@@ -85,6 +96,8 @@ export interface TomurcukApi {
   /** Ödeme sayfasından dönüş. Sonucu backend sağlayıcıdan alır; bilinmeyen token null. */
   completePayment(shopId: string, token: string): Promise<{ trackingToken: string; paid: boolean } | null>;
   getOrderTracking(shopId: string, token: string): Promise<OrderTracking | null>;
+  /** Takip linkinden: siparişin sözleşmelerdeki bilgileri. */
+  getOrderContract(shopId: string, token: string): Promise<OrderContract | null>;
   /** Sipariş numarası ve gönderen telefonu eşleşirse takip token'ı. */
   findTrackingToken(shopId: string, input: { number: string; phone: string }): Promise<string | null>;
 
@@ -93,10 +106,14 @@ export interface TomurcukApi {
   getPanelSession(impersonationId: string | null): Promise<PanelSession>;
   /** Teslim gününe göre; `from` ve `to` dahil. */
   getOrders(shopId: string, filter?: { from?: IsoDate; to?: IsoDate }): Promise<Order[]>;
+  /** Bekleyen yeni siparişler (kartla ödemesi onaylanmamışlar hariç); panelin sesli uyarısı sorar. */
+  getNewOrders(shopId: string): Promise<NewOrders>;
   getOrder(shopId: string, orderId: string): Promise<Order | null>;
   /** Yalnızca izin verilen geçişler (lib/order-flow.ts); bildirimler backend'de gönderilir. */
   updateOrderStatus(shopId: string, orderId: string, status: OrderStatus): Promise<Result<Order, "status">>;
   markOrderPaid(shopId: string, orderId: string): Promise<Result<Order, "payment">>;
+  /** Yolda ya da teslim edilmiş siparişe teslim fotoğrafı; yenisi eskisinin yerine geçer. Bulunamayan sipariş null. */
+  uploadDeliveryPhoto(shopId: string, orderId: string, file: Blob): Promise<Result<Order, "photo"> | null>;
   getCustomers(shopId: string, filter?: { query?: string }): Promise<CustomerSummary[]>;
   getCustomer(shopId: string, customerId: string): Promise<CustomerDetail | null>;
   findCustomerByPhone(shopId: string, phone: string): Promise<(CustomerSummary & { lastOrder: Order | null }) | null>;
@@ -115,6 +132,17 @@ export interface TomurcukApi {
   deleteProduct(shopId: string, productId: string): Promise<boolean>;
   /** Fotoğrafı 4:5 kırpıp depoya yazar; adres ürün kaydedilirken `photos`'a girer. */
   uploadProductPhoto(shopId: string, file: Blob): Promise<Result<{ url: string }, "photo">>;
+  getPanelSettings(shopId: string): Promise<PanelSettings>;
+  /** Ayarları yalnızca dükkân sahibi değiştirir (CATALOG_EDIT). */
+  saveShopProfile(shopId: string, input: ShopProfileInput): Promise<Result<true, keyof ShopProfileInput>>;
+  saveSameDayCutoff(shopId: string, cutoff: string): Promise<Result<true, "sameDayCutoff">>;
+  /** Liste olduğu gibi yazılır; gelmeyen aralık ve bölge pasife alınır. */
+  saveTimeSlots(shopId: string, slots: SlotSetting[]): Promise<Result<true, "slots">>;
+  saveDeliveryZones(shopId: string, zones: ZoneSetting[]): Promise<Result<true, "zones">>;
+  addClosedDay(shopId: string, date: string): Promise<Result<{ date: IsoDate; reserved: number }, "date">>;
+  removeClosedDay(shopId: string, date: IsoDate): Promise<boolean>;
+  /** Teslim bölgeleri bu listeden seçilir. */
+  getIstanbulPlaces(): Promise<Places>;
   /** Panelden açılan destek talepleri ve durumları. */
   getShopTickets(shopId: string): Promise<TicketSummary[]>;
   createTicket(shopId: string, input: TicketInput): Promise<Result<{ ticketId: string }, keyof TicketInput>>;
@@ -142,6 +170,16 @@ export interface TomurcukApi {
   getAuditLog(): Promise<AuditEntry[]>;
   getCannedReplies(): Promise<CannedReply[]>;
   getSupportOrders(): Promise<(SupportOrderView & { shopName: string })[]>;
+
+  getPilotApplications(): Promise<PilotApplication[]>;
+  /** Dükkân, sahibinin hesabı ve şifre bağlantısı tek işlemde; platform sahibi ve lider. */
+  openShop(input: OpenShopInput): Promise<Result<PasswordLink, keyof OpenShopInput>>;
+  /** Sahibe yeni şifre bağlantısı; eskisi geçersiz olur. Sahibi olmayan dükkânda null. */
+  createPasswordLink(shopId: string): Promise<PasswordLink | null>;
+
+  // Şifre belirleme bağlantısı (/sifre/<token>); oturumsuz.
+  getPasswordHolder(token: string): Promise<PasswordHolder | null>;
+  setPassword(token: string, password: string): Promise<Result<true, "token" | "password">>;
 
   // Tanıtım sitesi
   submitPilotApplication(input: PilotApplicationInput): Promise<Result<true, keyof PilotApplicationInput>>;

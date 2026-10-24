@@ -1,5 +1,6 @@
 package com.tomurcuk.ordering.web;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -9,6 +10,7 @@ import com.tomurcuk.ordering.OrderStatus;
 import com.tomurcuk.ordering.internal.CustomerDetail;
 import com.tomurcuk.ordering.internal.CustomerSummary;
 import com.tomurcuk.ordering.internal.CustomerWithLastOrder;
+import com.tomurcuk.ordering.internal.NewOrders;
 import com.tomurcuk.ordering.Order;
 import com.tomurcuk.ordering.internal.PanelOrders;
 import com.tomurcuk.ordering.internal.PanelOrders.ManualOrderInput;
@@ -26,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 /**
@@ -49,6 +52,12 @@ class PanelOrderController {
 		return panel.list(user, from, to);
 	}
 
+	/** Panel 30 saniyede bir sorar; en son gelen değişince sesli uyarı verir. */
+	@GetMapping("/orders/new")
+	NewOrders newOrders(@AuthenticationPrincipal ShopPrincipal user) {
+		return panel.newOrders(user);
+	}
+
 	@GetMapping("/orders/{orderId}")
 	Order order(@AuthenticationPrincipal ShopPrincipal user, @PathVariable String orderId) {
 		return panel.get(user, orderId).orElseThrow(PanelOrderController::notFound);
@@ -70,6 +79,16 @@ class PanelOrderController {
 	@PostMapping("/orders/{orderId}/paid")
 	Order markPaid(@AuthenticationPrincipal ShopPrincipal user, @PathVariable String orderId) {
 		return panel.markPaid(user, orderId);
+	}
+
+	/** Çok parçalı form, alan adı `file`. */
+	@PostMapping("/orders/{orderId}/delivery-photo")
+	Order addDeliveryPhoto(@AuthenticationPrincipal ShopPrincipal user, @PathVariable String orderId,
+			@RequestParam("file") MultipartFile file) throws IOException {
+		if (file.isEmpty()) {
+			throw ValidationException.of("photo", FieldError.of("photo_invalid"));
+		}
+		return panel.addDeliveryPhoto(user, orderId, file.getBytes()).orElseThrow(PanelOrderController::notFound);
 	}
 
 	@PostMapping("/orders")

@@ -1,6 +1,9 @@
 import "server-only";
 import type { TomurcukApi } from "../contract";
 import type {
+  PasswordHolder,
+  PasswordLink,
+  PilotApplication,
   AuditEntry,
   CannedReply,
   Impersonation,
@@ -12,7 +15,7 @@ import type {
   TicketDetail,
   TicketSummary,
 } from "../types";
-import { ApiError, get, getOrNull, path, remove, send } from "./client";
+import { ApiError, get, getOrNull, path, remove, send, sendOrNull } from "./client";
 
 export type SupportApi = Pick<
   TomurcukApi,
@@ -35,6 +38,11 @@ export type SupportApi = Pick<
   | "getShopTickets"
   | "createTicket"
   | "submitPilotApplication"
+  | "getPilotApplications"
+  | "openShop"
+  | "createPasswordLink"
+  | "getPasswordHolder"
+  | "setPassword"
 >;
 
 /**
@@ -81,4 +89,13 @@ export const httpSupportApi: SupportApi = {
   getShopTickets: () => get<TicketSummary[]>("/api/panel/tickets"),
   createTicket: (_shopId, input) => send("POST", "/api/panel/tickets", input),
   submitPilotApplication: (input) => send("POST", "/api/public/pilot-applications", input),
+  getPilotApplications: () => get<PilotApplication[]>("/api/support/pilot-applications"),
+  openShop: (input) => send("POST", "/api/support/shops", input),
+  createPasswordLink: async (shopId) => {
+    const result = await sendOrNull<PasswordLink, never>("POST", path`/api/support/shops/${shopId}/password-link`, {});
+    return result?.ok ? result.value : null;
+  },
+  // Şifre belirleme bağlantısı: oturumsuz, token'ın kendisi yetkidir.
+  getPasswordHolder: (token) => getOrNull<PasswordHolder>(path`/api/public/password-setup/${token}`),
+  setPassword: (token, password) => send("POST", "/api/public/password-setup", { token, password }),
 };

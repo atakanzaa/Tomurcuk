@@ -1,4 +1,4 @@
-package com.tomurcuk.catalog.internal;
+package com.tomurcuk.media.internal;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

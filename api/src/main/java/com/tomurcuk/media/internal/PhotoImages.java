@@ -1,4 +1,4 @@
-package com.tomurcuk.catalog.internal;
+package com.tomurcuk.media.internal;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -19,15 +19,18 @@ import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.ImageOutputStream;
 
 /**
- * Yüklenen fotoğrafı vitrine hazırlar: ortadan 4:5 kırpar, en çok 1200×1500'e küçültür ve JPEG
- * olarak yeniden yazar. Yeniden yazmak konum gibi EXIF bilgilerini de siler. Telefonun döndürme
- * bilgisini tarayıcı uygular; panel fotoğrafı yüklemeden önce kırpıp JPEG'e çevirir.
+ * Yüklenen fotoğrafı hazırlar ve JPEG olarak yeniden yazar; yeniden yazmak konum gibi EXIF
+ * bilgilerini de siler. Ürün fotoğrafı ortadan 4:5 kırpılır, en çok 1200×1500; teslim fotoğrafı
+ * kırpılmaz, uzun kenarı en çok 1600. Telefonun döndürme bilgisini tarayıcı uygular; panel
+ * fotoğrafı yüklemeden önce JPEG'e çevirir.
  */
 final class PhotoImages {
 
 	static final int WIDTH = 1200;
 
 	static final int HEIGHT = 1500;
+
+	static final int DELIVERY_LONG_SIDE = 1600;
 
 	static final int MAX_BYTES = 8 * 1024 * 1024;
 
@@ -66,7 +69,23 @@ final class PhotoImages {
 		int x = (w - cropW) / 2;
 		int y = (h - cropH) / 2;
 		int outW = Math.min(WIDTH, cropW);
-		int outH = outW * 5 / 4;
+		return writeJpeg(scale(source.getSubimage(x, y, cropW, cropH), outW, outW * 5 / 4));
+	}
+
+	static byte[] toDeliveryJpeg(byte[] input) throws InvalidPhoto {
+		if (input.length == 0 || input.length > MAX_BYTES) {
+			throw new InvalidPhoto("Boyut uygun değil: " + input.length);
+		}
+		BufferedImage source = read(input);
+		int w = source.getWidth();
+		int h = source.getHeight();
+		double ratio = Math.min(1.0, (double) DELIVERY_LONG_SIDE / Math.max(w, h));
+		int outW = Math.max(1, (int) Math.round(w * ratio));
+		int outH = Math.max(1, (int) Math.round(h * ratio));
+		return writeJpeg(scale(source, outW, outH));
+	}
+
+	private static BufferedImage scale(BufferedImage source, int outW, int outH) {
 		BufferedImage out = new BufferedImage(outW, outH, BufferedImage.TYPE_INT_RGB);
 		Graphics2D g = out.createGraphics();
 		try {
@@ -76,12 +95,12 @@ final class PhotoImages {
 			// Saydam PNG'nin zemini beyaz olur.
 			g.setColor(Color.WHITE);
 			g.fillRect(0, 0, outW, outH);
-			g.drawImage(halve(source.getSubimage(x, y, cropW, cropH), outW), 0, 0, outW, outH, null);
+			g.drawImage(halve(source, outW), 0, 0, outW, outH, null);
 		}
 		finally {
 			g.dispose();
 		}
-		return writeJpeg(out);
+		return out;
 	}
 
 	private static BufferedImage read(byte[] input) throws InvalidPhoto {

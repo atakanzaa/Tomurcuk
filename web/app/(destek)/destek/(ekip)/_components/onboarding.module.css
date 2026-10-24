@@ -1,0 +1,93 @@
+/* Dükkân açma ve şifre bağlantısı. */
+
+.form {
+  display: grid;
+  gap: var(--space-6);
+  max-width: 720px;
+}
+
+.section {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.sectionTitle {
+  margin: 0;
+  font-size: 16px;
+  line-height: 22px;
+  font-weight: 600;
+}
+
+.fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3) var(--space-4);
+}
+
+.fields > * {
+  align-content: start;
+}
+
+.wide {
+  grid-column: 1 / -1;
+}
+
+.slug {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.slugPrefix {
+  padding-right: var(--space-1);
+  color: var(--ink-muted);
+  font-size: 15px;
+  white-space: nowrap;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.card {
+  display: grid;
+  gap: var(--space-4);
+  max-width: 720px;
+  padding: var(--space-5);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-l);
+  background: var(--paper-raised);
+}
+
+.cardTitle {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 23px;
+  line-height: 28px;
+}
+
+.cardText {
+  margin: 0;
+  color: var(--ink-muted);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.url {
+  width: 100%;
+  font-size: 14px;
+}
+
+.status {
+  color: var(--stem-ink);
+  font-size: 14px;
+}
+
+.done {
+  color: var(--ink-muted);
+  font-size: 13px;
+}

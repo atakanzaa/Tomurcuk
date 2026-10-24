@@ -10,6 +10,7 @@ export const Permission = {
   ShopSuspend: "SHOP_SUSPEND",
   CatalogEdit: "CATALOG_EDIT",
   AuditViewAll: "AUDIT_VIEW_ALL",
+  ShopOnboard: "SHOP_ONBOARD",
 } as const;
 export type Permission = (typeof Permission)[keyof typeof Permission];
 

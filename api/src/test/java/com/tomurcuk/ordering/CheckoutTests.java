@@ -83,6 +83,13 @@ class CheckoutTests {
 		Placed second = checkout.placeOrder(SHOP, draft.id(), input);
 		assertThat(second.trackingToken()).isEqualTo(first.trackingToken());
 		assertThat(first.paymentUrl()).isNull();
+		// Onaylanan sözleşmelerin sürümü siparişte durur; takip linkinden sipariş bilgisiyle açılır.
+		assertThat(checkout.contract(SHOP, first.trackingToken())).hasValueSatisfying(contract -> {
+			assertThat(contract.termsVersion()).isEqualTo(Terms.VERSION);
+			assertThat(contract.total()).isEqualTo(draft.total());
+			assertThat(contract.items()).hasSize(1);
+		});
+		assertThat(checkout.contract("shop_lale", first.trackingToken())).isEmpty();
 	}
 
 	/** Başka dükkânın takip kodu bulunamaz. */

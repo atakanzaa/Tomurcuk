@@ -55,7 +55,7 @@ class PublicDeliveryController {
 
 	@GetMapping("/time-slots")
 	List<TimeSlotResponse> slots(@PathVariable String shopId) {
-		return slots.findByShopIdOrderByStart(shopId).stream().map(TimeSlotResponse::of).toList();
+		return slots.findByShopIdAndActiveTrueOrderByStart(shopId).stream().map(TimeSlotResponse::of).toList();
 	}
 
 	/** web/lib/api/types.ts `DeliveryZone` */
