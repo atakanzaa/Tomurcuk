@@ -10,13 +10,22 @@ interface ActionBarProps {
   /** Butonun altındaki kısa not. */
   caption?: ReactNode;
   inlineOnDesktop?: boolean;
+  /** Masaüstünde not butonun yanında, sola hizalı durur (panel ürün formu). */
+  captionBeside?: boolean;
   /** Satıcı panelinde telefonun alt menüsünün üstünde durur. */
   aboveTabBar?: boolean;
 }
 
-export function ActionBar({ total, action, caption, inlineOnDesktop, aboveTabBar }: ActionBarProps) {
+export function ActionBar({ total, action, caption, inlineOnDesktop, captionBeside, aboveTabBar }: ActionBarProps) {
   return (
-    <div className={cx(styles.bar, inlineOnDesktop && styles.inlineOnDesktop, aboveTabBar && styles.aboveTabBar)}>
+    <div
+      className={cx(
+        styles.bar,
+        inlineOnDesktop && styles.inlineOnDesktop,
+        captionBeside && styles.captionBeside,
+        aboveTabBar && styles.aboveTabBar,
+      )}
+    >
       <div className={cx(styles.inner, caption ? styles.stacked : undefined)}>
         {total && (
           <div className={styles.total} aria-live="polite">

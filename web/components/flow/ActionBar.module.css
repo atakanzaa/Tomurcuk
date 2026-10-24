@@ -74,4 +74,20 @@
     max-width: none;
     padding-inline: 0;
   }
+
+  .captionBeside .stacked {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  .captionBeside .action {
+    flex: none;
+  }
+
+  .captionBeside .caption {
+    font-size: 13px;
+    text-align: left;
+  }
 }

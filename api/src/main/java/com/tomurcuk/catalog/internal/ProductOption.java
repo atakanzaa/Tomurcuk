@@ -33,6 +33,19 @@ public class ProductOption {
 	protected ProductOption() {
 	}
 
+	ProductOption(String id, Product product) {
+		this.id = id;
+		this.product = product;
+	}
+
+	void update(String name, String detail, OptionKind kind, long extraPrice, int position) {
+		this.name = name;
+		this.detail = detail;
+		this.kind = kind;
+		this.extraPrice = extraPrice;
+		this.position = position;
+	}
+
 	public String getId() {
 		return id;
 	}

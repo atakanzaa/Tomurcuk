@@ -14,7 +14,8 @@ RUN ./mvnw -B -q package -DskipTests \
  && java -Djarmode=tools -jar target/tomurcuk-api-*.jar extract --layers --launcher --destination /app
 
 FROM eclipse-temurin:21-jre
-RUN groupadd --system tomurcuk && useradd --system --gid tomurcuk --no-create-home tomurcuk
+RUN groupadd --system tomurcuk && useradd --system --gid tomurcuk --no-create-home tomurcuk \
+ && mkdir -p /data/photos && chown tomurcuk:tomurcuk /data/photos
 WORKDIR /app
 # Değişme sıklığına göre katmanlar: bağımlılıklar en altta, uygulama kodu en üstte.
 COPY --from=build /app/dependencies/ ./

@@ -161,15 +161,19 @@ export default function HomePage({ searchParams }: PageProps<"/">) {
   );
 }
 
-/** Bugün ve yarın, platformun saat dilimine göre. */
-function today(): IsoDate {
+/**
+ * Bugün, platformun saat dilimine göre. Saat okunduğu için istek anına bağlanır; yoksa Next
+ * sayfayı önceden render ederken (arama parametreleriyle ön yükleme) tarihi sabitlemeye çalışır.
+ */
+async function today(): Promise<IsoDate> {
+  await connection();
   return zonedNow(new Date(), PLATFORM_ZONE).date;
 }
 
 async function Search({ searchParams }: { searchParams: SearchParams }) {
   const params = await searchParams;
   const areas = await getAreas();
-  const now = today();
+  const now = await today();
   const area = parseArea(first(params[SEARCH_PARAMS.area]));
   const day = parseDay(first(params[SEARCH_PARAMS.day]), first(params[SEARCH_PARAMS.date])) ?? now;
   const days = [0, 1].map((offset) => {
@@ -192,7 +196,7 @@ async function Results({ searchParams }: { searchParams: SearchParams }) {
   const area = parseArea(first(params[SEARCH_PARAMS.area]));
   const date = parseDay(first(params[SEARCH_PARAMS.day]), first(params[SEARCH_PARAMS.date]));
   if (!area || !date) return null;
-  const now = today();
+  const now = await today();
   const offset = daysBetween(now, date);
   const place = area.neighborhood ?? area.district;
   const title = `${offset >= 0 ? dayName(date, now) : formatLongDate(date)} ${withDativeSuffix(place)} teslim eden çiçekçiler`;

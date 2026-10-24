@@ -58,17 +58,21 @@ async function credentials(path: string): Promise<Credentials | null> {
   return null;
 }
 
-/** Oturum yoksa ya da süresi dolduysa (401) kullanıcı ilgili giriş sayfasına gider. */
+/**
+ * Oturum yoksa ya da süresi dolduysa (401) kullanıcı ilgili giriş sayfasına gider. FormData
+ * çok parçalı gider (fotoğraf); sınırı fetch yazar.
+ */
 async function request(method: string, path: string, body?: unknown): Promise<Response> {
   const auth = await credentials(path);
+  const multipart = body instanceof FormData;
   const response = await fetch(apiUrl(path), {
     method,
     headers: {
       Accept: "application/json",
-      ...(body === undefined ? {} : { "Content-Type": "application/json" }),
+      ...(body === undefined || multipart ? {} : { "Content-Type": "application/json" }),
       ...auth?.headers,
     },
-    body: body === undefined ? undefined : JSON.stringify(body),
+    body: body === undefined ? undefined : multipart ? body : JSON.stringify(body),
   });
   if (auth && response.status === 401) redirect(auth.login);
   // Dükkân adına oturumun süresi dolduysa panel yetkisi yoktur; temsilci destek paneline döner.
@@ -103,7 +107,19 @@ export async function postOrNull<T>(path: string, body: unknown): Promise<T | nu
  * `Result` tipine çevrilir. Türkçe mesajı arayüz üretir.
  */
 export async function send<T, F extends string>(method: "POST" | "PUT", path: string, body: unknown): Promise<Result<T, F>> {
+  const result = await sendOrNull<T, F>(method, path, body);
+  if (!result) throw new ApiError(404, path);
+  return result;
+}
+
+/** `send` gibi; kayıt yoksa (404) null. */
+export async function sendOrNull<T, F extends string>(
+  method: "POST" | "PUT",
+  path: string,
+  body: unknown,
+): Promise<Result<T, F> | null> {
   const response = await request(method, path, body);
+  if (response.status === 404) return null;
   if (response.status === 422) {
     const { errors } = (await response.json()) as { errors: FieldErrors<F> };
     return { ok: false, errors };

@@ -31,13 +31,13 @@ final class CatalogResponses {
 	}
 
 	record ProductResponse(String id, String shopId, String categoryId, String name, String description,
-			String summary, long price, String photoUrl, boolean active, int order,
+			String summary, long price, String photoUrl, List<String> photos, boolean active, int order,
 			List<ProductOptionResponse> options) {
 
 		static ProductResponse of(Product product) {
 			return new ProductResponse(product.getId(), product.getShopId(), product.getCategoryId(),
 					product.getName(), product.getDescription(), product.getSummary(), product.getPrice(),
-					product.getPhotoUrl(), product.isActive(), product.getPosition(),
+					product.getPhotoUrl(), product.getPhotos(), product.isActive(), product.getPosition(),
 					product.getOptions()
 						.stream()
 						.map(option -> ProductOptionResponse.of(product.getId(), option))

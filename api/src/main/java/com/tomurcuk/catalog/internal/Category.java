@@ -22,6 +22,14 @@ public class Category {
 	protected Category() {
 	}
 
+	Category(String id, String shopId, String slug, String name, int position) {
+		this.id = id;
+		this.shopId = shopId;
+		this.slug = slug;
+		this.name = name;
+		this.position = position;
+	}
+
 	public String getId() {
 		return id;
 	}

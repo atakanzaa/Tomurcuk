@@ -22,6 +22,7 @@
     <springdoc.version>3.1.1</springdoc.version>
     <libphonenumber.version>9.0.41</libphonenumber.version>
     <ulid-creator.version>5.2.4</ulid-creator.version>
+    <awssdk.version>2.55.16</awssdk.version>
   </properties>
 
   <dependencyManagement>
@@ -92,6 +93,27 @@
       <groupId>com.googlecode.libphonenumber</groupId>
       <artifactId>libphonenumber</artifactId>
       <version>${libphonenumber.version}</version>
+    </dependency>
+    <!-- Ürün fotoğrafları Cloudflare R2'de (S3 uyumlu). İstemci JDK'nin HttpURLConnection'ı. -->
+    <dependency>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>s3</artifactId>
+      <version>${awssdk.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>software.amazon.awssdk</groupId>
+          <artifactId>netty-nio-client</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>software.amazon.awssdk</groupId>
+          <artifactId>apache-client</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>url-connection-client</artifactId>
+      <version>${awssdk.version}</version>
     </dependency>
     <dependency>
       <groupId>com.github.f4b6a3</groupId>

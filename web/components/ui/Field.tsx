@@ -20,6 +20,8 @@ interface FieldOwnProps {
   error?: string;
   /** Etiketin yanına "(isteğe bağlı)" ekler. Zorunlu alanlar işaretlenmez. */
   optional?: boolean;
+  /** Tek satırlı alanda da `maxLength` sayacını gösterir. */
+  counter?: boolean;
   className?: string;
 }
 
@@ -52,7 +54,8 @@ export function Field(props: FieldProps) {
   const error = editedSinceError || changedElsewhere ? undefined : props.error;
   const [length, setLength] = useState(() => String(props.value ?? props.defaultValue ?? "").length);
 
-  const showCount = props.as === "textarea" && props.maxLength !== undefined;
+  const maxLength = props.as === "select" ? undefined : props.maxLength;
+  const showCount = (props.as === "textarea" || props.counter) && maxLength !== undefined;
   const count = props.value !== undefined ? String(props.value).length : length;
   const message = error ?? hint;
   const hasMeta = Boolean(message) || showCount;
@@ -80,7 +83,7 @@ export function Field(props: FieldProps) {
           {message && <span id={metaId}>{message}</span>}
           {showCount && (
             <span className="tm-field__count">
-              {count} / {props.maxLength}
+              {count} / {maxLength}
             </span>
           )}
         </span>
@@ -91,13 +94,13 @@ export function Field(props: FieldProps) {
 
 function renderControl(props: FieldProps, controlProps: object) {
   if (props.as === "textarea") {
-    const { as, label, hint, error, optional, className, ...rest } = props;
+    const { as, label, hint, error, optional, counter, className, ...rest } = props;
     return <textarea {...rest} {...controlProps} />;
   }
   if (props.as === "select") {
-    const { as, label, hint, error, optional, className, ...rest } = props;
+    const { as, label, hint, error, optional, counter, className, ...rest } = props;
     return <select {...rest} {...controlProps} />;
   }
-  const { as, label, hint, error, optional, className, ...rest } = props;
+  const { as, label, hint, error, optional, counter, className, ...rest } = props;
   return <input {...rest} {...controlProps} />;
 }

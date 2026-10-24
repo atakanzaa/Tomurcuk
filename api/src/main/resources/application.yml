@@ -24,6 +24,11 @@ spring:
   session:
     jdbc:
       initialize-schema: never
+  servlet:
+    multipart:
+      # Panel fotoğrafı tarayıcıda küçültüp gönderir; telefonun ham fotoğrafı da sığsın.
+      max-file-size: 8MB
+      max-request-size: 9MB
   modulith:
     events:
       republish-outstanding-events-on-restart: true
@@ -51,6 +56,13 @@ tomurcuk:
     provider: log
   email:
     provider: log
+  photos:
+    # disk: yerel, testler ve R2 kurulana kadar sunucular (dizin bir volume'dür). r2: Cloudflare R2;
+    # adres, bucket, önek ve herkese açık adres ortamın .env'inden, anahtarlar secret olarak
+    # (TOMURCUK_PHOTOS_R2_*; deploy/README.md).
+    store: disk
+    disk:
+      dir: data/photos
   jobs:
     enabled: true
 

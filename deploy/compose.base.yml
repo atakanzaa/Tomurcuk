@@ -34,7 +34,12 @@ services:
       SPRING_DATASOURCE_USERNAME: tomurcuk
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
       TOMURCUK_WEBURL: https://${HOST:?}
+      # Ürün fotoğrafları R2 kurulmamışsa burada (TOMURCUK_PHOTOS_STORE=disk); R2'ye geçince de
+      # önceden yüklenenler buradan okunur.
+      TOMURCUK_PHOTOS_DISK_DIR: /data/photos
       TZ: Europe/Istanbul
+    volumes:
+      - photos:/data/photos
     healthcheck:
       test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8080/actuator/health"]
       interval: 10s
@@ -64,6 +69,7 @@ services:
 
 volumes:
   postgres-data:
+  photos:
 
 networks:
   # Sunucudaki Traefik'in ağı (traefik/compose.yml).
