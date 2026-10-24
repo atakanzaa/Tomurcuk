@@ -21,12 +21,23 @@ class AccountNotifications {
 		this.webUrl = webUrl;
 	}
 
-	/** Destek ekibi dükkânı açınca ya da yeni bağlantı oluşturunca sahibine şifre bağlantısı. */
+	/**
+	 * Şifre bağlantısı. Kurulum: destek ekibi dükkânı açınca ya da yeni bağlantı oluşturunca.
+	 * Sıfırlama: kullanıcı giriş ekranından isteyince.
+	 */
 	@ApplicationModuleListener
 	void on(PasswordLinkIssued event) {
 		String url = UriComponentsBuilder.fromUriString(webUrl).pathSegment("sifre", event.token()).build().toUriString();
 		String login = UriComponentsBuilder.fromUriString(webUrl).pathSegment("giris").build().toUriString();
-		String text = """
+		boolean reset = PasswordLinkIssued.RESET.equals(event.purpose());
+		String text = reset ? """
+				Merhaba %s,
+
+				%s paneli için şifre yenileme istendi. Şifrenizi yenilemek için bu bağlantıyı açın:
+				%s
+
+				Bağlantı 1 saat geçerlidir ve bir kez kullanılır. Bu isteği siz yapmadıysanız bu e-postayı yok sayın; şifreniz değişmez.
+				""".formatted(event.name(), event.shopName(), url) : """
 				Merhaba %s,
 
 				%s için Tomurcuk paneliniz hazır. Şifrenizi belirlemek için bu bağlantıyı açın:
@@ -37,7 +48,9 @@ class AccountNotifications {
 				Panele giriş: %s
 				E-postanız: %s
 				""".formatted(event.name(), event.shopName(), url, login, event.email());
-		notifications.send(new Notification(event.shopId(), null, null, "password_link_email", "email", event.email(),
-				"Tomurcuk panelinize şifre belirleyin", text, event.linkId() + ":password_link_email"));
+		String kind = reset ? "password_reset_email" : "password_link_email";
+		notifications.send(new Notification(event.shopId(), null, null, kind, "email", event.email(),
+				reset ? "Tomurcuk şifrenizi yenileyin" : "Tomurcuk panelinize şifre belirleyin", text,
+				event.linkId() + ":" + kind));
 	}
 }

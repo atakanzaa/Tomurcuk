@@ -171,6 +171,13 @@
   font-weight: 500;
 }
 
+.senderLinks {
+  flex: none;
+  display: grid;
+  justify-items: end;
+  gap: var(--space-3);
+}
+
 .textLink::after {
   content: "";
   position: absolute;

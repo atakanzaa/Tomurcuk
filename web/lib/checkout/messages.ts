@@ -6,6 +6,7 @@ import { formatPrice, withTimeSuffix } from "@/lib/format";
 /** Alana özgü "boş bırakıldı" mesajları. */
 const requiredMessages: Record<string, string> = {
   recipientName: "Alıcının adını yazın.",
+  title: "Hangi gün olduğunu yazın, ör. Annesinin doğum günü.",
   recipientPhone: "Alıcının telefonunu yazın. Kurye teslimattan önce bu numarayı arar.",
   neighborhood: "Mahalleyi yazın.",
   address: "Açık adresi yazın: sokak, bina ve daire numarası.",
@@ -76,6 +77,8 @@ export function checkoutErrorMessage(
       return "Fiyatı 1 TL ile 100.000 TL arasında, yalnızca rakamla yazın.";
     case CheckoutError.PhotoInvalid:
       return "Fotoğraf okunamadı. JPEG ya da PNG, en az 300 piksel genişliğinde bir fotoğraf seçin.";
+    case CheckoutError.DayInvalid:
+      return "Bu ayda o gün yok. Günü yeniden seçin.";
     case CheckoutError.DeliveryPhotoStatus:
       return "Teslim fotoğrafı sipariş yola çıkınca eklenir.";
     case CheckoutError.TooMany:

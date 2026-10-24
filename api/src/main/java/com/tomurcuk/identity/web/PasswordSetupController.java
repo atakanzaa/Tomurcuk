@@ -14,7 +14,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 /** Şifre belirleme bağlantısı (/sifre/<token>); oturum gerekmez, token'ın kendisi yetkidir. */
 @RestController
-@RequestMapping("/api/public/password-setup")
+@RequestMapping("/api/public")
 class PasswordSetupController {
 
 	private final PasswordLinks links;
@@ -24,17 +24,27 @@ class PasswordSetupController {
 	}
 
 	/** Geçersiz ya da süresi geçmiş bağlantı 404. */
-	@GetMapping("/{token}")
+	@GetMapping("/password-setup/{token}")
 	Holder holder(@PathVariable String token) {
 		return links.holder(token).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 	}
 
-	@PostMapping
+	@PostMapping("/password-setup")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	void redeem(@RequestBody Redeem body) {
 		links.redeem(body.token(), body.password());
 	}
 
+	/** Şifremi unuttum: adres kayıtlı olsun olmasın 204; bağlantı yalnızca e-postayla gider. */
+	@PostMapping("/password-reset")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	void requestReset(@RequestBody ResetRequest body) {
+		links.requestReset(body.email());
+	}
+
 	record Redeem(String token, String password) {
+	}
+
+	record ResetRequest(String email) {
 	}
 }

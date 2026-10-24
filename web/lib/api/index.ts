@@ -92,6 +92,8 @@ export const getNewOrders = read("getNewOrders");
 export const getOrder = read("getOrder");
 export const getCustomers = read("getCustomers");
 export const getCustomer = read("getCustomer");
+export const saveSpecialDay = write("saveSpecialDay");
+export const deleteSpecialDay = write("deleteSpecialDay");
 export const findCustomerByPhone = read("findCustomerByPhone");
 export const getReminders = read("getReminders");
 export const updateOrderStatus = write("updateOrderStatus");
@@ -144,6 +146,7 @@ export const createPasswordLink = write("createPasswordLink");
 // Şifre belirleme bağlantısı
 export const getPasswordHolder = read("getPasswordHolder");
 export const setPassword = write("setPassword");
+export const requestPasswordReset = write("requestPasswordReset");
 
 // Tanıtım sitesi
 export const submitPilotApplication = write("submitPilotApplication");

@@ -43,6 +43,7 @@ export type SupportApi = Pick<
   | "createPasswordLink"
   | "getPasswordHolder"
   | "setPassword"
+  | "requestPasswordReset"
 >;
 
 /**
@@ -98,4 +99,7 @@ export const httpSupportApi: SupportApi = {
   // Şifre belirleme bağlantısı: oturumsuz, token'ın kendisi yetkidir.
   getPasswordHolder: (token) => getOrNull<PasswordHolder>(path`/api/public/password-setup/${token}`),
   setPassword: (token, password) => send("POST", "/api/public/password-setup", { token, password }),
+  requestPasswordReset: async (email) => {
+    await send("POST", "/api/public/password-reset", { email });
+  },
 };

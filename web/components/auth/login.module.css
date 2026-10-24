@@ -45,6 +45,26 @@
   gap: var(--space-4);
 }
 
+.altLink {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-size: 15px;
+  line-height: 22px;
+  font-weight: 500;
+}
+
+.notice {
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-m);
+  background: var(--stem-soft);
+  color: var(--stem-ink);
+  font-size: 15px;
+  line-height: 22px;
+}
+
 @media (min-width: 640px) {
   .content {
     padding: var(--space-8) var(--space-6);

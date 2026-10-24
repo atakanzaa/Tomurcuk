@@ -460,6 +460,8 @@ export const CheckoutError = {
   // Panel: ürün formu.
   PriceInvalid: "price_invalid",
   PhotoInvalid: "photo_invalid",
+  /** Özel gün: o ayda olmayan gün. */
+  DayInvalid: "day_invalid",
   /** Teslim fotoğrafı sipariş yola çıkmadan eklenmez. */
   DeliveryPhotoStatus: "delivery_photo_status",
   TooMany: "too_many",
@@ -570,6 +572,14 @@ export interface SpecialDay {
   day: number;
   month: number;
   recipientName: string | null;
+}
+
+/** Ay 1–12; gün o ayda olmalı (29 Şubat geçerli). */
+export interface SpecialDayInput {
+  title: string;
+  day: number;
+  month: number;
+  recipientName: string;
 }
 
 export interface CustomerSummary extends Customer {
