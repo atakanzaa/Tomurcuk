@@ -41,7 +41,7 @@ Her modül `com.tomurcuk.<modül>` paketidir. Kökteki sınıflar modülün dı�
 | Modül | İçerik |
 | --- | --- |
 | `shop` | dükkân, slug geçmişi (301), plan, saat dilimi, aynı gün son saati, abonelik durumu |
-| `catalog` | kategori, ürün, seçenek, ürün sırası |
+| `catalog` | kategori, ürün, seçenek, ürün sırası; panelden ürün yönetimi ve fotoğraf yükleme (disk ya da Cloudflare R2) |
 | `delivery` | bölge, haftalık saat aralığı şablonu, kapalı gün, günlük kapasite, 10 dakikalık rezervasyon |
 | `ordering` | taslak, sipariş, sipariş kalemi kopyası, durum geçişleri, olay geçmişi, takip token'ı |
 | `payment` | iyzico adapter'ı, callback ve webhook, 15 dakikalık durum sorgusu, 30 dakikada terk edilen ödemenin iptali |
@@ -64,7 +64,7 @@ Modüller arası yan etkiler Modulith olaylarıyla taşınır, olay yayınları 
 - Dükkâna ait her sorgu `shop_id` ile filtrelenir. Başka dükkânın kaydı 404 döner, 403 değil.
 - Silme yerine `active = false` (bölge, ürün). Siparişe ad, fiyat ve bölge ücreti kopyalanır.
 
-`docs/mvp.md` veri modeline frontend yapılırken çıkan eklemeler: `category`, `shop_slug_history`, `shop_order_counter`, `order_draft`, `slot_hold` (10 dakikalık rezervasyon), `slot_capacity` (gün + aralık başına `taken`), `order_event`, `order.number`, `order.tracking_token`, `order.idempotency_key`, `shop_note`, `pilot_application`. Sipariş tablosunun adı `orders` (`order` SQL'de ayrılmış kelime).
+`docs/mvp.md` veri modeline frontend yapılırken çıkan eklemeler: `category`, `shop_slug_history`, `shop_order_counter`, `order_draft`, `slot_hold` (10 dakikalık rezervasyon), `slot_capacity` (gün + aralık başına `taken`), `order_event`, `order.number`, `order.tracking_token`, `order.idempotency_key`, `shop_note`, `pilot_application`, `product.photos` (sırayla en çok dört fotoğraf; `photo_url` kapağın kopyası), `product.updated_at`/`updated_by`, `product.deleted_at`. Sipariş tablosunun adı `orders` (`order` SQL'de ayrılmış kelime).
 
 ## API kuralları
 
@@ -72,8 +72,9 @@ Modüller arası yan etkiler Modulith olaylarıyla taşınır, olay yayınları 
 | --- | --- | --- |
 | Vitrin ve sipariş akışı | `/api/public/shop-lookup/{slug}`, `/api/public/shops/{shopId}/...` | yok |
 | Alıcı ana sayfası | `/api/public/discover/areas`, `/api/public/discover/shops?district&neighborhood&date`, `/api/public/discover/picks`, `/api/public/order-lookup` | yok |
-| Satıcı paneli | `/api/panel/...` | dükkân kullanıcısı ya da dükkân adına oturum |
+| Satıcı paneli | `/api/panel/...` (ürünler: `GET/POST /api/panel/products`, `GET/PUT/DELETE /api/panel/products/{id}`, `POST /api/panel/photos`) | dükkân kullanıcısı ya da dükkân adına oturum; ürün yazma `CATALOG_EDIT` |
 | Destek paneli | `/api/support/...` | platform kullanıcısı |
+| Diskteki ürün fotoğrafı | `/api/public/photos/{ad}` (web `/foto/{ad}` yolunda aktarır) | yok |
 | Ödeme bildirimleri | `/webhooks/iyzico` | iyzico imzası |
 
 - Uç noktalar `web/lib/api/contract.ts`'teki fonksiyonlarla bire bir eşleşir; isimler ve alanlar oradaki tiplerle aynı tutulur.
@@ -147,8 +148,9 @@ Kapsam bilerek dar tutulur; geliştirme hızı önce gelir.
 - Aşama 3 (`CheckoutTests`, `DeliveryScheduleTests`): ödeme callback'inin iki kez gelmesi, aynı idempotency anahtarı, aynı aralığa 20 eşzamanlı rezervasyon (kapasite 6), süresi dolan rezervasyon, "bugün" ve son sipariş saatinde saat dilimi, başka dükkânın takip kodu.
 - Aşama 4 (`PanelTests`): oturumsuz istek 401, yanlış şifrede hangi alanın yanlış olduğu söylenmez, durum geçişleri (atlanan ve geri giden reddedilir), çalışan iptal edemez (403), başka dükkânın siparişi ve müşterisi bulunamaz.
 
-- Adapter'lar (`NetgsmSmsSenderTests`, `IyzicoPaymentProviderTests`): istek biçimi, imza ve yanıt kodları, sağlayıcıya bağlanmadan; staging'de SMS'in yalnızca ekip numaralarına gitmesi.
+- Adapter'lar (`NetgsmSmsSenderTests`, `IyzicoPaymentProviderTests`, `R2PhotoStoreTests`): istek biçimi, imza ve yanıt kodları, sağlayıcıya bağlanmadan; staging'de SMS'in yalnızca ekip numaralarına gitmesi.
 - Aşama 6 (`SupportTests`): şifre ve TOTP birlikte; dükkân oturumuyla panele destek girişi yok; telefon maskeli, gerekçesiz açılmaz, açılış kayda geçer; dükkân adına oturum çalışan yetkisinde (iptal 403), işlem kayda geçer, 30 dakikada biter; denetim kaydı güncellenemez ve silinemez.
+- Ürün yönetimi (`PanelCatalogTests`): boyların tam fiyatı ürün fiyatı ve ek fiyata çevrilir, satıştan kalkan ürün vitrinde yok, fotoğraf 4:5 kırpılır ve yalnızca yüklenen adres kabul edilir, çalışan ürün değiştiremez (403), başka dükkânın ürünü bulunamaz.
 - Alıcı ana sayfası (`DiscoveryTests`): o gün teslim edebilen dükkânlar önce, ilk müsait aralığa göre; aynı gün son saati geçen dükkân sonda ve ilk müsait günüyle.
 - Aşama 5 (`NotificationTests`): aynı olay iki kez işlense de tek SMS, isimsiz gönderimde gönderen metinde yok.
 

@@ -258,3 +258,6 @@ ON CONFLICT (id) DO UPDATE SET
     start_time = EXCLUDED.start_time,
     end_time = EXCLUDED.end_time,
     capacity = EXCLUDED.capacity;
+
+-- Ürün fotoğraflarının listesi; ilki kapak (V14). Örnek ürünlerin tek fotoğrafı var.
+UPDATE product SET photos = ARRAY[photo_url] WHERE photo_url IS NOT NULL AND photos = '{}';

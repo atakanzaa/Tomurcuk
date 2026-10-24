@@ -72,6 +72,12 @@ export function checkoutErrorMessage(
       return "Ödeme sayfası şu an açılamıyor. Birkaç dakika sonra yeniden deneyin ya da havaleyle ödeyin.";
     case CheckoutError.DraftIncomplete:
       return "Sipariş bilgileri eksik. Önceki adımları tamamlayın.";
+    case CheckoutError.PriceInvalid:
+      return "Fiyatı 1 TL ile 100.000 TL arasında, yalnızca rakamla yazın.";
+    case CheckoutError.PhotoInvalid:
+      return "Fotoğraf okunamadı. JPEG ya da PNG, en az 300 piksel genişliğinde bir fotoğraf seçin.";
+    case CheckoutError.TooMany:
+      return `En fazla ${meta.max} tane ekleyebilirsiniz.`;
   }
 }
 

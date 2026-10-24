@@ -95,6 +95,11 @@ export const getReminders = read("getReminders");
 export const updateOrderStatus = write("updateOrderStatus");
 export const markOrderPaid = write("markOrderPaid");
 export const createManualOrder = write("createManualOrder");
+export const getPanelProducts = read("getPanelProducts");
+export const getPanelProduct = read("getPanelProduct");
+export const saveProduct = write("saveProduct");
+export const deleteProduct = write("deleteProduct");
+export const uploadProductPhoto = write("uploadProductPhoto");
 export const getShopTickets = read("getShopTickets");
 export const createTicket = write("createTicket");
 

@@ -86,7 +86,33 @@ TOMURCUK_SMS_ALLOWED_RECIPIENTS=05320000000,05330000000
 
 Netgsm hesabı henüz yoksa `TOMURCUK_SMS_PROVIDER=log` yazın; SMS'ler log'a düşer.
 
+Ürün fotoğrafları için aşağıdaki "Ürün fotoğrafları" bölümündeki satırları ekleyin (önek `staging`). Eklenmezse fotoğraflar API'nin `photos` volume'üne yazılır.
+
 Aynı anda en fazla 3 önizleme çalışır. Sınır doluysa CI uyarı verir, PR'ın testleri yine geçer; başka bir PR kapanınca yeni commit'le önizleme açılır.
+
+### Ürün fotoğrafları (Cloudflare R2)
+
+Panelden yüklenen fotoğraf API'de 4:5 kırpılır, JPEG'e çevrilir ve R2'ye yazılır; alıcı fotoğrafı R2'nin herkese açık adresinden görür. Bütün ortamlar aynı bucket'ı kullanır, her ortam kendi önekiyle (`staging/`, `prod/`). Önizlemeler R2'ye yazmaz; fotoğrafları kendi volume'lerinde durur ve önizlemeyle silinir.
+
+Kurulum bir kez yapılır:
+
+1. Cloudflare panelinde R2 > Create bucket: `tomurcuk`. Bucket > Settings > Public access: geliştirme için `r2.dev` adresini açın. Prod'dan önce aynı yerden kendi alan adını bağlayın (`foto.tomurcuk.shop`); bunun için alan adının DNS'i Cloudflare'de olmalı. `r2.dev` adresi hız sınırlıdır, yalnızca staging içindir.
+2. R2 > Manage API tokens > Create API token: izin "Object Read & Write", yalnızca `tomurcuk` bucket'ı. Çıkan Access Key ID ve Secret Access Key bir kez gösterilir; sohbete ya da repoya yazmayın, doğrudan sunucudaki `.env`'e girin.
+3. Ortamın `.env`'ine ekleyin ve deploy'u yeniden çalıştırın (ya da `docker compose ... up -d`):
+
+```sh
+TOMURCUK_PHOTOS_STORE=r2
+TOMURCUK_PHOTOS_R2_ENDPOINT=https://<hesap kimliği>.r2.cloudflarestorage.com
+TOMURCUK_PHOTOS_R2_BUCKET=tomurcuk
+TOMURCUK_PHOTOS_R2_PUBLICURL=https://pub-<kimlik>.r2.dev
+TOMURCUK_PHOTOS_R2_PREFIX=staging
+TOMURCUK_PHOTOS_R2_ACCESSKEY=<Access Key ID>
+TOMURCUK_PHOTOS_R2_SECRETKEY=<Secret Access Key>
+```
+
+Kendi alan adına geçince yalnızca `TOMURCUK_PHOTOS_R2_PUBLICURL=https://foto.tomurcuk.shop` değişir; eski fotoğrafların adresleri `r2.dev`'de kalır ve çalışmaya devam eder. Web, fotoğrafları `*.r2.dev` ve `foto.tomurcuk.shop` adreslerinden küçültüp sunar (`web/next.config.ts`); başka bir adres kullanılacaksa oraya eklenmeli.
+
+R2'ye geçmeden önce diske yüklenmiş fotoğraflar `/foto/` adresinden okunmaya devam eder. Kaldırılan fotoğrafın ya da silinen ürünün dosyası depodan silinmez.
 
 ### Sunucu 2: prod
 
@@ -102,6 +128,8 @@ TOMURCUK_SMS_NETGSM_USERCODE=<Netgsm kullanıcı kodu>
 TOMURCUK_SMS_NETGSM_PASSWORD=<Netgsm API şifresi>
 TOMURCUK_SMS_NETGSM_HEADER=<onaylı mesaj başlığı>
 ```
+
+Fotoğraflar için "Ürün fotoğrafları" bölümündeki satırlar (önek `prod`).
 
 Prod pazaryeri modelinde çalışır: her dükkânın iyzico alt üye işyeri anahtarı `shop_payment_account` tablosunda olmalı, yoksa o dükkânda kartla ödeme açılmaz (alıcı "Ödeme sayfası şu an açılamıyor" görür, havale çalışır).
 

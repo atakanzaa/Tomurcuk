@@ -122,10 +122,45 @@ export interface Product {
   /** Listede fiyatın yanındaki kısa bilgi, ör. "12 dal", "Aynı gün". */
   summary: string;
   price: Kurus;
+  /** Kapak fotoğrafı; `photos`'un ilki. */
   photoUrl: string | null;
+  /** Sırayla en çok dört fotoğraf. */
+  photos: string[];
   active: boolean;
   order: number;
   options: ProductOption[];
+}
+
+/** Panelde ürün: satışta olmayanlar da gelir; son değişikliğin zamanı ve yapanın adı. */
+export interface PanelProduct {
+  product: Product;
+  updatedAt: string | null;
+  updatedBy: string | null;
+}
+
+/** Boy ya da ek seçenek. Boyda `price` tam fiyattır ("Küçük, 10 dal" 850 TL), ek seçenekte ek ücrettir. */
+export interface ProductChoice {
+  /** Var olan seçeneğin kimliği; yeni satırda null. */
+  id: string | null;
+  name: string;
+  price: Kurus | null;
+}
+
+/**
+ * Panelden ürün kaydı. `categoryId` boşsa `newCategory` adıyla kategori açılır. Boy yoksa ürünün
+ * tek fiyatı `price`'tır. `photos` yüklenmiş fotoğrafların adresleri, ilki kapak.
+ */
+export interface ProductInput {
+  categoryId: string;
+  newCategory: string;
+  name: string;
+  summary: string;
+  description: string;
+  price: Kurus | null;
+  sizes: ProductChoice[];
+  extras: ProductChoice[];
+  photos: string[];
+  active: boolean;
 }
 
 /** delivery_zone */
@@ -327,6 +362,10 @@ export const CheckoutError = {
   /** Ödeme sağlayıcısının sayfası açılamadı; sipariş açık kalır. */
   PaymentUnavailable: "payment_unavailable",
   DraftIncomplete: "draft_incomplete",
+  // Panel: ürün formu.
+  PriceInvalid: "price_invalid",
+  PhotoInvalid: "photo_invalid",
+  TooMany: "too_many",
 } as const;
 export type CheckoutError = ValueOf<typeof CheckoutError>;
 

@@ -30,6 +30,8 @@ import type {
   Order,
   OrderDraft,
   OrderTracking,
+  PanelProduct,
+  ProductInput,
   PlaceOrderInput,
   PlacedOrder,
   Product,
@@ -101,6 +103,18 @@ export interface TomurcukApi {
   /** Bugünden itibaren `days` gün içindeki özel günler. */
   getReminders(shopId: string, days: number): Promise<Reminder[]>;
   createManualOrder(shopId: string, input: ManualOrderInput): Promise<Result<{ orderId: string }, keyof ManualOrderInput>>;
+  /** Satışta olmayanlar dahil, silinenler hariç; dükkânın sırasıyla. */
+  getPanelProducts(shopId: string): Promise<PanelProduct[]>;
+  getPanelProduct(shopId: string, productId: string): Promise<PanelProduct | null>;
+  /** `productId` null ise yeni ürün. Yalnızca dükkân sahibi (CATALOG_EDIT); bulunamayan ürün null. */
+  saveProduct(
+    shopId: string,
+    productId: string | null,
+    input: ProductInput,
+  ): Promise<Result<{ productId: string }, keyof ProductInput | "category"> | null>;
+  deleteProduct(shopId: string, productId: string): Promise<boolean>;
+  /** Fotoğrafı 4:5 kırpıp depoya yazar; adres ürün kaydedilirken `photos`'a girer. */
+  uploadProductPhoto(shopId: string, file: Blob): Promise<Result<{ url: string }, "photo">>;
   /** Panelden açılan destek talepleri ve durumları. */
   getShopTickets(shopId: string): Promise<TicketSummary[]>;
   createTicket(shopId: string, input: TicketInput): Promise<Result<{ ticketId: string }, keyof TicketInput>>;
