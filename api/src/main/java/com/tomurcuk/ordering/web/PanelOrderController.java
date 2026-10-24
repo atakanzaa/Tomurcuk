@@ -5,6 +5,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
+import com.tomurcuk.customer.Customers.SpecialDayInput;
+import com.tomurcuk.customer.SpecialDay;
 import com.tomurcuk.identity.ShopPrincipal;
 import com.tomurcuk.ordering.OrderStatus;
 import com.tomurcuk.ordering.internal.CustomerDetail;
@@ -20,9 +22,11 @@ import com.tomurcuk.shared.ValidationException;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -107,6 +111,28 @@ class PanelOrderController {
 	@GetMapping("/customers/{customerId}")
 	CustomerDetail customer(@AuthenticationPrincipal ShopPrincipal user, @PathVariable String customerId) {
 		return panel.customer(user, customerId).orElseThrow(PanelOrderController::notFound);
+	}
+
+	@PostMapping("/customers/{customerId}/special-days")
+	@ResponseStatus(HttpStatus.CREATED)
+	SpecialDay addSpecialDay(@AuthenticationPrincipal ShopPrincipal user, @PathVariable String customerId,
+			@RequestBody SpecialDayInput body) {
+		return panel.addSpecialDay(user, customerId, body).orElseThrow(PanelOrderController::notFound);
+	}
+
+	@PutMapping("/customers/{customerId}/special-days/{dayId}")
+	SpecialDay updateSpecialDay(@AuthenticationPrincipal ShopPrincipal user, @PathVariable String customerId,
+			@PathVariable String dayId, @RequestBody SpecialDayInput body) {
+		return panel.updateSpecialDay(user, customerId, dayId, body).orElseThrow(PanelOrderController::notFound);
+	}
+
+	@DeleteMapping("/customers/{customerId}/special-days/{dayId}")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	void deleteSpecialDay(@AuthenticationPrincipal ShopPrincipal user, @PathVariable String customerId,
+			@PathVariable String dayId) {
+		if (!panel.deleteSpecialDay(user, customerId, dayId)) {
+			throw notFound();
+		}
 	}
 
 	@GetMapping("/customers/by-phone")

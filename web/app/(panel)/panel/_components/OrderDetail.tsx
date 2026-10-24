@@ -172,9 +172,14 @@ export function OrderDetail({ order, customer, today, timeZone, role, backHref, 
                 {order.anonymous ? ". İsimsiz gönderim: alıcıya adı söylenmez." : ""}
               </span>
             </div>
-            <Link href={`/panel/musteriler/${customer.customer.id}`} className={styles.textLink}>
-              Müşteri kartı
-            </Link>
+            <div className={styles.senderLinks}>
+              <Link href={`/panel/musteriler/${customer.customer.id}`} className={styles.textLink}>
+                Müşteri kartı
+              </Link>
+              <Link href={`/panel/musteriler/${customer.customer.id}?ozel-gun=${order.id}`} className={styles.textLink}>
+                Özel gün olarak kaydet
+              </Link>
+            </div>
           </section>
         )}
       </div>

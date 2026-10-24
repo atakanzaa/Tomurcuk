@@ -1,10 +1,16 @@
 package com.tomurcuk.customer;
 
+import java.time.Month;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 
+import com.tomurcuk.shared.FieldError;
 import com.tomurcuk.shared.Ids;
+import com.tomurcuk.shared.Texts;
+import com.tomurcuk.shared.ValidationException;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +22,9 @@ public class Customers {
 	private static final String UNNAMED = "İsimsiz müşteri";
 
 	private static final Locale TR = Locale.forLanguageTag("tr");
+
+	/** Bir müşteride en çok bu kadar özel gün. */
+	static final int MAX_SPECIAL_DAYS = 20;
 
 	private final JdbcClient jdbc;
 
@@ -96,5 +105,99 @@ public class Customers {
 			.param("shopId", shopId)
 			.query(SpecialDay.class)
 			.list();
+	}
+
+	/** "Annesinin doğum günü, 12 Mart"; yıl tutulmaz. `recipientName` isteğe bağlı. */
+	public record SpecialDayInput(String title, Integer day, Integer month, String recipientName) {
+	}
+
+	/**
+	 * Müşteri bu dükkânın değilse boş döner. Hatalar: `title` (`required`, `too_long`), `day`
+	 * (`day_invalid`: o ayda olmayan gün; 29 Şubat geçerli), `recipientName` (`too_long`), `form`
+	 * (`too_many`, meta: max).
+	 */
+	@Transactional
+	public Optional<SpecialDay> addSpecialDay(String shopId, String customerId, SpecialDayInput input) {
+		if (find(shopId, customerId).isEmpty()) {
+			return Optional.empty();
+		}
+		Clean clean = validate(input);
+		int count = jdbc.sql("SELECT count(*) FROM special_day WHERE customer_id = :customerId")
+			.param("customerId", customerId)
+			.query(Integer.class)
+			.single();
+		if (count >= MAX_SPECIAL_DAYS) {
+			throw ValidationException.of("form", FieldError.of("too_many", Map.of("max", MAX_SPECIAL_DAYS)));
+		}
+		String id = Ids.newId();
+		jdbc.sql("""
+				INSERT INTO special_day (id, customer_id, title, day, month, recipient_name)
+				VALUES (:id, :customerId, :title, :day, :month, :recipientName)
+				""")
+			.param("id", id)
+			.param("customerId", customerId)
+			.param("title", clean.title())
+			.param("day", clean.day())
+			.param("month", clean.month())
+			.param("recipientName", clean.recipientName())
+			.update();
+		return Optional.of(new SpecialDay(id, customerId, clean.title(), clean.day(), clean.month(),
+				clean.recipientName()));
+	}
+
+	/** Özel gün ya da müşteri bu dükkânın değilse boş döner; hatalar {@link #addSpecialDay} gibi. */
+	@Transactional
+	public Optional<SpecialDay> updateSpecialDay(String shopId, String customerId, String dayId,
+			SpecialDayInput input) {
+		Clean clean = validate(input);
+		int updated = jdbc.sql("""
+				UPDATE special_day d SET title = :title, day = :day, month = :month, recipient_name = :recipientName
+				FROM customer c
+				WHERE c.id = d.customer_id AND c.shop_id = :shopId AND c.id = :customerId AND d.id = :dayId
+				""")
+			.param("title", clean.title())
+			.param("day", clean.day())
+			.param("month", clean.month())
+			.param("recipientName", clean.recipientName())
+			.param("shopId", shopId)
+			.param("customerId", customerId)
+			.param("dayId", dayId)
+			.update();
+		return updated == 0 ? Optional.empty()
+				: Optional.of(new SpecialDay(dayId, customerId, clean.title(), clean.day(), clean.month(),
+						clean.recipientName()));
+	}
+
+	@Transactional
+	public boolean deleteSpecialDay(String shopId, String customerId, String dayId) {
+		return jdbc.sql("""
+				DELETE FROM special_day d USING customer c
+				WHERE c.id = d.customer_id AND c.shop_id = :shopId AND c.id = :customerId AND d.id = :dayId
+				""")
+			.param("shopId", shopId)
+			.param("customerId", customerId)
+			.param("dayId", dayId)
+			.update() > 0;
+	}
+
+	private record Clean(String title, int day, int month, String recipientName) {
+	}
+
+	private static Clean validate(SpecialDayInput input) {
+		SpecialDayInput in = input == null ? new SpecialDayInput(null, null, null, null) : input;
+		Map<String, FieldError> errors = new LinkedHashMap<>();
+		String title = Texts.check(errors, "title", in.title(), 160, true);
+		String recipient = Texts.check(errors, "recipientName", in.recipientName(), 120, false);
+		Integer day = in.day();
+		Integer month = in.month();
+		// Artık yıla göre: 29 Şubat geçerli, hatırlatma artık yıl olmayan yılda 28 Şubat'ta gelir.
+		if (day == null || month == null || month < 1 || month > 12 || day < 1
+				|| day > Month.of(month).maxLength()) {
+			errors.put("day", FieldError.of("day_invalid"));
+		}
+		if (!errors.isEmpty()) {
+			throw new ValidationException(errors);
+		}
+		return new Clean(title, day, month, recipient.isEmpty() ? null : recipient);
 	}
 }

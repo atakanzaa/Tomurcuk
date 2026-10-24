@@ -5,8 +5,10 @@ import { redirect } from "next/navigation";
 import {
   createManualOrder,
   createTicket,
+  deleteSpecialDay,
   endImpersonation,
   markOrderPaid,
+  saveSpecialDay,
   updateOrderStatus,
   uploadDeliveryPhoto,
 } from "@/lib/api";
@@ -103,4 +105,49 @@ export async function openTicket(prev: FormState, formData: FormData): Promise<F
   if (!result.ok) return { version: prev.version + 1, errors: toMessages(result.errors), values: formValues(formData) };
   refresh();
   return { version: prev.version + 1, errors: {}, values: { sent: "1" } };
+}
+
+export interface SpecialDayFormState extends FormState {
+  notice: ActionNotice;
+  /** Kayıt başarılı olunca artar; düzenleme formu kapanır. */
+  saved: number;
+}
+
+/** Müşteri kartında özel gün ekleme ve düzenleme; `dayId` boşsa yeni kayıt. */
+export async function saveSpecialDayForm(prev: SpecialDayFormState, formData: FormData): Promise<SpecialDayFormState> {
+  const { shop } = await loadPanel();
+  const dayId = str(formData, "dayId");
+  const result = await saveSpecialDay(shop.id, str(formData, "customerId"), dayId || null, {
+    title: str(formData, "title"),
+    day: Number(str(formData, "day")),
+    month: Number(str(formData, "month")),
+    recipientName: str(formData, "recipientName"),
+  });
+  const notice = (message: string, error: boolean) => ({ version: prev.notice.version + 1, message, error });
+  if (!result) {
+    return { ...prev, version: prev.version + 1, notice: notice("Kayıt bulunamadı. Sayfayı yenileyin.", true) };
+  }
+  if (!result.ok) {
+    const errors = toMessages(result.errors);
+    return { ...prev, version: prev.version + 1, errors, values: formValues(formData), notice: errors.form ? notice(errors.form, true) : prev.notice };
+  }
+  refresh();
+  return {
+    version: prev.version + 1,
+    errors: {},
+    values: {},
+    notice: notice(dayId ? "Özel gün güncellendi." : "Özel gün eklendi. Tarihi yaklaşınca hatırlatmalarda görünür.", false),
+    saved: prev.saved + 1,
+  };
+}
+
+export async function removeSpecialDay(prev: ActionNotice, formData: FormData): Promise<ActionNotice> {
+  const { shop } = await loadPanel();
+  const removed = await deleteSpecialDay(shop.id, str(formData, "customerId"), str(formData, "dayId"));
+  if (removed) refresh();
+  return {
+    version: prev.version + 1,
+    message: removed ? "Özel gün silindi." : "Özel gün bulunamadı. Sayfayı yenileyin.",
+    error: !removed,
+  };
 }

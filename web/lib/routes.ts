@@ -11,6 +11,7 @@ const RESERVED_SEGMENTS = new Set([
   "gizlilik",
   "kullanim-kosullari",
   "sifre",
+  "sifremi-unuttum",
 ]);
 
 /** Satıcı panelinin giriş sayfası. */

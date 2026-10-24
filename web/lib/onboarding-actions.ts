@@ -1,7 +1,7 @@
 "use server";
 
 import { refresh } from "next/cache";
-import { createPasswordLink, openShop, setPassword } from "@/lib/api";
+import { createPasswordLink, openShop, requestPasswordReset, setPassword } from "@/lib/api";
 import type { PasswordLink } from "@/lib/api/types";
 import { formValues, type FormState } from "@/lib/checkout/form-state";
 import { toMessages } from "@/lib/checkout/messages";
@@ -64,4 +64,20 @@ export async function setPasswordAction(token: string, prev: SetPasswordState, f
   const result = await setPassword(token, password);
   if (!result.ok) return { ...prev, version: prev.version + 1, errors: toMessages(result.errors) };
   return { version: prev.version + 1, errors: {}, values: {}, done: true };
+}
+
+export interface ResetRequestState {
+  version: number;
+  error: string | null;
+  sent: boolean;
+}
+
+/** Şifremi unuttum. Adres kayıtlı olsun olmasın aynı sonuç gösterilir. */
+export async function requestResetAction(prev: ResetRequestState, formData: FormData): Promise<ResetRequestState> {
+  const email = str(formData, "email").trim();
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+    return { version: prev.version + 1, error: "Panele girdiğiniz e-posta adresini yazın, ör. ayla@nergiscicek.com.", sent: false };
+  }
+  await requestPasswordReset(email);
+  return { version: prev.version + 1, error: null, sent: true };
 }

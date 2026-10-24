@@ -1,19 +1,24 @@
 package com.tomurcuk.ordering;
 
 import static org.hamcrest.Matchers.startsWith;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.ZoneId;
 
 import javax.imageio.ImageIO;
 
 import com.jayway.jsonpath.JsonPath;
+import com.tomurcuk.MutableClock;
 import com.tomurcuk.TestcontainersConfiguration;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.Test;
@@ -38,6 +43,9 @@ class PanelTests {
 
 	@Autowired
 	MockMvc mvc;
+
+	@Autowired
+	MutableClock clock;
 
 	@Test
 	void panelRequiresSession() throws Exception {
@@ -110,6 +118,47 @@ class PanelTests {
 			.andExpect(jsonPath("$.errors.photo.code").value("delivery_photo_status"));
 		deliveryPhoto(owner, "o_4816").andExpect(status().isOk())
 			.andExpect(jsonPath("$.deliveryPhotoUrl").value(startsWith("/foto/")));
+	}
+
+	/** Özel gün eklenir, hatırlatmada görünür, düzenlenir ve silinir; başka dükkânın müşterisine eklenemez. */
+	@Test
+	void specialDayLifecycle() throws Exception {
+		Cookie owner = login("ayla@nergiscicek.com");
+		LocalDate soon = LocalDate.now(clock.withZone(ZoneId.of("Europe/Istanbul"))).plusDays(2);
+		String body = "{\"title\":\"Kız kardeşinin doğum günü\",\"day\":%d,\"month\":%d,\"recipientName\":\"Ece\"}"
+			.formatted(soon.getDayOfMonth(), soon.getMonthValue());
+		String id = JsonPath.read(mvc
+			.perform(post("/api/panel/customers/cu_ayse/special-days").cookie(owner)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(body))
+			.andExpect(status().isCreated())
+			.andReturn()
+			.getResponse()
+			.getContentAsString(), "$.id");
+		mvc.perform(get("/api/panel/reminders").cookie(owner))
+			.andExpect(jsonPath("$[?(@.specialDay.id == '" + id + "')]").isNotEmpty());
+
+		mvc.perform(put("/api/panel/customers/cu_ayse/special-days/{id}", id).cookie(owner)
+			.contentType(MediaType.APPLICATION_JSON)
+			.content("{\"title\":\"Yıl dönümü\",\"day\":31,\"month\":4}"))
+			.andExpect(status().isUnprocessableContent())
+			.andExpect(jsonPath("$.errors.day.code").value("day_invalid"));
+		mvc.perform(put("/api/panel/customers/cu_ayse/special-days/{id}", id).cookie(owner)
+			.contentType(MediaType.APPLICATION_JSON)
+			.content("{\"title\":\"Yıl dönümü\",\"day\":29,\"month\":2}"))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.recipientName").isEmpty());
+
+		Cookie other = login("leyla@lalebahcesi.com");
+		mvc.perform(post("/api/panel/customers/cu_ayse/special-days").cookie(other)
+			.contentType(MediaType.APPLICATION_JSON)
+			.content(body)).andExpect(status().isNotFound());
+		mvc.perform(delete("/api/panel/customers/cu_ayse/special-days/{id}", id).cookie(other))
+			.andExpect(status().isNotFound());
+		mvc.perform(delete("/api/panel/customers/cu_ayse/special-days/{id}", id).cookie(owner))
+			.andExpect(status().isNoContent());
+		mvc.perform(get("/api/panel/customers/cu_ayse").cookie(owner))
+			.andExpect(jsonPath("$.specialDays[?(@.id == '" + id + "')]").isEmpty());
 	}
 
 	/** Sesli uyarının sorduğu özet yalnızca kendi dükkânının yeni siparişlerini sayar. */

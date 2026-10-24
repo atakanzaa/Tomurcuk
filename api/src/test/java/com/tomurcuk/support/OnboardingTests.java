@@ -10,6 +10,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.tomurcuk.MutableClock;
 import com.tomurcuk.TestcontainersConfiguration;
@@ -150,6 +153,56 @@ class OnboardingTests {
 
 	private static String token(PasswordLink link) {
 		return link.url().substring(link.url().lastIndexOf('/') + 1);
+	}
+
+	/**
+	 * Şifremi unuttum: kayıtlı olmayan adres de 204 alır ve e-posta gitmez; kayıtlıya 1 saat geçerli
+	 * bağlantı gider, 2 dakika içinde ikincisi gitmez.
+	 */
+	@Test
+	void forgottenPasswordIsResetByEmail() throws Exception {
+		String email = "unutkan-" + suffix + "@ornek.com";
+		onboarding.open(LEAD, input("unutkan-" + suffix, email));
+		clock.set(clock.instant().plus(Duration.ofMinutes(3)));
+
+		requestReset("kimse-" + suffix + "@ornek.com").andExpect(status().isNoContent());
+		requestReset(" " + email.toUpperCase() + " ").andExpect(status().isNoContent());
+		requestReset(email).andExpect(status().isNoContent());
+		await().atMost(Duration.ofSeconds(10)).until(() -> resetEmails(email).size() == 1);
+		assertThat(resetEmails("kimse-" + suffix + "@ornek.com")).isEmpty();
+
+		// Bir saat sonra bağlantı geçersiz; yenisiyle şifre değişir.
+		clock.set(clock.instant().plus(Duration.ofMinutes(61)));
+		setPassword(resetToken(resetEmails(email).getFirst()), "yeni-sifre-789")
+			.andExpect(status().isUnprocessableContent());
+		requestReset(email).andExpect(status().isNoContent());
+		await().atMost(Duration.ofSeconds(10)).until(() -> resetEmails(email).size() == 2);
+		String latest = resetEmails(email).stream()
+			.filter(text -> !text.equals(resetEmails(email).getFirst()))
+			.findFirst()
+			.orElseThrow();
+		setPassword(resetToken(latest), "yeni-sifre-789").andExpect(status().isNoContent());
+		mvc.perform(post("/api/panel/auth/login").contentType(MediaType.APPLICATION_JSON)
+			.content("{\"email\":\"" + email + "\",\"password\":\"yeni-sifre-789\"}"))
+			.andExpect(status().isOk());
+	}
+
+	private ResultActions requestReset(String email) throws Exception {
+		return mvc.perform(post("/api/public/password-reset").contentType(MediaType.APPLICATION_JSON)
+			.content("{\"email\":\"" + email + "\"}"));
+	}
+
+	private List<String> resetEmails(String email) {
+		return jdbc.sql("""
+				SELECT text FROM notification_log
+				WHERE kind = 'password_reset_email' AND recipient = :email ORDER BY created_at
+				""").param("email", email).query(String.class).list();
+	}
+
+	private static String resetToken(String text) {
+		Matcher m = Pattern.compile("/sifre/(\\S+)").matcher(text);
+		assertThat(m.find()).isTrue();
+		return m.group(1);
 	}
 
 	private ResultActions setPassword(String token, String password) throws Exception {

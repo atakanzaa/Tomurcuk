@@ -14,6 +14,8 @@ export type PanelApi = Pick<
   | "uploadDeliveryPhoto"
   | "getCustomers"
   | "getCustomer"
+  | "saveSpecialDay"
+  | "deleteSpecialDay"
   | "findCustomerByPhone"
   | "getReminders"
   | "createManualOrder"
@@ -58,6 +60,11 @@ export const httpPanelApi: PanelApi = {
   },
   getCustomers: (_shopId, filter) => get<CustomerSummary[]>(`/api/panel/customers${query({ query: filter?.query })}`),
   getCustomer: (_shopId, customerId) => getOrNull<CustomerDetail>(path`/api/panel/customers/${customerId}`),
+  saveSpecialDay: (_shopId, customerId, dayId, input) =>
+    dayId
+      ? sendOrNull("PUT", path`/api/panel/customers/${customerId}/special-days/${dayId}`, input)
+      : sendOrNull("POST", path`/api/panel/customers/${customerId}/special-days`, input),
+  deleteSpecialDay: (_shopId, customerId, dayId) => remove(path`/api/panel/customers/${customerId}/special-days/${dayId}`),
   findCustomerByPhone: (_shopId, phone) =>
     getOrNull<CustomerSummary & { lastOrder: Order | null }>(`/api/panel/customers/by-phone${query({ phone })}`),
   getReminders: (_shopId, days) => get<Reminder[]>(`/api/panel/reminders${query({ days })}`),

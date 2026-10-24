@@ -10,7 +10,7 @@ import { SetPasswordForm } from "./SetPasswordForm";
 
 export const metadata: Metadata = { title: "Şifrenizi belirleyin · Tomurcuk", robots: { index: false, follow: false } };
 
-/** Destek ekibinin gönderdiği tek kullanımlık bağlantı; 7 gün geçerli. */
+/** Tek kullanımlık bağlantı: destek ekibinden (7 gün) ya da şifremi unuttum ile (1 saat). */
 export default function SetPasswordPage({ params }: PageProps<"/sifre/[token]">) {
   return (
     <LoginShell aside="Siparişleriniz, müşteri defteriniz ve vitrininiz sizi bekliyor.">
@@ -30,8 +30,8 @@ async function SetPassword({ params }: Pick<PageProps<"/sifre/[token]">, "params
       <>
         <h1 className={styles.title}>Bu bağlantı artık geçerli değil</h1>
         <p className={styles.lede}>
-          Bu bağlantı kullanılmış ya da 7 günlük süresi dolmuş. Tomurcuk ekibinden yeni bağlantı isteyin. Şifrenizi daha önce
-          belirlediyseniz giriş yapabilirsiniz.
+          Bu bağlantı kullanılmış ya da süresi dolmuş. Yeni bağlantıyı giriş sayfasındaki &ldquo;Şifrenizi mi unuttunuz?&rdquo; ile
+          isteyebilirsiniz. Şifrenizi daha önce belirlediyseniz giriş yapabilirsiniz.
         </p>
         <Button href={LOGIN_PATH} variant="secondary">
           Giriş sayfasına git
