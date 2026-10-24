@@ -460,8 +460,6 @@ export const CheckoutError = {
   // Panel: ürün formu.
   PriceInvalid: "price_invalid",
   PhotoInvalid: "photo_invalid",
-  /** Özel gün: o ayda olmayan gün. */
-  DayInvalid: "day_invalid",
   /** Teslim fotoğrafı sipariş yola çıkmadan eklenmez. */
   DeliveryPhotoStatus: "delivery_photo_status",
   TooMany: "too_many",

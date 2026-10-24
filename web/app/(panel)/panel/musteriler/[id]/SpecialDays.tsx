@@ -27,10 +27,45 @@ const initialState: SpecialDayFormState = { version: 0, errors: {}, values: {}, 
 
 const monthName = new Intl.DateTimeFormat("tr", { month: "long", timeZone: "UTC" });
 const MONTHS = Array.from({ length: 12 }, (_, i) => monthName.format(Date.UTC(2000, i, 1)));
-const DAYS = Array.from({ length: 31 }, (_, i) => i + 1);
+/** Ayın gün sayısı; 2000 artık yıl olduğu için Şubat 29 (hatırlatma artık yıl olmayan yılda 28'inde gelir). */
+const daysInMonth = (month: number) => new Date(Date.UTC(2000, month, 0)).getUTCDate();
 
 /** "12 Mart"; yıl tutulmaz. */
 const dayLabel = (d: { day: number; month: number }) => `${d.day} ${MONTHS[d.month - 1]}`;
+
+/** Gün listesi seçili ayın gün sayısı kadar; ay değişince olmayan gün ayın son gününe çekilir. */
+function DateSelects({ day: initialDay, month: initialMonth }: { day: number; month: number }) {
+  const [month, setMonth] = useState(initialMonth);
+  const [day, setDay] = useState(Math.min(initialDay, daysInMonth(initialMonth)));
+  return (
+    <div className={styles.dateFields}>
+      <Field as="select" label="Gün" name="day" value={day} onChange={(e) => setDay(Number(e.target.value))}>
+        {Array.from({ length: daysInMonth(month) }, (_, i) => (
+          <option key={i + 1} value={i + 1}>
+            {i + 1}
+          </option>
+        ))}
+      </Field>
+      <Field
+        as="select"
+        label="Ay"
+        name="month"
+        value={month}
+        onChange={(e) => {
+          const next = Number(e.target.value);
+          setMonth(next);
+          setDay((d) => Math.min(d, daysInMonth(next)));
+        }}
+      >
+        {MONTHS.map((m, i) => (
+          <option key={m} value={i + 1}>
+            {m}
+          </option>
+        ))}
+      </Field>
+    </div>
+  );
+}
 
 /** Müşteri kartındaki özel günler: satır satır liste, yerinde düzenleme, altta ekleme. */
 export function SpecialDays({ customerId, days, draft }: SpecialDaysProps) {
@@ -63,22 +98,7 @@ export function SpecialDays({ customerId, days, draft }: SpecialDaysProps) {
             maxLength={160}
             error={state.errors.title}
           />
-          <div className={styles.dateFields}>
-            <Field as="select" label="Gün" name="day" defaultValue={v("day", start?.day ?? 1)} error={state.errors.day}>
-              {DAYS.map((d) => (
-                <option key={d} value={d}>
-                  {d}
-                </option>
-              ))}
-            </Field>
-            <Field as="select" label="Ay" name="month" defaultValue={v("month", start?.month ?? 1)}>
-              {MONTHS.map((m, i) => (
-                <option key={m} value={i + 1}>
-                  {m}
-                </option>
-              ))}
-            </Field>
-          </div>
+          <DateSelects day={Number(v("day", start?.day ?? 1))} month={Number(v("month", start?.month ?? 1))} />
           <Field
             label="Kime"
             name="recipientName"
