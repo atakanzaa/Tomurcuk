@@ -28,6 +28,23 @@ public class DeliveryZone {
 	protected DeliveryZone() {
 	}
 
+	public DeliveryZone(String id, String shopId) {
+		this.id = id;
+		this.shopId = shopId;
+	}
+
+	public void update(String district, String neighborhood, long fee, int position) {
+		this.district = district;
+		this.neighborhood = neighborhood;
+		this.fee = fee;
+		this.position = position;
+		this.active = true;
+	}
+
+	public void deactivate() {
+		this.active = false;
+	}
+
 	public String getId() {
 		return id;
 	}

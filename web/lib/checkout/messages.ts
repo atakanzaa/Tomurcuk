@@ -78,6 +78,14 @@ export function checkoutErrorMessage(
       return "Fotoğraf okunamadı. JPEG ya da PNG, en az 300 piksel genişliğinde bir fotoğraf seçin.";
     case CheckoutError.TooMany:
       return `En fazla ${meta.max} tane ekleyebilirsiniz.`;
+    case CheckoutError.SlotOverlap:
+      return "Saat aralıkları üst üste binmesin. Bir aralık bitmeden diğeri başlamamalı.";
+    case CheckoutError.ZoneDuplicate:
+      return "Aynı bölgeyi iki kez yazmışsınız. Birini kaldırın.";
+    case CheckoutError.TaxNumberInvalid:
+      return "Vergi numarası 10, T.C. kimlik numarası 11 hane olmalı; yalnızca rakam yazın.";
+    case CheckoutError.EmailInvalid:
+      return "E-posta adresi eksik ya da hatalı görünüyor, ör. merhaba@dukkan.com.";
   }
 }
 

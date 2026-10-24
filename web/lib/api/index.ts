@@ -101,6 +101,20 @@ export const getPanelProduct = read("getPanelProduct");
 export const saveProduct = write("saveProduct");
 export const deleteProduct = write("deleteProduct");
 export const uploadProductPhoto = write("uploadProductPhoto");
+export const getPanelSettings = read("getPanelSettings");
+export const saveShopProfile = write("saveShopProfile");
+export const saveSameDayCutoff = write("saveSameDayCutoff");
+export const saveTimeSlots = write("saveTimeSlots");
+export const saveDeliveryZones = write("saveDeliveryZones");
+export const addClosedDay = write("addClosedDay");
+export const removeClosedDay = write("removeClosedDay");
+
+/** İlçe ve mahalle listesi uygulamayla gelir, değişmez. */
+export async function getIstanbulPlaces() {
+  "use cache";
+  cacheLife("days");
+  return impl.getIstanbulPlaces();
+}
 export const getShopTickets = read("getShopTickets");
 export const createTicket = write("createTicket");
 

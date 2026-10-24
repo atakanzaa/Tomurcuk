@@ -129,6 +129,30 @@ public class Shop {
 		return featuredProductId;
 	}
 
+	/** Panelden dükkân bilgileri; slug panelden değişmez. */
+	public void updateProfile(String name, String shortName, String phone, String address, String descriptionShort,
+			String description, String openingHours, String featuredProductId, String legalName, String taxOffice,
+			String taxNumber, String email, String notifyPhone, boolean notifySms) {
+		this.name = name;
+		this.shortName = shortName;
+		this.phone = phone;
+		this.address = address;
+		this.descriptionShort = descriptionShort;
+		this.description = description;
+		this.openingHours = openingHours;
+		this.featuredProductId = featuredProductId;
+		this.legalName = legalName;
+		this.taxOffice = taxOffice;
+		this.taxNumber = taxNumber;
+		this.email = email;
+		this.notifyPhone = notifyPhone;
+		this.notifySms = notifySms;
+	}
+
+	public void updateSameDayCutoff(LocalTime cutoff) {
+		this.sameDayCutoff = cutoff;
+	}
+
 	public String getLegalName() {
 		return legalName;
 	}

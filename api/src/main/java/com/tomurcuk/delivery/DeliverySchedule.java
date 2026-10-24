@@ -65,7 +65,7 @@ public class DeliverySchedule {
 		int days = Math.max(0, Math.min(count, BOOKING_WINDOW_DAYS));
 		LocalDate last = today.plusDays(Math.max(days - 1, 0));
 
-		List<TimeSlot> template = slots.findByShopIdOrderByStart(shop.id());
+		List<TimeSlot> template = slots.findByShopIdAndActiveTrueOrderByStart(shop.id());
 		Set<LocalDate> closed = new HashSet<>(jdbc
 			.sql("SELECT date FROM closed_day WHERE shop_id = :shopId AND date BETWEEN :from AND :to")
 			.param("shopId", shop.id())
@@ -153,7 +153,7 @@ public class DeliverySchedule {
 	@Transactional(readOnly = true)
 	public Optional<SlotInfo> findSlot(String shopId, String slotId) {
 		return slots.findById(slotId)
-			.filter(slot -> slot.getShopId().equals(shopId))
+			.filter(slot -> slot.getShopId().equals(shopId) && slot.isActive())
 			.map(slot -> new SlotInfo(slot.getId(), slot.getStart(), slot.getEnd()));
 	}
 

@@ -1,6 +1,6 @@
 import "server-only";
 import type { TomurcukApi } from "../contract";
-import type { CustomerDetail, CustomerSummary, Order, PanelProduct, PanelSession, Reminder } from "../types";
+import type { CustomerDetail, CustomerSummary, Order, PanelProduct, PanelSession, PanelSettings, Places, Reminder } from "../types";
 import { get, getOrNull, path, remove, send, sendOrNull } from "./client";
 
 export type PanelApi = Pick<
@@ -20,6 +20,14 @@ export type PanelApi = Pick<
   | "saveProduct"
   | "deleteProduct"
   | "uploadProductPhoto"
+  | "getPanelSettings"
+  | "saveShopProfile"
+  | "saveSameDayCutoff"
+  | "saveTimeSlots"
+  | "saveDeliveryZones"
+  | "addClosedDay"
+  | "removeClosedDay"
+  | "getIstanbulPlaces"
 >;
 
 const query = (params: Record<string, string | number | undefined>) => {
@@ -56,4 +64,12 @@ export const httpPanelApi: PanelApi = {
     body.set("file", file, "foto.jpg");
     return send("POST", "/api/panel/photos", body);
   },
+  getPanelSettings: () => get<PanelSettings>("/api/panel/settings"),
+  saveShopProfile: (_shopId, input) => send("PUT", "/api/panel/settings/profile", input),
+  saveSameDayCutoff: (_shopId, sameDayCutoff) => send("PUT", "/api/panel/settings/same-day-cutoff", { sameDayCutoff }),
+  saveTimeSlots: (_shopId, slots) => send("PUT", "/api/panel/settings/slots", slots),
+  saveDeliveryZones: (_shopId, zones) => send("PUT", "/api/panel/settings/zones", zones),
+  addClosedDay: (_shopId, date) => send("POST", "/api/panel/settings/closed-days", { date }),
+  removeClosedDay: (_shopId, date) => remove(path`/api/panel/settings/closed-days/${date}`),
+  getIstanbulPlaces: () => get<Places>("/api/public/places/istanbul"),
 };

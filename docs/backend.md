@@ -51,6 +51,7 @@ Her modül `com.tomurcuk.<modül>` paketidir. Kökteki sınıflar modülün dı�
 | `support` | talepler, mesajlar, hazır cevaplar, dahili notlar, dükkân adına oturum, maskeli veri |
 | `audit` | yalnızca eklenen denetim kaydı |
 | `marketing` | pilot başvuruları |
+| `settings` | satıcı panelinde dükkân ve teslimat ayarları; shop, delivery ve catalog servislerini çağırır, yetki burada (identity shop'a bağlı olduğu için ayrı modül) |
 | `discovery` | alıcı ana sayfası: semtler, semt ve güne göre teslim eden dükkânlar, öne çıkan ürünler; yalnızca okur |
 
 Modüller arası yan etkiler Modulith olaylarıyla taşınır, olay yayınları veritabanında tutulur. Örnek: `OrderPlaced` olayını `notification` (çiçekçiye bildirim) ve `customer` (müşteri kartı) dinler. Bu kalıcı yayın kaydı outbox işini de görür: SMS sağlayıcısı çökse de sipariş bloklanmaz, olay yeniden işlenir.
@@ -74,6 +75,8 @@ Modüller arası yan etkiler Modulith olaylarıyla taşınır, olay yayınları 
 | Alıcı ana sayfası | `/api/public/discover/areas`, `/api/public/discover/shops?district&neighborhood&date`, `/api/public/discover/picks`, `/api/public/order-lookup` | yok |
 | Satıcı paneli | `/api/panel/...` (ürünler: `GET/POST /api/panel/products`, `GET/PUT/DELETE /api/panel/products/{id}`, `POST /api/panel/photos`) | dükkân kullanıcısı ya da dükkân adına oturum; ürün yazma `CATALOG_EDIT` |
 | Destek paneli | `/api/support/...` | platform kullanıcısı |
+| Panel ayarları | `GET /api/panel/settings`, `PUT .../profile`, `.../same-day-cutoff`, `.../slots`, `.../zones`, `POST/DELETE .../closed-days` | dükkân kullanıcısı; yazma `CATALOG_EDIT` |
+| İstanbul ilçe ve mahalleleri | `/api/public/places/istanbul` (`resources/places/istanbul.json`, kaynağı `NOTICE.txt`) | yok |
 | Diskteki ürün fotoğrafı | `/api/public/photos/{ad}` (web `/foto/{ad}` yolunda aktarır) | yok |
 | Ödeme bildirimleri | `/webhooks/iyzico` | iyzico imzası |
 
@@ -150,6 +153,7 @@ Kapsam bilerek dar tutulur; geliştirme hızı önce gelir.
 
 - Adapter'lar (`NetgsmSmsSenderTests`, `IyzicoPaymentProviderTests`, `R2PhotoStoreTests`): istek biçimi, imza ve yanıt kodları, sağlayıcıya bağlanmadan; staging'de SMS'in yalnızca ekip numaralarına gitmesi.
 - Aşama 6 (`SupportTests`): şifre ve TOTP birlikte; dükkân oturumuyla panele destek girişi yok; telefon maskeli, gerekçesiz açılmaz, açılış kayda geçer; dükkân adına oturum çalışan yetkisinde (iptal 403), işlem kayda geçer, 30 dakikada biter; denetim kaydı güncellenemez ve silinemez.
+- Ayarlar (`PanelSettingsTests`): çalışan ayar değiştiremez (403), bölge İstanbul listesinden (kayıtlı eski ad değişmedikçe kalır), kapasite düşünce dolu yer korunur, kaldırılan aralık takvimden çıkar ve kaydı durur, çakışan aralık reddedilir, kapalı güne sipariş verilemez.
 - Ürün yönetimi (`PanelCatalogTests`): boyların tam fiyatı ürün fiyatı ve ek fiyata çevrilir, satıştan kalkan ürün vitrinde yok, fotoğraf 4:5 kırpılır ve yalnızca yüklenen adres kabul edilir, çalışan ürün değiştiremez (403), başka dükkânın ürünü bulunamaz.
 - Alıcı ana sayfası (`DiscoveryTests`): o gün teslim edebilen dükkânlar önce, ilk müsait aralığa göre; aynı gün son saati geçen dükkân sonda ve ilk müsait günüyle.
 - Aşama 5 (`NotificationTests`): aynı olay iki kez işlense de tek SMS, isimsiz gönderimde gönderen metinde yok.

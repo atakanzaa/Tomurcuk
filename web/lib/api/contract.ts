@@ -32,6 +32,11 @@ import type {
   OrderTracking,
   OrderContract,
   PanelProduct,
+  PanelSettings,
+  Places,
+  ShopProfileInput,
+  SlotSetting,
+  ZoneSetting,
   ProductInput,
   PlaceOrderInput,
   PlacedOrder,
@@ -118,6 +123,17 @@ export interface TomurcukApi {
   deleteProduct(shopId: string, productId: string): Promise<boolean>;
   /** Fotoğrafı 4:5 kırpıp depoya yazar; adres ürün kaydedilirken `photos`'a girer. */
   uploadProductPhoto(shopId: string, file: Blob): Promise<Result<{ url: string }, "photo">>;
+  getPanelSettings(shopId: string): Promise<PanelSettings>;
+  /** Ayarları yalnızca dükkân sahibi değiştirir (CATALOG_EDIT). */
+  saveShopProfile(shopId: string, input: ShopProfileInput): Promise<Result<true, keyof ShopProfileInput>>;
+  saveSameDayCutoff(shopId: string, cutoff: string): Promise<Result<true, "sameDayCutoff">>;
+  /** Liste olduğu gibi yazılır; gelmeyen aralık ve bölge pasife alınır. */
+  saveTimeSlots(shopId: string, slots: SlotSetting[]): Promise<Result<true, "slots">>;
+  saveDeliveryZones(shopId: string, zones: ZoneSetting[]): Promise<Result<true, "zones">>;
+  addClosedDay(shopId: string, date: string): Promise<Result<{ date: IsoDate; reserved: number }, "date">>;
+  removeClosedDay(shopId: string, date: IsoDate): Promise<boolean>;
+  /** Teslim bölgeleri bu listeden seçilir. */
+  getIstanbulPlaces(): Promise<Places>;
   /** Panelden açılan destek talepleri ve durumları. */
   getShopTickets(shopId: string): Promise<TicketSummary[]>;
   createTicket(shopId: string, input: TicketInput): Promise<Result<{ ticketId: string }, keyof TicketInput>>;

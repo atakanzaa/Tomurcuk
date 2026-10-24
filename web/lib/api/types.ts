@@ -136,6 +136,50 @@ export interface Product {
   options: ProductOption[];
 }
 
+/** Panelde dükkân ve teslimat ayarları. Saat aralığı ve bölge satırında `id` yeni satırda null. */
+export interface PanelSettings {
+  profile: { shop: Shop; notifyPhone: string | null; notifySms: boolean };
+  slots: SlotSetting[];
+  zones: ZoneSetting[];
+  /** Bugünden sonraki kapalı günler; `reserved` o güne alınmış sipariş ve ayrılmış yer sayısı. */
+  closedDays: { date: IsoDate; reserved: number }[];
+}
+
+export interface SlotSetting {
+  id: string | null;
+  start: ClockTime;
+  end: ClockTime;
+  capacity: number | null;
+}
+
+/** Mahalle null ise bütün ilçe. */
+export interface ZoneSetting {
+  id: string | null;
+  district: string;
+  neighborhood: string | null;
+  fee: Kurus | null;
+}
+
+export interface ShopProfileInput {
+  name: string;
+  shortName: string;
+  phone: string;
+  address: string;
+  descriptionShort: string;
+  description: string;
+  openingHours: string;
+  featuredProductId: string;
+  legalName: string;
+  taxOffice: string;
+  taxNumber: string;
+  email: string;
+  notifyPhone: string;
+  notifySms: boolean;
+}
+
+/** İlçe → mahalleler (İstanbul). */
+export type Places = Record<string, string[]>;
+
 /** Panelde ürün: satışta olmayanlar da gelir; son değişikliğin zamanı ve yapanın adı. */
 export interface PanelProduct {
   product: Product;
@@ -371,6 +415,11 @@ export const CheckoutError = {
   PriceInvalid: "price_invalid",
   PhotoInvalid: "photo_invalid",
   TooMany: "too_many",
+  // Panel: ayarlar.
+  SlotOverlap: "slot_overlap",
+  ZoneDuplicate: "zone_duplicate",
+  TaxNumberInvalid: "tax_number_invalid",
+  EmailInvalid: "email_invalid",
 } as const;
 export type CheckoutError = ValueOf<typeof CheckoutError>;
 

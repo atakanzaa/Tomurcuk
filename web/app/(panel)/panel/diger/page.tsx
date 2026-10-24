@@ -22,6 +22,7 @@ export default function MorePage() {
         {[
           { href: "/panel/urunler", label: "Ürünler" },
           { href: "/panel/teslimat", label: "Teslimat ayarları" },
+          { href: "/panel/ayarlar", label: "Dükkân ayarları" },
           { href: "/panel/fisler?gun=bugun", label: "Bugünün fişlerini yazdır" },
           { href: "/panel/yardim", label: "Yardım ve destek" },
         ].map((item) => (
