@@ -1,3 +1,5 @@
+import Link from "next/link";
+import { documentPath, ShopDocument, shopDocumentShortTitle } from "@/lib/legal/documents";
 import { Button } from "@/components/ui/Button";
 import { LogoMark } from "@/components/ui/Logo";
 import type { DeliveryZone, Shop } from "@/lib/api/types";
@@ -44,6 +46,13 @@ export function StoreFooter({ shop, zones }: { shop: Shop; zones: DeliveryZone[]
           </div>
         </div>
       </div>
+      <nav aria-label="Sözleşmeler" className={cx(container.container, styles.legal)}>
+        {Object.values(ShopDocument).map((doc) => (
+          <Link key={doc} href={documentPath(shop.slug, doc)}>
+            {shopDocumentShortTitle[doc]}
+          </Link>
+        ))}
+      </nav>
       <p className={cx(container.container, styles.credit)}>
         <LogoMark className={styles.creditMark} />
         Tomurcuk ile hazırlandı

@@ -48,17 +48,24 @@ public class OrderStore {
 	}
 
 	void insert(Order order, String idempotencyKey) {
+		insert(order, idempotencyKey, null);
+	}
+
+	/** `termsVersion`: alıcının onayladığı sözleşmelerin sürümü; panelden girilen siparişte yok. */
+	void insert(Order order, String idempotencyKey, String termsVersion) {
 		jdbc.sql("""
 				INSERT INTO orders (id, shop_id, number, customer_id, source, status, payment_status, payment_method,
 				                    delivery_date, time_slot_id, slot_start, slot_end, delivery_time, exact_time,
 				                    delivery_zone_id, zone_name, recipient_name, recipient_phone, address, courier_note,
 				                    card_note, sender_name, anonymous, sender_phone, subtotal, delivery_fee, total,
-				                    delivery_photo_url, courier_name, tracking_token, idempotency_key, created_at)
+				                    delivery_photo_url, courier_name, tracking_token, idempotency_key, created_at,
+				                    terms_version)
 				VALUES (:id, :shopId, :number, :customerId, :source, :status, :paymentStatus, :paymentMethod,
 				        :deliveryDate, :timeSlotId, :slotStart, :slotEnd, :deliveryTime, :exactTime,
 				        :deliveryZoneId, :zoneName, :recipientName, :recipientPhone, :address, :courierNote,
 				        :cardNote, :senderName, :anonymous, :senderPhone, :subtotal, :deliveryFee, :total,
-				        :deliveryPhotoUrl, :courierName, :trackingToken, :idempotencyKey, :createdAt)
+				        :deliveryPhotoUrl, :courierName, :trackingToken, :idempotencyKey, :createdAt,
+				        :termsVersion)
 				""")
 			.param("id", order.id())
 			.param("shopId", order.shopId())
@@ -92,6 +99,7 @@ public class OrderStore {
 			.param("trackingToken", order.trackingToken())
 			.param("idempotencyKey", idempotencyKey)
 			.param("createdAt", Instants.sql(order.createdAt()))
+			.param("termsVersion", termsVersion)
 			.update();
 		int position = 1;
 		for (Order.Item item : order.items()) {
@@ -127,6 +135,13 @@ public class OrderStore {
 
 	Optional<Order> findByTrackingToken(String shopId, String token) {
 		return findWhere("o.shop_id = :shopId AND o.tracking_token = :value", shopId, token);
+	}
+
+	Optional<String> termsVersion(String orderId) {
+		return jdbc.sql("SELECT terms_version FROM orders WHERE id = :id")
+			.param("id", orderId)
+			.query((rs, n) -> Optional.ofNullable(rs.getString(1)))
+			.single();
 	}
 
 	Optional<Order> findByIdempotencyKey(String shopId, String key) {

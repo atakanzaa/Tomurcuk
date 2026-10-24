@@ -261,3 +261,14 @@ ON CONFLICT (id) DO UPDATE SET
 
 -- Ürün fotoğraflarının listesi; ilki kapak (V14). Örnek ürünlerin tek fotoğrafı var.
 UPDATE product SET photos = ARRAY[photo_url] WHERE photo_url IS NOT NULL AND photos = '{}';
+
+-- Sözleşmelerdeki satıcı bilgileri (V15). Örnek değerlerdir.
+UPDATE shop SET legal_name = 'Nergis Çiçekçilik - Ayla Er', tax_office = 'Kadıköy', tax_number = '1234567890',
+    email = 'merhaba@nergiscicek.com'
+WHERE id = 'shop_nergis' AND legal_name = '';
+UPDATE shop SET legal_name = 'Lale Bahçesi Çiçekçilik - Leyla Bahçe', tax_office = 'Beşiktaş', tax_number = '9876543210',
+    email = 'merhaba@lalebahcesi.com'
+WHERE id = 'shop_lale' AND legal_name = '';
+UPDATE shop SET legal_name = 'Begonvil Atölye - Deniz Kaya', tax_office = 'Kozyatağı', tax_number = '5554443332',
+    email = 'merhaba@begonvilatolye.com'
+WHERE id = 'shop_begonvil' AND legal_name = '';

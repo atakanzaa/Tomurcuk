@@ -155,6 +155,7 @@ export default function HomePage({ searchParams }: PageProps<"/">) {
         <span className={styles.footerLinks}>
           <Link href="/cicekciler">Çiçekçiler için</Link>
           <a href="#takip">Siparişimi bul</a>
+          <Link href="/gizlilik">Gizlilik ve çerezler</Link>
         </span>
       </footer>
     </>

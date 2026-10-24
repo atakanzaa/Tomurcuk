@@ -1,7 +1,7 @@
 import "server-only";
 import { headers } from "next/headers";
 import type { TomurcukApi } from "../contract";
-import type { DeliveryDay, OrderDraft, OrderTracking, PlacedOrder } from "../types";
+import type { DeliveryDay, OrderContract, OrderDraft, OrderTracking, PlacedOrder } from "../types";
 import { get, getOrNull, path, postOrNull, send } from "./client";
 
 export type CheckoutApi = Pick<
@@ -14,6 +14,7 @@ export type CheckoutApi = Pick<
   | "placeOrder"
   | "completePayment"
   | "getOrderTracking"
+  | "getOrderContract"
   | "findTrackingToken"
 >;
 
@@ -35,6 +36,8 @@ export const httpCheckoutApi: CheckoutApi = {
   completePayment: (shopId, token) =>
     postOrNull<{ trackingToken: string; paid: boolean }>(path`/api/public/shops/${shopId}/payments/complete`, { token }),
   getOrderTracking: (shopId, token) => getOrNull<OrderTracking>(path`/api/public/shops/${shopId}/tracking/${token}`),
+  getOrderContract: (shopId, token) =>
+    getOrNull<OrderContract>(path`/api/public/shops/${shopId}/tracking/${token}/contract`),
   findTrackingToken: async (shopId, input) =>
     (await postOrNull<{ token: string }>(path`/api/public/shops/${shopId}/tracking-lookup`, input))?.token ?? null,
 };

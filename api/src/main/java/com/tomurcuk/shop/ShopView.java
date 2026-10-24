@@ -23,7 +23,11 @@ public record ShopView(
 		String description,
 		String descriptionShort,
 		String openingHours,
-		String featuredProductId) {
+		String featuredProductId,
+		String legalName,
+		String taxOffice,
+		String taxNumber,
+		String email) {
 
 	public static ShopView of(Shop shop) {
 		return new ShopView(
@@ -42,6 +46,10 @@ public record ShopView(
 				shop.getDescription(),
 				shop.getDescriptionShort(),
 				shop.getOpeningHours(),
-				shop.getFeaturedProductId());
+				shop.getFeaturedProductId(),
+				shop.getLegalName(),
+				shop.getTaxOffice(),
+				shop.getTaxNumber(),
+				shop.getEmail());
 	}
 }

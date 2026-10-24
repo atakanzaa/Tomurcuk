@@ -90,6 +90,11 @@ export interface Shop {
   descriptionShort: string;
   openingHours: string;
   featuredProductId: string | null;
+  /** Sözleşmelerde satıcı: unvan ya da ad soyad. Boşsa dükkân ayarlarından doldurulmamıştır. */
+  legalName: string;
+  taxOffice: string;
+  taxNumber: string;
+  email: string;
 }
 
 /** Vitrindeki kategori menüsü. Veri modeline ek. */
@@ -375,6 +380,27 @@ export type FieldErrors<F extends string = string> = Partial<
 >;
 
 export type Result<T, F extends string = string> = { ok: true; value: T } | { ok: false; errors: FieldErrors<F> };
+
+/**
+ * Takip linkinden açılan sözleşmelerde siparişe ait kısım. `termsVersion` alıcının onayladığı
+ * metnin sürümü (lib/legal/version.ts); panelden girilen siparişte null.
+ */
+export interface OrderContract {
+  number: string;
+  createdAt: string;
+  termsVersion: string | null;
+  paymentMethod: PaymentMethod;
+  items: OrderItem[];
+  subtotal: Kurus;
+  deliveryFee: Kurus;
+  total: Kurus;
+  deliveryDate: IsoDate;
+  slotStart: ClockTime;
+  slotEnd: ClockTime;
+  recipientName: string;
+  zoneName: string;
+  address: string;
+}
 
 /** Alıcıya gösterilen takip görünümü. İsimsiz gönderimde imza hiç gelmez. */
 export interface OrderTracking {

@@ -64,13 +64,13 @@ Modüller arası yan etkiler Modulith olaylarıyla taşınır, olay yayınları 
 - Dükkâna ait her sorgu `shop_id` ile filtrelenir. Başka dükkânın kaydı 404 döner, 403 değil.
 - Silme yerine `active = false` (bölge, ürün). Siparişe ad, fiyat ve bölge ücreti kopyalanır.
 
-`docs/mvp.md` veri modeline frontend yapılırken çıkan eklemeler: `category`, `shop_slug_history`, `shop_order_counter`, `order_draft`, `slot_hold` (10 dakikalık rezervasyon), `slot_capacity` (gün + aralık başına `taken`), `order_event`, `order.number`, `order.tracking_token`, `order.idempotency_key`, `shop_note`, `pilot_application`, `product.photos` (sırayla en çok dört fotoğraf; `photo_url` kapağın kopyası), `product.updated_at`/`updated_by`, `product.deleted_at`. Sipariş tablosunun adı `orders` (`order` SQL'de ayrılmış kelime).
+`docs/mvp.md` veri modeline frontend yapılırken çıkan eklemeler: `category`, `shop_slug_history`, `shop_order_counter`, `order_draft`, `slot_hold` (10 dakikalık rezervasyon), `slot_capacity` (gün + aralık başına `taken`), `order_event`, `order.number`, `order.tracking_token`, `order.idempotency_key`, `shop_note`, `pilot_application`, `product.photos` (sırayla en çok dört fotoğraf; `photo_url` kapağın kopyası), `product.updated_at`/`updated_by`, `product.deleted_at`, `shop.legal_name`/`tax_office`/`tax_number`/`email` (sözleşmelerde satıcı), `shop.notify_phone`/`notify_sms`, `orders.terms_version` (alıcının onayladığı sözleşme sürümü; `ordering/Terms.VERSION` ile `web/lib/legal/version.ts` aynı). Sipariş tablosunun adı `orders` (`order` SQL'de ayrılmış kelime).
 
 ## API kuralları
 
 | Grup | Önek | Oturum |
 | --- | --- | --- |
-| Vitrin ve sipariş akışı | `/api/public/shop-lookup/{slug}`, `/api/public/shops/{shopId}/...` | yok |
+| Vitrin ve sipariş akışı | `/api/public/shop-lookup/{slug}`, `/api/public/shops/{shopId}/...` (takip linkinden sözleşmeler: `/tracking/{token}/contract`) | yok |
 | Alıcı ana sayfası | `/api/public/discover/areas`, `/api/public/discover/shops?district&neighborhood&date`, `/api/public/discover/picks`, `/api/public/order-lookup` | yok |
 | Satıcı paneli | `/api/panel/...` (ürünler: `GET/POST /api/panel/products`, `GET/PUT/DELETE /api/panel/products/{id}`, `POST /api/panel/photos`) | dükkân kullanıcısı ya da dükkân adına oturum; ürün yazma `CATALOG_EDIT` |
 | Destek paneli | `/api/support/...` | platform kullanıcısı |

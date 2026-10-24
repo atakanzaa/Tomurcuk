@@ -77,6 +77,7 @@ function write<K extends keyof Api>(name: K): Api[K] {
 export const getDeliveryDays = read("getDeliveryDays");
 export const getDraft = read("getDraft");
 export const getOrderTracking = read("getOrderTracking");
+export const getOrderContract = read("getOrderContract");
 export const createDraft = write("createDraft");
 export const saveDelivery = write("saveDelivery");
 export const saveCard = write("saveCard");

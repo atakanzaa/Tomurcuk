@@ -30,6 +30,7 @@ import type {
   Order,
   OrderDraft,
   OrderTracking,
+  OrderContract,
   PanelProduct,
   ProductInput,
   PlaceOrderInput,
@@ -85,6 +86,8 @@ export interface TomurcukApi {
   /** Ödeme sayfasından dönüş. Sonucu backend sağlayıcıdan alır; bilinmeyen token null. */
   completePayment(shopId: string, token: string): Promise<{ trackingToken: string; paid: boolean } | null>;
   getOrderTracking(shopId: string, token: string): Promise<OrderTracking | null>;
+  /** Takip linkinden: siparişin sözleşmelerdeki bilgileri. */
+  getOrderContract(shopId: string, token: string): Promise<OrderContract | null>;
   /** Sipariş numarası ve gönderen telefonu eşleşirse takip token'ı. */
   findTrackingToken(shopId: string, input: { number: string; phone: string }): Promise<string | null>;
 

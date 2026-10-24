@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState } from "react";
 import { Field } from "@/components/ui/Field";
 import { initialFormState } from "@/lib/checkout/form-state";
@@ -37,7 +38,10 @@ export function PilotForm() {
       </div>
       <Field label="Instagram hesabınız" name="instagram" optional placeholder="@dukkaniniz" defaultValue={state.values.instagram} error={state.errors.instagram} />
       <Submit />
-      <span className={styles.formNote}>2 iş günü içinde sizi arayıp dükkânınızı ziyaret etmek için gün ayarlıyoruz.</span>
+      <span className={styles.formNote}>
+        2 iş günü içinde sizi arayıp dükkânınızı ziyaret etmek için gün ayarlıyoruz. Bilgileriniz{" "}
+        <Link href="/gizlilik">gizlilik metnindeki</Link> gibi işlenir.
+      </span>
     </form>
   );
 }

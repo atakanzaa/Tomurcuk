@@ -46,6 +46,20 @@ public class Shop {
 
 	private String featuredProductId;
 
+	/** Sözleşmelerde satıcı: unvan ya da ad soyad, vergi dairesi ve numarası, e-posta. */
+	private String legalName;
+
+	private String taxOffice;
+
+	private String taxNumber;
+
+	private String email;
+
+	/** Yeni siparişte SMS'in gittiği cep telefonu; `notifySms` kapalıysa kullanılmaz. */
+	private String notifyPhone;
+
+	private boolean notifySms;
+
 	private java.time.Instant createdAt;
 
 	@OneToMany
@@ -113,6 +127,30 @@ public class Shop {
 
 	public String getFeaturedProductId() {
 		return featuredProductId;
+	}
+
+	public String getLegalName() {
+		return legalName;
+	}
+
+	public String getTaxOffice() {
+		return taxOffice;
+	}
+
+	public String getTaxNumber() {
+		return taxNumber;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public String getNotifyPhone() {
+		return notifyPhone;
+	}
+
+	public boolean isNotifySms() {
+		return notifySms;
 	}
 
 	public java.time.Instant getCreatedAt() {

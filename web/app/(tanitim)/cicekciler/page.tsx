@@ -328,6 +328,8 @@ export default function FloristsPage() {
           <Link href="/">Alıcılar için</Link>
           <a href="#basvuru">İletişim</a>
           <Link href="/panel">Çiçekçi girişi</Link>
+          <Link href="/kullanim-kosullari">Hizmet koşulları</Link>
+          <Link href="/gizlilik">Gizlilik</Link>
         </span>
       </footer>
     </>

@@ -10,6 +10,7 @@ import com.tomurcuk.ordering.internal.Checkout.PaymentReturn;
 import com.tomurcuk.ordering.internal.Checkout.Placed;
 import com.tomurcuk.ordering.internal.Checkout.PlaceOrderInput;
 import com.tomurcuk.ordering.internal.Draft;
+import com.tomurcuk.ordering.internal.Contract;
 import com.tomurcuk.ordering.internal.Tracking;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -72,6 +73,11 @@ class PublicCheckoutController {
 	@GetMapping("/tracking/{token}")
 	Tracking tracking(@PathVariable String shopId, @PathVariable String token) {
 		return checkout.tracking(shopId, token).orElseThrow(PublicCheckoutController::notFound);
+	}
+
+	@GetMapping("/tracking/{token}/contract")
+	Contract contract(@PathVariable String shopId, @PathVariable String token) {
+		return checkout.contract(shopId, token).orElseThrow(PublicCheckoutController::notFound);
 	}
 
 	/** Sipariş numarası ve gönderen telefonu eşleşmezse 404; hangisinin yanlış olduğu söylenmez. */
