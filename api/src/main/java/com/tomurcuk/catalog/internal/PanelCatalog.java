@@ -16,12 +16,11 @@ import java.util.stream.Collectors;
 import com.tomurcuk.catalog.OptionKind;
 import com.tomurcuk.identity.Permission;
 import com.tomurcuk.identity.ShopPrincipal;
+import com.tomurcuk.media.Photos;
 import com.tomurcuk.shared.FieldError;
 import com.tomurcuk.shared.Ids;
 import com.tomurcuk.shared.Texts;
 import com.tomurcuk.shared.ValidationException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,8 +37,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class PanelCatalog {
 
-	private static final Logger log = LoggerFactory.getLogger(PanelCatalog.class);
-
 	/** 100.000 TL, kuruş. */
 	static final long MAX_PRICE = 10_000_000L;
 
@@ -53,11 +50,11 @@ public class PanelCatalog {
 
 	private final CategoryRepository categories;
 
-	private final PhotoStore photos;
+	private final Photos photos;
 
 	private final Clock clock;
 
-	PanelCatalog(ProductRepository products, CategoryRepository categories, PhotoStore photos, Clock clock) {
+	PanelCatalog(ProductRepository products, CategoryRepository categories, Photos photos, Clock clock) {
 		this.products = products;
 		this.categories = categories;
 		this.photos = photos;
@@ -114,15 +111,7 @@ public class PanelCatalog {
 	/** Fotoğrafı 4:5 JPEG'e çevirip depoya yazar; adresi ürün kaydedilirken listeye girer. */
 	public String uploadPhoto(ShopPrincipal user, byte[] content) {
 		requireEdit(user);
-		byte[] jpeg;
-		try {
-			jpeg = PhotoImages.toProductJpeg(content);
-		}
-		catch (PhotoImages.InvalidPhoto ex) {
-			log.info("Fotoğraf reddedildi ({}): {}", user.shopId(), ex.getMessage());
-			throw ValidationException.of("photo", FieldError.of("photo_invalid"));
-		}
-		return photos.put(Ids.newId().toLowerCase(Locale.ROOT) + ".jpg", jpeg);
+		return photos.storeProductPhoto(content);
 	}
 
 	private void apply(ShopPrincipal user, Product product, ProductInput input) {

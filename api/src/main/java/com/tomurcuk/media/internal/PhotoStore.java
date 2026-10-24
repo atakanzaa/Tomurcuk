@@ -1,4 +1,4 @@
-package com.tomurcuk.catalog.internal;
+package com.tomurcuk.media.internal;
 
 /**
  * Ürün fotoğraflarının durduğu yer: yerelde ve testlerde disk, staging ve prod'da Cloudflare R2

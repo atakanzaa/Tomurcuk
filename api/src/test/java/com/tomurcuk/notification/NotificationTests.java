@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import com.tomurcuk.TestcontainersConfiguration;
+import com.tomurcuk.ordering.OrderConfirmed;
 import com.tomurcuk.ordering.OrderNotice;
 import com.tomurcuk.ordering.OrderStatus;
 import com.tomurcuk.ordering.OrderStatusChanged;
@@ -54,6 +55,36 @@ class NotificationTests {
 		assertThat(sent()).singleElement()
 			.satisfies(text -> assertThat(text).startsWith("Nergis Çiçek Atölyesi: Size bir gönderi yolda.")
 				.doesNotContain("Deniz"));
+	}
+
+	/** Dükkân ayarında açıksa çiçekçiye yeni sipariş SMS'i; olay yeniden işlense de bir kez. */
+	@Test
+	void floristGetsOneNewOrderSmsWhenEnabled() {
+		OrderNotice order = new OrderNotice("o_4824", "shop_nergis", "T-4824", LocalDate.parse("2026-11-14"),
+				"13:00", "16:00", null, "Can Öz", "0532 100 20 30", "0532 100 20 31", "Ece Öz", false,
+				"n2Qk7RtYv4WsX9aB", "Moda, Kadıköy", "Mevsim buketi", 95000);
+		jdbc.sql("UPDATE shop SET notify_sms = true, notify_phone = '0532 999 88 77' WHERE id = 'shop_nergis'").update();
+		try {
+			tx.executeWithoutResult(status -> events.publishEvent(new OrderConfirmed(order)));
+			await().atMost(Duration.ofSeconds(10)).until(() -> pending("o_4824") == 0);
+			tx.executeWithoutResult(status -> events.publishEvent(new OrderConfirmed(order)));
+			await().atMost(Duration.ofSeconds(10)).until(() -> pending("o_4824") == 0);
+			assertThat(jdbc.sql("""
+					SELECT text FROM notification_log
+					WHERE order_id = 'o_4824' AND kind = 'new_order_sms' AND recipient = '0532 999 88 77'
+					""").query(String.class).list()).singleElement()
+				.satisfies(text -> assertThat(text).startsWith("Tomurcuk: T-4824 yeni sipariş, 14 Kasım 13:00–16:00, Moda"));
+		}
+		finally {
+			jdbc.sql("UPDATE shop SET notify_sms = false, notify_phone = NULL WHERE id = 'shop_nergis'").update();
+		}
+	}
+
+	private int pending(String orderId) {
+		return jdbc.sql("SELECT count(*) FROM event_publication WHERE serialized_event LIKE :pattern")
+			.param("pattern", "%" + orderId + "%")
+			.query(Integer.class)
+			.single();
 	}
 
 	private List<String> sent() {

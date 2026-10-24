@@ -10,6 +10,7 @@ import type {
   CustomerSummary,
   Impersonation,
   ManualOrderInput,
+  NewOrders,
   OrderStatus,
   PanelSession,
   PilotApplicationInput,
@@ -105,10 +106,14 @@ export interface TomurcukApi {
   getPanelSession(impersonationId: string | null): Promise<PanelSession>;
   /** Teslim gününe göre; `from` ve `to` dahil. */
   getOrders(shopId: string, filter?: { from?: IsoDate; to?: IsoDate }): Promise<Order[]>;
+  /** Bekleyen yeni siparişler (kartla ödemesi onaylanmamışlar hariç); panelin sesli uyarısı sorar. */
+  getNewOrders(shopId: string): Promise<NewOrders>;
   getOrder(shopId: string, orderId: string): Promise<Order | null>;
   /** Yalnızca izin verilen geçişler (lib/order-flow.ts); bildirimler backend'de gönderilir. */
   updateOrderStatus(shopId: string, orderId: string, status: OrderStatus): Promise<Result<Order, "status">>;
   markOrderPaid(shopId: string, orderId: string): Promise<Result<Order, "payment">>;
+  /** Yolda ya da teslim edilmiş siparişe teslim fotoğrafı; yenisi eskisinin yerine geçer. Bulunamayan sipariş null. */
+  uploadDeliveryPhoto(shopId: string, orderId: string, file: Blob): Promise<Result<Order, "photo"> | null>;
   getCustomers(shopId: string, filter?: { query?: string }): Promise<CustomerSummary[]>;
   getCustomer(shopId: string, customerId: string): Promise<CustomerDetail | null>;
   findCustomerByPhone(shopId: string, phone: string): Promise<(CustomerSummary & { lastOrder: Order | null }) | null>;

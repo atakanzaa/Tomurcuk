@@ -41,12 +41,13 @@ Her modül `com.tomurcuk.<modül>` paketidir. Kökteki sınıflar modülün dı�
 | Modül | İçerik |
 | --- | --- |
 | `shop` | dükkân, slug geçmişi (301), plan, saat dilimi, aynı gün son saati, abonelik durumu |
-| `catalog` | kategori, ürün, seçenek, ürün sırası; panelden ürün yönetimi ve fotoğraf yükleme (disk ya da Cloudflare R2) |
+| `catalog` | kategori, ürün, seçenek, ürün sırası; panelden ürün yönetimi |
+| `media` | yüklenen fotoğraflar: ürün (4:5 kırpılır) ve teslim fotoğrafı (oranı korunur, uzun kenar en çok 1600); depo disk ya da Cloudflare R2 |
 | `delivery` | bölge, haftalık saat aralığı şablonu, kapalı gün, günlük kapasite, 10 dakikalık rezervasyon |
-| `ordering` | taslak, sipariş, sipariş kalemi kopyası, durum geçişleri, olay geçmişi, takip token'ı |
+| `ordering` | taslak, sipariş, sipariş kalemi kopyası, durum geçişleri, olay geçmişi, takip token'ı, teslim fotoğrafı |
 | `payment` | iyzico adapter'ı, callback ve webhook, 15 dakikalık durum sorgusu, 30 dakikada terk edilen ödemenin iptali |
 | `customer` | müşteri kartı, özel günler, hatırlatma listesi, pazarlama izni |
-| `notification` | bildirim kaydı (sipariş + tür tekil), `SmsSender`, yeniden deneme |
+| `notification` | bildirim kaydı (sipariş + tür tekil), `SmsSender` (Netgsm), `EmailSender` (Resend), yeniden deneme; çiçekçiye yeni sipariş e-postası ve isteğe bağlı SMS, şifre bağlantısı e-postası |
 | `identity` | dükkân ve platform kullanıcıları, rol, izin, oturum, TOTP, şifre belirleme bağlantısı (7 gün, tek kullanım, token'ın yalnızca SHA-256 özeti saklanır) |
 | `support` | talepler, mesajlar, hazır cevaplar, dahili notlar, dükkân adına oturum, maskeli veri, başvurudan dükkân açma (`SHOP_ONBOARD`: sahip ve lider) |
 | `audit` | yalnızca eklenen denetim kaydı |
@@ -73,12 +74,12 @@ Modüller arası yan etkiler Modulith olaylarıyla taşınır, olay yayınları 
 | --- | --- | --- |
 | Vitrin ve sipariş akışı | `/api/public/shop-lookup/{slug}`, `/api/public/shops/{shopId}/...` (takip linkinden sözleşmeler: `/tracking/{token}/contract`) | yok |
 | Alıcı ana sayfası | `/api/public/discover/areas`, `/api/public/discover/shops?district&neighborhood&date`, `/api/public/discover/picks`, `/api/public/order-lookup` | yok |
-| Satıcı paneli | `/api/panel/...` (ürünler: `GET/POST /api/panel/products`, `GET/PUT/DELETE /api/panel/products/{id}`, `POST /api/panel/photos`) | dükkân kullanıcısı ya da dükkân adına oturum; ürün yazma `CATALOG_EDIT` |
+| Satıcı paneli | `/api/panel/...` (ürünler: `GET/POST /api/panel/products`, `GET/PUT/DELETE /api/panel/products/{id}`, `POST /api/panel/photos`; teslim fotoğrafı `POST /api/panel/orders/{id}/delivery-photo`, yolda ya da teslim edilmiş siparişe; sesli uyarı `GET /api/panel/orders/new`) | dükkân kullanıcısı ya da dükkân adına oturum; ürün yazma `CATALOG_EDIT` |
 | Destek paneli | `/api/support/...` (dükkân açma: `GET /pilot-applications`, `POST /shops`, `POST /shops/{shopId}/password-link`) | platform kullanıcısı; dükkân açma `SHOP_ONBOARD` |
 | Şifre belirleme | `GET /api/public/password-setup/{token}`, `POST /api/public/password-setup` (web `/sifre/{token}`) | yok; bağlantı token'ı |
 | Panel ayarları | `GET /api/panel/settings`, `PUT .../profile`, `.../same-day-cutoff`, `.../slots`, `.../zones`, `POST/DELETE .../closed-days` | dükkân kullanıcısı; yazma `CATALOG_EDIT` |
 | İstanbul ilçe ve mahalleleri | `/api/public/places/istanbul` (`resources/places/istanbul.json`, kaynağı `NOTICE.txt`) | yok |
-| Diskteki ürün fotoğrafı | `/api/public/photos/{ad}` (web `/foto/{ad}` yolunda aktarır) | yok |
+| Diskteki fotoğraf | `/api/public/photos/{ad}` (web `/foto/{ad}` yolunda aktarır) | yok |
 | Ödeme bildirimleri | `/webhooks/iyzico` | iyzico imzası |
 
 - Uç noktalar `web/lib/api/contract.ts`'teki fonksiyonlarla bire bir eşleşir; isimler ve alanlar oradaki tiplerle aynı tutulur.
@@ -122,10 +123,12 @@ Sağlayıcılar:
 
 | Olay | Kime | Kanal |
 | --- | --- | --- |
-| `OrderConfirmed`: havalede sipariş anında, kartla ödemede ödeme ilk kez onaylanınca | gönderen (onay ve takip linki), dükkân sahipleri (yeni sipariş) | SMS, e-posta |
+| `OrderConfirmed`: havalede sipariş anında, kartla ödemede ödeme ilk kez onaylanınca | gönderen (onay ve takip linki), dükkân sahipleri (yeni sipariş), ayarda açıksa çiçekçinin cep telefonu (kısa yeni sipariş) | SMS, e-posta |
 | `OrderStatusChanged` → Yolda | alıcı | SMS |
-| → Teslim edildi | gönderen | SMS |
+| → Teslim edildi | gönderen (takip linkiyle; teslim fotoğrafı orada) | SMS |
 | → Teslim edilemedi | gönderen ve alıcı | SMS |
+| `PasswordLinkIssued`: destek dükkânı açınca ya da yeni bağlantı oluşturunca | dükkân sahibi | e-posta |
+| `ImpersonationStarted` | dükkân sahipleri | e-posta |
 
 - Panelden elle girilen sipariş ve "Hazırlanıyor" geçişi bildirim göndermez.
 - Dinleyiciler `@ApplicationModuleListener`: işlem tamamlandıktan sonra ayrı iş parçacığında çalışır, olay kaydı veritabanında durur. Sipariş akışı SMS sağlayıcısını beklemez; uygulama yeniden başlarsa yarım kalan olay yeniden işlenir.
@@ -134,7 +137,10 @@ Sağlayıcılar:
 - Metinlerde alıcıya ve gönderene dükkân konuşur, dükkân adı başta yazılır; isimsiz gönderimde gönderen hiç geçmez. Bütün mesajlar işlem mesajıdır; pazarlama mesajı (09:00–21:00 kuralı, İYS izni) MVP'de otomatik gönderilmez.
 - SMS sağlayıcısı Netgsm (`tomurcuk.sms.provider=netgsm`): `POST https://api.netgsm.com.tr/sms/rest/v2/send`, Basic auth, `encoding: TR`, `iysfilter: "0"` (bilgilendirme mesajı). Yanıttaki `code` "00" başarılıdır, `jobid` kayda yazılır. Kalıcı hatalar (20 metin, 30 kimlik, 40/41 başlık, 50/51 İYS, 70 parametre) yeniden denenmez; 85 ve 100 denenir. Kullanıcı kodu, şifre ve onaylı mesaj başlığı ortamın secret'larındadır: `TOMURCUK_SMS_NETGSM_USERCODE`, `TOMURCUK_SMS_NETGSM_PASSWORD`, `TOMURCUK_SMS_NETGSM_HEADER`. İstek biçimi Netgsm hesabıyla ilk gönderimde doğrulanmalı.
 - Staging'de Netgsm yalnızca `tomurcuk.sms.allowed-recipients` (`TOMURCUK_SMS_ALLOWED_RECIPIENTS`) numaralarına gönderir; diğerleri kayda "Gönderilmedi: ekip numarası değil" notuyla düşer. Değişken tanımsızsa staging açılmaz.
-- Yerelde ve önizlemede `log`: SMS gönderilmez, log'a yazılır. E-posta sağlayıcısı (SMTP ya da servis) seçilince `EmailSender` adapter'ı eklenir.
+- E-posta sağlayıcısı Resend (`tomurcuk.email.provider=resend`): `POST https://api.resend.com/emails`, Bearer anahtar (`TOMURCUK_EMAIL_RESEND_APIKEY`), düz metin, gönderen `Tomurcuk <siparis@tomurcuk.shop>`. 429 ve 5xx yeniden denenir, diğer 4xx (doğrulanmamış alan adı, hatalı adres) denenmez. Staging'de `TOMURCUK_EMAIL_ALLOWED_RECIPIENTS` dışındaki adreslere gitmez. Kurulum `deploy/README.md`.
+- Şifre bağlantısı e-postasında token düz durur (olay kaydında ve `notification_log`'da); bağlantı 7 gün geçerli ve tek kullanımlık olduğu için kabul edildi.
+- Yerelde ve önizlemede `log`: SMS ve e-posta gönderilmez, log'a yazılır.
+- Panel açıkken 30 saniyede bir `GET /api/panel/orders/new` sorulur (kartla ödemesi onaylanmamış siparişler sayılmaz). En son gelen sipariş değişince süzülen bildirim çıkar; çiçekçi açtıysa Web Audio ile kısa zil çalar (tercih tarayıcıda).
 
 ## Örnek veri ve derleme
 
@@ -150,15 +156,15 @@ Kapsam bilerek dar tutulur; geliştirme hızı önce gelir.
 
 - `ModularityTests`: modül sınırları (`ApplicationModules.verify()`).
 - Aşama 3 (`CheckoutTests`, `DeliveryScheduleTests`): ödeme callback'inin iki kez gelmesi, aynı idempotency anahtarı, aynı aralığa 20 eşzamanlı rezervasyon (kapasite 6), süresi dolan rezervasyon, "bugün" ve son sipariş saatinde saat dilimi, başka dükkânın takip kodu.
-- Aşama 4 (`PanelTests`): oturumsuz istek 401, yanlış şifrede hangi alanın yanlış olduğu söylenmez, durum geçişleri (atlanan ve geri giden reddedilir), çalışan iptal edemez (403), başka dükkânın siparişi ve müşterisi bulunamaz.
+- Aşama 4 (`PanelTests`): oturumsuz istek 401, yanlış şifrede hangi alanın yanlış olduğu söylenmez, durum geçişleri (atlanan ve geri giden reddedilir), çalışan iptal edemez (403), başka dükkânın siparişi ve müşterisi bulunamaz; teslim fotoğrafı yalnızca yoldaki ya da teslim edilen kendi siparişine (başkasınınkine 404, yenisine 422); yeni sipariş özeti dükkâna özel.
 
-- Adapter'lar (`NetgsmSmsSenderTests`, `IyzicoPaymentProviderTests`, `R2PhotoStoreTests`): istek biçimi, imza ve yanıt kodları, sağlayıcıya bağlanmadan; staging'de SMS'in yalnızca ekip numaralarına gitmesi.
+- Adapter'lar (`NetgsmSmsSenderTests`, `ResendEmailSenderTests`, `IyzicoPaymentProviderTests`, `R2PhotoStoreTests`): istek biçimi, imza ve yanıt kodları, sağlayıcıya bağlanmadan; staging'de SMS'in yalnızca ekip numaralarına gitmesi.
 - Aşama 6 (`SupportTests`): şifre ve TOTP birlikte; dükkân oturumuyla panele destek girişi yok; telefon maskeli, gerekçesiz açılmaz, açılış kayda geçer; dükkân adına oturum çalışan yetkisinde (iptal 403), işlem kayda geçer, 30 dakikada biter; denetim kaydı güncellenemez ve silinemez.
 - Ayarlar (`PanelSettingsTests`): çalışan ayar değiştiremez (403), bölge İstanbul listesinden (kayıtlı eski ad değişmedikçe kalır), kapasite düşünce dolu yer korunur, kaldırılan aralık takvimden çıkar ve kaydı durur, çakışan aralık reddedilir, kapalı güne sipariş verilemez.
-- Dükkân açma (`OnboardingTests`): lider dükkân açar, sahip bağlantıyla şifre belirleyip girer; bağlantı ikinci kez ve süresi geçince çalışmaz, yeni bağlantı eskisini geçersiz kılar; temsilci açamaz (403); alınmış ya da ayrılmış slug ve başka hesaptaki e-posta reddedilir, hata olunca dükkân açılmaz.
+- Dükkân açma (`OnboardingTests`): lider dükkân açar, sahip bağlantıyla şifre belirleyip girer; bağlantı ikinci kez ve süresi geçince çalışmaz, yeni bağlantı eskisini geçersiz kılar; temsilci açamaz (403); alınmış ya da ayrılmış slug ve başka hesaptaki e-posta reddedilir, hata olunca dükkân açılmaz; şifre bağlantısı sahibine e-postayla gider.
 - Ürün yönetimi (`PanelCatalogTests`): boyların tam fiyatı ürün fiyatı ve ek fiyata çevrilir, satıştan kalkan ürün vitrinde yok, fotoğraf 4:5 kırpılır ve yalnızca yüklenen adres kabul edilir, çalışan ürün değiştiremez (403), başka dükkânın ürünü bulunamaz.
 - Alıcı ana sayfası (`DiscoveryTests`): o gün teslim edebilen dükkânlar önce, ilk müsait aralığa göre; aynı gün son saati geçen dükkân sonda ve ilk müsait günüyle.
-- Aşama 5 (`NotificationTests`): aynı olay iki kez işlense de tek SMS, isimsiz gönderimde gönderen metinde yok.
+- Aşama 5 (`NotificationTests`): aynı olay iki kez işlense de tek SMS, isimsiz gönderimde gönderen metinde yok; ayarda açıksa çiçekçiye tek yeni sipariş SMS'i.
 
 Testlerde saat `MutableClock` ile sabitlenir, zamanlanmış işler kapalıdır (`tomurcuk.jobs.enabled=false`).
 

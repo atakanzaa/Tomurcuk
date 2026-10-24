@@ -1,15 +1,17 @@
 import "server-only";
 import type { TomurcukApi } from "../contract";
-import type { CustomerDetail, CustomerSummary, Order, PanelProduct, PanelSession, PanelSettings, Places, Reminder } from "../types";
+import type { CustomerDetail, CustomerSummary, NewOrders, Order, PanelProduct, PanelSession, PanelSettings, Places, Reminder } from "../types";
 import { get, getOrNull, path, remove, send, sendOrNull } from "./client";
 
 export type PanelApi = Pick<
   TomurcukApi,
   | "getPanelSession"
   | "getOrders"
+  | "getNewOrders"
   | "getOrder"
   | "updateOrderStatus"
   | "markOrderPaid"
+  | "uploadDeliveryPhoto"
   | "getCustomers"
   | "getCustomer"
   | "findCustomerByPhone"
@@ -44,10 +46,16 @@ const query = (params: Record<string, string | number | undefined>) => {
  */
 export const httpPanelApi: PanelApi = {
   getPanelSession: () => get<PanelSession>("/api/panel/session"),
+  getNewOrders: () => get<NewOrders>("/api/panel/orders/new"),
   getOrders: (_shopId, filter) => get<Order[]>(`/api/panel/orders${query({ from: filter?.from, to: filter?.to })}`),
   getOrder: (_shopId, orderId) => getOrNull<Order>(path`/api/panel/orders/${orderId}`),
   updateOrderStatus: (_shopId, orderId, status) => send("POST", path`/api/panel/orders/${orderId}/status`, { status }),
   markOrderPaid: (_shopId, orderId) => send("POST", path`/api/panel/orders/${orderId}/paid`, {}),
+  uploadDeliveryPhoto: (_shopId, orderId, file) => {
+    const body = new FormData();
+    body.set("file", file, "teslim.jpg");
+    return sendOrNull("POST", path`/api/panel/orders/${orderId}/delivery-photo`, body);
+  },
   getCustomers: (_shopId, filter) => get<CustomerSummary[]>(`/api/panel/customers${query({ query: filter?.query })}`),
   getCustomer: (_shopId, customerId) => getOrNull<CustomerDetail>(path`/api/panel/customers/${customerId}`),
   findCustomerByPhone: (_shopId, phone) =>

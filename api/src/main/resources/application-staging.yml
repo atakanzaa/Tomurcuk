@@ -10,3 +10,6 @@ tomurcuk:
     provider: netgsm
     # Virgülle ayrılmış ekip numaraları; diğer numaralara gönderilmez. Tanımsızsa uygulama açılmaz.
     allowed-recipients: ${TOMURCUK_SMS_ALLOWED_RECIPIENTS}
+  email:
+    # Resend açılırsa e-posta yalnızca bu adreslere gider (virgülle ayrılmış); boşsa hiç kimseye.
+    allowed-recipients: ${TOMURCUK_EMAIL_ALLOWED_RECIPIENTS:}

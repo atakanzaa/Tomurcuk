@@ -112,7 +112,24 @@ TOMURCUK_PHOTOS_R2_SECRETKEY=<Secret Access Key>
 
 Kendi alan adına geçince yalnızca `TOMURCUK_PHOTOS_R2_PUBLICURL=https://foto.tomurcuk.shop` değişir; eski fotoğrafların adresleri `r2.dev`'de kalır ve çalışmaya devam eder. Web, fotoğrafları `*.r2.dev` ve `foto.tomurcuk.shop` adreslerinden küçültüp sunar (`web/next.config.ts`); başka bir adres kullanılacaksa oraya eklenmeli.
 
-R2'ye geçmeden önce diske yüklenmiş fotoğraflar `/foto/` adresinden okunmaya devam eder. Kaldırılan fotoğrafın ya da silinen ürünün dosyası depodan silinmez.
+R2'ye geçmeden önce diske yüklenmiş fotoğraflar `/foto/` adresinden okunmaya devam eder. Kaldırılan fotoğrafın ya da silinen ürünün dosyası depodan silinmez. Teslim fotoğrafları da aynı depoya yazılır (kırpılmaz, uzun kenarı en çok 1600).
+
+### E-posta (Resend)
+
+Çiçekçiye yeni sipariş e-postası, şifre belirleme bağlantısı ve destek girişi bildirimi Resend ile gider. Kurulana kadar e-postalar log'a yazılır.
+
+1. resend.com'da hesap açın. Domains > Add domain: `tomurcuk.shop`, bölge `eu-west-1` (İrlanda).
+2. Resend'in gösterdiği DNS kayıtlarını Hostinger > DNS'e girin: DKIM için `resend._domainkey` TXT kaydı, `send` alt adı için MX ve SPF (`v=spf1 include:amazonses.com ~all`) kayıtları. İsteğe bağlı ama önerilir: `_dmarc` TXT, `v=DMARC1; p=none;`. Kayıtlar yayılınca Resend'de "Verified" görünür.
+3. API Keys > Create API key: izin "Sending access", yalnızca `tomurcuk.shop`. Anahtar bir kez gösterilir; sohbete ya da repoya yazmayın, doğrudan sunucudaki `.env`'e girin:
+
+```
+TOMURCUK_EMAIL_PROVIDER=resend
+TOMURCUK_EMAIL_RESEND_APIKEY=<re_ ile başlayan anahtar>
+# Yalnızca staging: e-posta bu adreslere gider, örnek dükkânların adreslerine gitmez. Boşsa hiç kimseye.
+TOMURCUK_EMAIL_ALLOWED_RECIPIENTS=ekip@ornek.com
+```
+
+Gönderen `Tomurcuk <siparis@tomurcuk.shop>`; değiştirmek için `TOMURCUK_EMAIL_FROM`. Gönderim sonucu destek panelindeki bildirim listesinde Resend'in yanıtıyla görünür; doğrulanmamış alan adı gibi kalıcı hatalar yeniden denenmez.
 
 ### Sunucu 2: prod
 

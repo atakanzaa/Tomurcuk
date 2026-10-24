@@ -1,4 +1,4 @@
-package com.tomurcuk.catalog.internal;
+package com.tomurcuk.media.internal;
 
 import java.net.URI;
 import java.nio.file.Path;

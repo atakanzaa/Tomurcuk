@@ -11,6 +11,7 @@ import { formatPrice } from "@/lib/format";
 import { orderDelayMinutes, orderItemsSummary, orderStatusTag, orderTimeColumn } from "@/lib/order";
 import { DayView, dayRange, dayViewLabel, panelCounts } from "../_lib";
 import { OrderDetail } from "./OrderDetail";
+import { SoundToggle } from "./NewOrderWatcher";
 import styles from "./board.module.css";
 import panel from "./panel.module.css";
 
@@ -124,6 +125,7 @@ export async function OrderBoard({ session, view, selected }: OrderBoardProps) {
             <strong>{active.length} teslimat</strong>, toplam {formatPrice(total)}. {summary}.
           </KraftBand>
         </div>
+        <SoundToggle />
       </div>
 
       <div className={styles.columns}>

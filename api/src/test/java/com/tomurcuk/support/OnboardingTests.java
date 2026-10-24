@@ -2,6 +2,7 @@ package com.tomurcuk.support;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.awaitility.Awaitility.await;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -94,6 +95,16 @@ class OnboardingTests {
 			.param("id", link.shopId())
 			.query(Integer.class)
 			.single()).isEqualTo(1);
+		// Bağlantı sahibine e-postayla da gider.
+		await().atMost(Duration.ofSeconds(10))
+			.until(() -> jdbc.sql("""
+					SELECT count(*) FROM notification_log
+					WHERE kind = 'password_link_email' AND recipient = :email AND position(:url in text) > 0
+					""")
+				.param("email", "sahip-" + suffix + "@ornek.com")
+				.param("url", link.url())
+				.query(Integer.class)
+				.single() == 1);
 	}
 
 	/** Süresi geçen ya da yenisi oluşturulan bağlantı çalışmaz. */

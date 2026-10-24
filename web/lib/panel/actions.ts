@@ -2,10 +2,17 @@
 
 import { refresh } from "next/cache";
 import { redirect } from "next/navigation";
-import { createManualOrder, createTicket, endImpersonation, markOrderPaid, updateOrderStatus } from "@/lib/api";
+import {
+  createManualOrder,
+  createTicket,
+  endImpersonation,
+  markOrderPaid,
+  updateOrderStatus,
+  uploadDeliveryPhoto,
+} from "@/lib/api";
 import { OrderStatus } from "@/lib/api/types";
 import { formValues, type FormState } from "@/lib/checkout/form-state";
-import { toMessages } from "@/lib/checkout/messages";
+import { checkoutErrorMessage, toMessages } from "@/lib/checkout/messages";
 import { transitionDone } from "@/lib/order-flow";
 import type { ActionNotice } from "./notice";
 import { clearImpersonation, readImpersonation } from "@/lib/auth/cookie";
@@ -34,6 +41,21 @@ export async function markPaid(prev: ActionNotice, formData: FormData): Promise<
   if (!result.ok) return { version: prev.version + 1, message: "Sipariş bulunamadı. Sayfayı yenileyin.", error: true };
   refresh();
   return { version: prev.version + 1, message: "Ödendi olarak işaretlendi.", error: false };
+}
+
+/** Teslim fotoğrafı; tarayıcı küçültüp JPEG yapar (lib/panel/photo.ts). */
+export async function addDeliveryPhoto(formData: FormData): Promise<{ message: string; error: boolean }> {
+  const { shop } = await loadPanel();
+  const file = formData.get("file");
+  if (!(file instanceof Blob) || file.size === 0) return { message: "Fotoğraf seçilmedi.", error: true };
+  const result = await uploadDeliveryPhoto(shop.id, str(formData, "orderId"), file);
+  if (!result) return { message: "Sipariş bulunamadı. Sayfayı yenileyin.", error: true };
+  if (!result.ok) {
+    const error = result.errors.photo;
+    return { message: error ? checkoutErrorMessage("photo", error) : "Fotoğraf yüklenemedi. Yeniden deneyin.", error: true };
+  }
+  refresh();
+  return { message: "Teslim fotoğrafı eklendi. Gönderen takip sayfasında görür.", error: false };
 }
 
 export async function saveManualOrder(prev: FormState, formData: FormData): Promise<FormState> {

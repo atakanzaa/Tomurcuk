@@ -11,6 +11,7 @@ import com.tomurcuk.ordering.OrderNotice;
 import com.tomurcuk.ordering.OrderStatusChanged;
 import com.tomurcuk.shop.ShopDirectory;
 import com.tomurcuk.shop.ShopInfo;
+import com.tomurcuk.shop.ShopSettings;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.modulith.events.ApplicationModuleListener;
 import org.springframework.stereotype.Component;
@@ -30,20 +31,26 @@ class OrderNotifications {
 
 	private final ShopUsers users;
 
+	private final ShopSettings settings;
+
 	private final Clock clock;
 
 	private final String webUrl;
 
-	OrderNotifications(NotificationLog notifications, ShopDirectory shops, ShopUsers users, Clock clock,
-			@Value("${tomurcuk.web-url}") String webUrl) {
+	OrderNotifications(NotificationLog notifications, ShopDirectory shops, ShopUsers users, ShopSettings settings,
+			Clock clock, @Value("${tomurcuk.web-url}") String webUrl) {
 		this.notifications = notifications;
 		this.shops = shops;
 		this.users = users;
+		this.settings = settings;
 		this.clock = clock;
 		this.webUrl = webUrl;
 	}
 
-	/** Gönderene onay SMS'i (takip linkiyle), dükkân sahiplerine yeni sipariş e-postası. */
+	/**
+	 * Gönderene onay SMS'i (takip linkiyle), dükkân sahiplerine yeni sipariş e-postası; dükkân
+	 * ayarlarında açıksa çiçekçinin cep telefonuna kısa SMS.
+	 */
 	@ApplicationModuleListener
 	void on(OrderConfirmed event) {
 		OrderNotice order = event.order();
@@ -58,6 +65,9 @@ class OrderNotifications {
 					"email", email, Messages.newOrderSubject(order, today),
 					Messages.newOrderBody(order, today, panelUrl), order.orderId() + ":new_order_email:" + email));
 		}
+		settings.newOrderSmsPhone(order.shopId())
+			.ifPresent(phone -> notifications.send(
+					sms(order, "new_order_sms", phone, Messages.newOrderSms(order, today, panelUrl), "0")));
 	}
 
 	/** Yolda: alıcıya. Teslim edildi: gönderene. Teslim edilemedi: ikisine. */
@@ -69,8 +79,8 @@ class OrderNotifications {
 		switch (event.to()) {
 			case ON_WAY -> notifications.send(
 					sms(order, "order_on_way", order.recipientPhone(), Messages.onWay(shop, order), sequence));
-			case DELIVERED -> notifications.send(
-					sms(order, "order_delivered", order.senderPhone(), Messages.delivered(shop, order), sequence));
+			case DELIVERED -> notifications.send(sms(order, "order_delivered", order.senderPhone(),
+					Messages.delivered(shop, order, url(shop.slug(), "takip", order.trackingToken())), sequence));
 			case FAILED -> {
 				notifications.send(sms(order, "order_failed", order.senderPhone(),
 						Messages.failedToSender(shop, order), sequence));

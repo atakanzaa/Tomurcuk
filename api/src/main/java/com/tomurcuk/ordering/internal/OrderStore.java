@@ -261,6 +261,28 @@ public class OrderStore {
 			.update();
 	}
 
+	/** Bekleyen yeni siparişler (kartla ödemesi onaylanmamışlar hariç) ve en son geleni. */
+	NewOrders newOrders(String shopId) {
+		return jdbc.sql("""
+				SELECT count(*) AS count,
+				       (array_agg(id ORDER BY created_at DESC, id DESC))[1] AS latest_id,
+				       (array_agg(number ORDER BY created_at DESC, id DESC))[1] AS latest_number
+				FROM orders
+				WHERE shop_id = :shopId AND status = 'new' AND NOT (payment_method = 'card' AND payment_status <> 'paid')
+				""")
+			.param("shopId", shopId)
+			.query((rs, n) -> new NewOrders(rs.getInt("count"), rs.getString("latest_id"), rs.getString("latest_number")))
+			.single();
+	}
+
+	int setDeliveryPhoto(String shopId, String orderId, String url) {
+		return jdbc.sql("UPDATE orders SET delivery_photo_url = :url WHERE shop_id = :shopId AND id = :id")
+			.param("url", url)
+			.param("shopId", shopId)
+			.param("id", orderId)
+			.update();
+	}
+
 	int markPaid(String shopId, String orderId) {
 		return jdbc.sql("UPDATE orders SET payment_status = 'paid' WHERE shop_id = :shopId AND id = :id AND payment_status <> 'paid'")
 			.param("shopId", shopId)

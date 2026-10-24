@@ -25,6 +25,7 @@ import com.tomurcuk.delivery.SlotInfo;
 import com.tomurcuk.delivery.ZoneInfo;
 import com.tomurcuk.identity.Permission;
 import com.tomurcuk.identity.ShopPrincipal;
+import com.tomurcuk.media.Photos;
 import com.tomurcuk.ordering.Order;
 import com.tomurcuk.ordering.OrderSource;
 import com.tomurcuk.ordering.OrderStatus;
@@ -71,12 +72,15 @@ public class PanelOrders {
 
 	private final ShopDirectory shops;
 
+	private final Photos photos;
+
 	private final ApplicationEventPublisher events;
 
 	private final Clock clock;
 
 	PanelOrders(OrderStore orders, Customers customers, Catalog catalog, DeliverySchedule schedule,
-			ShopDirectory shops, ApplicationEventPublisher events, Clock clock) {
+			ShopDirectory shops, Photos photos, ApplicationEventPublisher events, Clock clock) {
+		this.photos = photos;
 		this.orders = orders;
 		this.customers = customers;
 		this.catalog = catalog;
@@ -88,6 +92,10 @@ public class PanelOrders {
 
 	public List<Order> list(ShopPrincipal user, LocalDate from, LocalDate to) {
 		return orders.findByDeliveryDate(user.shopId(), from, to);
+	}
+
+	public NewOrders newOrders(ShopPrincipal user) {
+		return orders.newOrders(user.shopId());
 	}
 
 	public Optional<Order> get(ShopPrincipal user, String orderId) {
@@ -120,6 +128,24 @@ public class PanelOrders {
 		events.publishEvent(new OrderStatusChanged(orderId, order.shopId(), order.status(), next,
 				changed.events().size(), Notices.of(changed)));
 		return changed;
+	}
+
+	/**
+	 * Teslim fotoğrafı; alıcı ve gönderen takip sayfasında görür. Sipariş yolda ya da teslim
+	 * edilmiş olmalı (`delivery_photo_status`). Yenisi eskisinin yerine geçer.
+	 */
+	@Transactional
+	public Optional<Order> addDeliveryPhoto(ShopPrincipal user, String orderId, byte[] content) {
+		Optional<Order> order = orders.find(user.shopId(), orderId);
+		if (order.isEmpty()) {
+			return Optional.empty();
+		}
+		OrderStatus status = order.get().status();
+		if (status != OrderStatus.ON_WAY && status != OrderStatus.DELIVERED) {
+			throw ValidationException.of("photo", FieldError.of("delivery_photo_status"));
+		}
+		orders.setDeliveryPhoto(user.shopId(), orderId, photos.storeDeliveryPhoto(content));
+		return orders.find(user.shopId(), orderId);
 	}
 
 	/** Havale ve kapıda ödemede dükkân işaretler. Zaten ödenmişse sipariş olduğu gibi döner. */

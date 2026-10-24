@@ -23,8 +23,9 @@ export function PasswordLinkCard({ link, shopName, phone, title }: PasswordLinkC
     <div className={styles.card} role="status">
       <h2 className={styles.cardTitle}>{title}</h2>
       <p className={styles.cardText}>
-        Bağlantıyı {link.ownerName} ({link.ownerEmail}) ile paylaşın. 7 gün geçerli, bir kez kullanılır ve bu sayfadan ayrılınca
-        yeniden gösterilmez; gerekirse dükkânın özetinden yenisini oluşturursunuz.
+        Bağlantı {link.ownerName} adına {link.ownerEmail} adresine e-postayla da gönderildi; WhatsApp&apos;tan da
+        iletebilirsiniz. 7 gün geçerli, bir kez kullanılır ve bu sayfadan ayrılınca yeniden gösterilmez; gerekirse
+        dükkânın özetinden yenisini oluşturursunuz.
       </p>
       <input className={`tm-field__control ${styles.url}`} readOnly value={link.url} aria-label="Şifre bağlantısı" onFocus={(e) => e.target.select()} />
       <div className={styles.actions}>

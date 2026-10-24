@@ -55,7 +55,10 @@ tomurcuk:
     # numaraları) ve prod; kullanıcı kodu, şifre ve başlık ortamın secret'larından gelir.
     provider: log
   email:
+    # log: e-posta gönderilmez, log'a yazılır. resend: sunucuda .env'e TOMURCUK_EMAIL_PROVIDER=resend
+    # ve TOMURCUK_EMAIL_RESEND_APIKEY yazılınca; gönderen alan adı Resend'de doğrulanmış olmalı.
     provider: log
+    from: Tomurcuk <siparis@tomurcuk.shop>
   photos:
     # disk: yerel, testler ve R2 kurulana kadar sunucular (dizin bir volume'dür). r2: Cloudflare R2;
     # adres, bucket, önek ve herkese açık adres ortamın .env'inden, anahtarlar secret olarak

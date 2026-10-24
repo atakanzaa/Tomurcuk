@@ -13,6 +13,7 @@ import com.tomurcuk.shared.FieldError;
 import com.tomurcuk.shared.Ids;
 import com.tomurcuk.shared.Instants;
 import com.tomurcuk.shared.ValidationException;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -36,17 +37,23 @@ public class PasswordLinks {
 
 	private final Clock clock;
 
-	PasswordLinks(JdbcClient jdbc, PasswordEncoder passwords, Clock clock) {
+	private final ApplicationEventPublisher events;
+
+	PasswordLinks(JdbcClient jdbc, PasswordEncoder passwords, Clock clock, ApplicationEventPublisher events) {
 		this.jdbc = jdbc;
 		this.passwords = passwords;
 		this.clock = clock;
+		this.events = events;
 	}
 
 	/** Bağlantının sahibi; web sayfada "Ayla Er, Nergis Çiçek Atölyesi" diye gösterir. */
 	public record Holder(String name, String email, String shopName) {
 	}
 
-	/** Yeni bağlantının token'ı; yalnızca bir kez döner, sonra okunamaz. */
+	/**
+	 * Yeni bağlantının token'ı; yalnızca bir kez döner, sonra okunamaz. Kullanıcıya e-postayla da
+	 * gider (`PasswordLinkIssued`).
+	 */
 	@Transactional
 	public String issue(String userId) {
 		Instant now = clock.instant();
@@ -60,6 +67,15 @@ public class PasswordLinks {
 			.param("userId", userId)
 			.param("expires", Instants.sql(now.plus(VALIDITY)))
 			.update();
+		jdbc.sql("""
+				SELECT u.shop_id, u.name, u.email, s.name AS shop_name
+				FROM shop_user u JOIN shop s ON s.id = u.shop_id WHERE u.id = :userId
+				""")
+			.param("userId", userId)
+			.query((rs, n) -> new PasswordLinkIssued(Ids.newId(), rs.getString("shop_id"), rs.getString("name"),
+					rs.getString("email"), rs.getString("shop_name"), token))
+			.optional()
+			.ifPresent(events::publishEvent);
 		return token;
 	}
 

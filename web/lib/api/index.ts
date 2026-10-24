@@ -88,6 +88,7 @@ export const completePayment = write("completePayment");
 // Satıcı paneli
 export const getPanelSession = read("getPanelSession");
 export const getOrders = read("getOrders");
+export const getNewOrders = read("getNewOrders");
 export const getOrder = read("getOrder");
 export const getCustomers = read("getCustomers");
 export const getCustomer = read("getCustomer");
@@ -95,6 +96,7 @@ export const findCustomerByPhone = read("findCustomerByPhone");
 export const getReminders = read("getReminders");
 export const updateOrderStatus = write("updateOrderStatus");
 export const markOrderPaid = write("markOrderPaid");
+export const uploadDeliveryPhoto = write("uploadDeliveryPhoto");
 export const createManualOrder = write("createManualOrder");
 export const getPanelProducts = read("getPanelProducts");
 export const getPanelProduct = read("getPanelProduct");

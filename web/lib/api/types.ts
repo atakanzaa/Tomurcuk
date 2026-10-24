@@ -176,6 +176,13 @@ export interface PasswordHolder {
 }
 
 /** Panelde dükkân ve teslimat ayarları. Saat aralığı ve bölge satırında `id` yeni satırda null. */
+/** Bekleyen yeni siparişler; `latestOrderId` değişince panel sesli uyarı verir. */
+export interface NewOrders {
+  count: number;
+  latestOrderId: string | null;
+  latestNumber: string | null;
+}
+
 export interface PanelSettings {
   profile: { shop: Shop; notifyPhone: string | null; notifySms: boolean };
   slots: SlotSetting[];
@@ -453,6 +460,8 @@ export const CheckoutError = {
   // Panel: ürün formu.
   PriceInvalid: "price_invalid",
   PhotoInvalid: "photo_invalid",
+  /** Teslim fotoğrafı sipariş yola çıkmadan eklenmez. */
+  DeliveryPhotoStatus: "delivery_photo_status",
   TooMany: "too_many",
   // Panel: ayarlar.
   SlotOverlap: "slot_overlap",
