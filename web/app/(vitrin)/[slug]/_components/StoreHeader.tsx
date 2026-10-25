@@ -54,6 +54,11 @@ export function HeaderCategories({ shop, categories, selection }: HeaderCategori
             </Link>
           </li>
         ))}
+        {shop.story.trim() && (
+          <li>
+            <a href="#hikayemiz">Hikâyemiz</a>
+          </li>
+        )}
       </ul>
     </nav>
   );

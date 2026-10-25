@@ -21,12 +21,16 @@ public class Photos {
 	}
 
 	/** Herkese açık adresini döner. */
+	public String store(PhotoKind kind, byte[] content) {
+		return storage.store(content, kind).orElseThrow(Photos::invalid);
+	}
+
 	public String storeProductPhoto(byte[] content) {
-		return storage.store(content, false).orElseThrow(Photos::invalid);
+		return store(PhotoKind.PRODUCT, content);
 	}
 
 	public String storeDeliveryPhoto(byte[] content) {
-		return storage.store(content, true).orElseThrow(Photos::invalid);
+		return store(PhotoKind.DELIVERY, content);
 	}
 
 	/** Panelden gelen bir fotoğraf adresi yalnızca Tomurcuk'un deposundan olabilir. */

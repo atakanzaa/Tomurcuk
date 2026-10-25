@@ -35,20 +35,9 @@ export function Catalog({ shop, categories, products, selection }: CatalogProps)
 
   return (
     <section aria-labelledby="urunler" className={cx(container.container, styles.catalog)}>
-      <nav aria-label="Kategoriler" className={styles.categoryChips}>
-        <Chip href={href({ category: null })} current={!selection.category}>
-          Hepsi
-        </Chip>
-        {categories.map((category) => (
-          <Chip key={category.id} href={href({ category })} current={selection.category?.id === category.id}>
-            {category.name}
-          </Chip>
-        ))}
-      </nav>
-
       <div className={styles.headingRow}>
         <h2 id="urunler" className={styles.heading}>
-          {selection.category?.name ?? "Bugün gönderilebilenler"}
+          {selection.category?.name ?? "Bütün çiçekler"}
         </h2>
         <nav aria-label="Süzgeçler" className={styles.filters}>
           <Chip href={href({ filter: null })} current={!selection.filter}>
@@ -61,6 +50,17 @@ export function Catalog({ shop, categories, products, selection }: CatalogProps)
           ))}
         </nav>
       </div>
+
+      <nav aria-label="Kategoriler" className={styles.categoryChips}>
+        <Chip href={href({ category: null })} current={!selection.category}>
+          Hepsi
+        </Chip>
+        {categories.map((category) => (
+          <Chip key={category.id} href={href({ category })} current={selection.category?.id === category.id}>
+            {category.name}
+          </Chip>
+        ))}
+      </nav>
 
       {visible.length ? (
         <div className={styles.grid}>

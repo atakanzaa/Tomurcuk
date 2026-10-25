@@ -39,6 +39,14 @@ export async function getProduct(shopId: string, productId: string) {
   return impl.getProduct(shopId, productId);
 }
 
+/** Sipariş verisinden; saatte bir yenilenir, ürün değişince de. */
+export async function getBestseller(shopId: string) {
+  "use cache";
+  cacheLife("hours");
+  cacheTag(`products:${shopId}`);
+  return impl.getBestseller(shopId);
+}
+
 export async function getDeliveryZones(shopId: string) {
   "use cache";
   cacheLife("minutes");
@@ -107,6 +115,8 @@ export const deleteProduct = write("deleteProduct");
 export const uploadProductPhoto = write("uploadProductPhoto");
 export const getPanelSettings = read("getPanelSettings");
 export const saveShopProfile = write("saveShopProfile");
+export const saveShopPage = write("saveShopPage");
+export const uploadShopPhoto = write("uploadShopPhoto");
 export const saveSameDayCutoff = write("saveSameDayCutoff");
 export const saveTimeSlots = write("saveTimeSlots");
 export const saveDeliveryZones = write("saveDeliveryZones");

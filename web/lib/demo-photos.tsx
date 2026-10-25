@@ -129,6 +129,90 @@ illustrations.delivery = () => (
   </svg>
 );
 
+// Örnek dükkânın sayfası: kapak (3:2), logo ve üç kare atölye fotoğrafı.
+const square = (children: ReactNode) => (
+  <svg viewBox="0 0 200 200" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
+    {children}
+  </svg>
+);
+
+const bucket = (x: number, flowers: string[]) => (
+  <g key={x}>
+    {flowers.map((token, i) => (
+      <g key={i}>
+        <rect x={x + 14 + i * 22} y={150 + (i % 2) * 24} width="4" height="120" style={fill("stem")} />
+        <circle cx={x + 16 + i * 22} cy={146 + (i % 2) * 24} r="17" style={fill(token)} />
+      </g>
+    ))}
+    <path d={`M${x} 250 L${x + 90} 250 L${x + 80} 330 L${x + 10} 330 Z`} style={fill("line-strong")} />
+  </g>
+);
+
+illustrations.shop_cover = () => (
+  <svg viewBox="0 0 600 400" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
+    <rect x="0" y="0" width="600" height="400" style={fill("paper-raised")} />
+    <rect x="360" y="40" width="190" height="200" rx="6" style={fill("sky-soft")} />
+    <rect x="452" y="40" width="6" height="200" style={fill("paper-raised")} />
+    <rect x="360" y="136" width="190" height="6" style={fill("paper-raised")} />
+    {bucket(40, ["peony", "pollen", "peony"])}
+    {bucket(150, ["paper", "peony", "paper"])}
+    {bucket(260, ["pollen", "pollen", "peony"])}
+    <rect x="0" y="330" width="600" height="70" style={fill("kraft-deep")} />
+    <ellipse cx="470" cy="300" rx="44" ry="28" transform="rotate(-24 470 300)" style={fill("stem")} />
+    <ellipse cx="520" cy="290" rx="40" ry="24" transform="rotate(30 520 290)" style={fill("stem")} />
+    <rect x="460" y="300" width="70" height="40" rx="6" style={fill("kraft")} />
+  </svg>
+);
+
+illustrations.shop_logo = () =>
+  square(
+    <>
+      <rect x="0" y="0" width="200" height="200" style={fill("stem")} />
+      <text
+        x="100"
+        y="138"
+        textAnchor="middle"
+        style={{ fill: "var(--on-stem)", fontFamily: "var(--font-display)", fontSize: 120 }}
+      >
+        N
+      </text>
+    </>,
+  );
+
+illustrations.story_tezgah = () =>
+  square(
+    <>
+      <rect x="0" y="0" width="200" height="200" style={fill("paper-raised")} />
+      <rect x="0" y="140" width="200" height="60" style={fill("kraft-deep")} />
+      <path d="M50 150 L100 60 L150 150 Z" style={fill("kraft")} />
+      <circle cx="84" cy="70" r="16" style={fill("peony")} />
+      <circle cx="112" cy="60" r="14" style={fill("pollen")} />
+      <circle cx="104" cy="88" r="12" style={fill("paper")} />
+    </>,
+  );
+
+illustrations.story_kova = () =>
+  square(
+    <>
+      <rect x="0" y="0" width="200" height="200" style={fill("paper-raised")} />
+      <g transform="translate(-20 -112)">{bucket(30, ["peony", "peony", "pollen"])}</g>
+      <g transform="translate(-10 -122)">{bucket(110, ["paper", "pollen", "paper"])}</g>
+    </>,
+  );
+
+illustrations.story_atolye = () =>
+  square(
+    <>
+      <rect x="0" y="0" width="200" height="200" style={fill("paper-raised")} />
+      <rect x="30" y="24" width="140" height="100" rx="6" style={fill("sky-soft")} />
+      <rect x="98" y="24" width="4" height="100" style={fill("paper-raised")} />
+      <rect x="0" y="150" width="200" height="50" style={fill("kraft-deep")} />
+      <ellipse cx="72" cy="122" rx="30" ry="18" transform="rotate(-30 72 122)" style={fill("stem")} />
+      <ellipse cx="118" cy="114" rx="30" ry="18" transform="rotate(25 118 114)" style={fill("stem")} />
+      <rect x="70" y="130" width="60" height="36" rx="6" style={fill("kraft")} />
+    </>,
+  );
+
 export const MOCK_PHOTO_PREFIX = "mock:";
 
 /** `mock:p_lale` gibi bir adres için çizimi döner; tanınmayan adreste null. */

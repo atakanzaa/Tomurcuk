@@ -4,6 +4,8 @@ import type {
   OrderRef,
   ShopMatch,
   ShopStatusDetail,
+  ShopPageInput,
+  Bestseller,
   ShopStatusInput,
   ShopPick,
   CannedReply,
@@ -65,6 +67,8 @@ export interface TomurcukApi {
   getCategories(shopId: string): Promise<Category[]>;
   /** Yalnızca aktif ürünler, `order` sırasıyla. */
   getProducts(shopId: string): Promise<Product[]>;
+  /** Son 90 günde en az 3 siparişte teslim edilen ürünlerin en çok gideni. */
+  getBestseller(shopId: string): Promise<Bestseller>;
   getProduct(shopId: string, productId: string): Promise<Product | null>;
   /** Yalnızca aktif bölgeler. */
   getDeliveryZones(shopId: string): Promise<DeliveryZone[]>;
@@ -147,6 +151,9 @@ export interface TomurcukApi {
   getPanelSettings(shopId: string): Promise<PanelSettings>;
   /** Ayarları yalnızca dükkân sahibi değiştirir (CATALOG_EDIT). */
   saveShopProfile(shopId: string, input: ShopProfileInput): Promise<Result<true, keyof ShopProfileInput>>;
+  saveShopPage(shopId: string, input: ShopPageInput): Promise<Result<true, keyof ShopPageInput>>;
+  /** Kapak 3:2, logo ve atölye fotoğrafı kare kırpılır; adres sayfa kaydedilirken listeye girer. */
+  uploadShopPhoto(shopId: string, kind: "cover" | "square", file: Blob): Promise<Result<{ url: string }, "photo">>;
   saveSameDayCutoff(shopId: string, cutoff: string): Promise<Result<true, "sameDayCutoff">>;
   /** Liste olduğu gibi yazılır; gelmeyen aralık ve bölge pasife alınır. */
   saveTimeSlots(shopId: string, slots: SlotSetting[]): Promise<Result<true, "slots">>;

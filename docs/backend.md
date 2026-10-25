@@ -117,6 +117,16 @@ Destek ekibi dükkânın durumunu değiştirir (`shop.status`, `V18`). Gerekçe 
 - Teslim edilmeyi bekleyen siparişi olan dükkân, onay verilmeden kalıcı kapatılmaz (`open_orders`, meta: count). Var olan siparişler hiçbir durumda silinmez.
 - Taslak açıldıktan sonra dükkân kapanırsa sipariş verilirken yeniden kontrol edilir.
 
+## Dükkânın sayfası
+
+Vitrin dükkânın kendi sayfasıdır; içeriğini dükkân sahibi panelde "Dükkân ayarları"ndan girer (`CATALOG_EDIT`, `V19`).
+
+- `shop` alanları: `cover_photo_url` (3:2), `logo_url` (kare), `story` (en çok 1.500 karakter, boş satır paragraf ayırır), `founded_year` (1900 ile bu yıl arası), `story_photos` (en çok 3 kare), `featured_product_id` ve `favorite_note` (en çok 200 karakter).
+- `PUT /api/panel/settings/page` hepsini birlikte kaydeder. Fotoğraf alanına yalnızca kayıtlı adres ya da dükkânın kendi yüklediği fotoğraf yazılır (`photo_invalid`); favori satıştaki kendi ürünü olmalıdır.
+- `POST /api/panel/settings/photos?kind=cover|square` fotoğrafı yükler ve adresini döner. Oran ve ölçü türden gelir (`PhotoKind`: ürün 4:5 1200px, kapak 3:2 1800px, kare 1000px, teslim kırpılmadan 1600px); panel de yüklemeden önce aynı orana kırpar.
+- En çok gönderilen (`GET /api/public/shops/{id}/bestseller`): son 90 günde teslim edilen siparişlerde en çok geçen ürün, sipariş sayısıyla. En az 3 sipariş yoksa `productId` boş döner ve vitrinde bölüm görünmez. Web saatlik önbellekler, `products:` etiketiyle yenilenir.
+- Vitrin sırası: kapak ve logo, ad, ilçe ve kuruluş yılı, tanıtım, teslimat bandı; "Dükkânın favorisi" (notu kart notu etiketinde), "En çok gönderilen" (favoriyle aynıysa sayı favorinin altına yazılır), "Hikâyemiz", "Bütün çiçekler". Alan boşsa bölümü görünmez.
+
 ## Sipariş ve ödeme akışı
 
 1. Taslak: ürün ve seçenekler doğrulanır, fiyat o anki değerdir. Taslak 2 saat yaşar; tarayıcı yalnızca id'sini httpOnly cookie'de tutar.
@@ -177,7 +187,7 @@ Kapsam bilerek dar tutulur; geliştirme hızı önce gelir.
 - Adapter'lar (`NetgsmSmsSenderTests`, `ResendEmailSenderTests`, `IyzicoPaymentProviderTests`, `R2PhotoStoreTests`): istek biçimi, imza ve yanıt kodları, sağlayıcıya bağlanmadan; staging'de SMS'in yalnızca ekip numaralarına gitmesi.
 - Aşama 6 (`SupportTests`): şifre ve TOTP birlikte; dükkân oturumuyla panele destek girişi yok; telefon maskeli, gerekçesiz açılmaz, açılış kayda geçer; dükkân adına oturum çalışan yetkisinde (iptal 403), işlem kayda geçer, 30 dakikada biter; denetim kaydı güncellenemez ve silinemez.
 - Dükkân durumu (`ShopStatusTests`): temsilci geçici kapatır, süre bitince sipariş yeniden alınır, askıya alamaz, gerekçesiz kapatamaz; askıdaki dükkânı temsilci açamaz, lider açar, kayıt ve e-posta düşer; açık siparişli dükkân onaysız kapatılmaz, kapalı dükkânın vitrini (eski adresiyle de) bulunmaz, panel girişi reddedilir, açık oturum 401 alır.
-- Ayarlar (`PanelSettingsTests`): çalışan ayar değiştiremez (403), bölge İstanbul listesinden (kayıtlı eski ad değişmedikçe kalır), kapasite düşünce dolu yer korunur, kaldırılan aralık takvimden çıkar ve kaydı durur, çakışan aralık reddedilir, kapalı güne sipariş verilemez.
+- Ayarlar (`PanelSettingsTests`): çalışan ayar değiştiremez (403), bölge İstanbul listesinden (kayıtlı eski ad değişmedikçe kalır), kapasite düşünce dolu yer korunur, kaldırılan aralık takvimden çıkar ve kaydı durur, çakışan aralık reddedilir, kapalı güne sipariş verilemez; dükkânın sayfası başka sitedeki ya da başka dükkânın fotoğrafını almaz, kuruluş yılı ve atölye fotoğrafı sayısı sınırlıdır, en çok gönderilen 3 siparişin altında boş döner.
 - Dükkân açma (`OnboardingTests`): lider dükkân açar, sahip bağlantıyla şifre belirleyip girer; bağlantı ikinci kez ve süresi geçince çalışmaz, yeni bağlantı eskisini geçersiz kılar; temsilci açamaz (403); alınmış ya da ayrılmış slug ve başka hesaptaki e-posta reddedilir, hata olunca dükkân açılmaz; şifre bağlantısı sahibine e-postayla gider; şifremi unuttum kayıtsız adreste de 204 döner ve e-posta göndermez, 2 dakika içinde ikinci bağlantı gitmez, sıfırlama bağlantısı 1 saat sonra çalışmaz.
 - Ürün yönetimi (`PanelCatalogTests`): boyların tam fiyatı ürün fiyatı ve ek fiyata çevrilir, satıştan kalkan ürün vitrinde yok, fotoğraf 4:5 kırpılır ve yalnızca yüklenen adres kabul edilir, çalışan ürün değiştiremez (403), başka dükkânın ürünü bulunamaz.
 - Alıcı ana sayfası (`DiscoveryTests`): o gün teslim edebilen dükkânlar önce, ilk müsait aralığa göre; aynı gün son saati geçen dükkân sonda ve ilk müsait günüyle.

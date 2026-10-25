@@ -8,9 +8,14 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
+
+import javax.imageio.ImageIO;
 
 import com.tomurcuk.MutableClock;
 import com.tomurcuk.TestcontainersConfiguration;
@@ -19,10 +24,15 @@ import com.tomurcuk.delivery.DeliverySchedule;
 import com.tomurcuk.delivery.DeliverySettings;
 import com.tomurcuk.delivery.DeliverySettings.SlotRow;
 import com.tomurcuk.delivery.DeliverySettings.ZoneRow;
+import com.tomurcuk.media.PhotoKind;
+import com.tomurcuk.media.Photos;
+import com.tomurcuk.ordering.OrderDirectory;
 import com.tomurcuk.shared.Ids;
 import com.tomurcuk.shared.ValidationException;
 import com.tomurcuk.shop.ShopDirectory;
 import com.tomurcuk.shop.ShopInfo;
+import com.tomurcuk.shop.ShopSettings;
+import com.tomurcuk.shop.ShopSettings.PageInput;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -65,6 +75,15 @@ class PanelSettingsTests {
 
 	@Autowired
 	JdbcClient jdbc;
+
+	@Autowired
+	ShopSettings shopSettings;
+
+	@Autowired
+	Photos photos;
+
+	@Autowired
+	OrderDirectory orders;
 
 	String shopId;
 
@@ -162,6 +181,42 @@ class PanelSettingsTests {
 
 	private static int remaining(DeliveryDay day) {
 		return day.slots().getFirst().remaining();
+	}
+
+	/**
+	 * Dükkânın sayfası: hikâye ve kuruluş yılı kaydolur; fotoğraf yalnızca Tomurcuk'un deposundan
+	 * olur, kapak 3:2 kırpılır; gelecek yıl ve dördüncü atölye fotoğrafı reddedilir.
+	 */
+	@Test
+	void pageKeepsOnlyOwnPhotos() throws Exception {
+		String cover = photos.store(PhotoKind.COVER, png(1200, 1200));
+		String square = photos.store(PhotoKind.SQUARE, png(800, 600));
+		shopSettings.updatePage(shopId, new PageInput(square, cover, "  2009'dan beri Moda'da.  ", 2009,
+				List.of(square), null, "Lalelerimiz pazartesi gelir."), photos::owns);
+		assertThat(shops.view(shopId)).hasValueSatisfying(view -> {
+			assertThat(view.coverPhotoUrl()).isEqualTo(cover);
+			assertThat(view.story()).isEqualTo("2009'dan beri Moda'da.");
+			assertThat(view.foundedYear()).isEqualTo(2009);
+			assertThat(view.storyPhotos()).containsExactly(square);
+		});
+
+		assertThatThrownBy(() -> shopSettings.updatePage(shopId, new PageInput(null,
+				"https://baska.site/kapak.jpg", "", 2030, List.of(square, square, square, square), null, ""),
+				photos::owns))
+			.isInstanceOfSatisfying(ValidationException.class, ex -> {
+				assertThat(ex.getErrors().get("coverPhotoUrl").code()).isEqualTo("photo_invalid");
+				assertThat(ex.getErrors().get("foundedYear").code()).isEqualTo("option_invalid");
+				assertThat(ex.getErrors().get("storyPhotos").code()).isEqualTo("too_many");
+			});
+		assertThat(orders.bestseller(shopId).productId()).isNull();
+		assertThat(orders.bestseller("shop_nergis").orders()).satisfiesAnyOf(n -> assertThat(n).isZero(),
+				n -> assertThat(n).isGreaterThanOrEqualTo(3));
+	}
+
+	private static byte[] png(int width, int height) throws IOException {
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		ImageIO.write(new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB), "png", out);
+		return out.toByteArray();
 	}
 
 	private Cookie login(String email) throws Exception {

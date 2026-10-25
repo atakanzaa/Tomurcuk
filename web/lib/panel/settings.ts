@@ -18,6 +18,7 @@ const optionMessages: Record<string, string> = {
   zones: "Her bölgenin ilçesini ve ücretini yazın; ücret 0 ile 100.000 TL arasında.",
   featuredProductId: "Bu ürün artık satışta değil. Başka bir ürün seçin.",
   sameDayCutoff: "Saati 15:00 biçiminde yazın.",
+  foundedYear: "Kuruluş yılını 1900 ile bu yıl arasında, 2009 gibi yazın.",
 };
 
 export function settingsErrorMessages(errors: FieldErrors): Record<string, string> {

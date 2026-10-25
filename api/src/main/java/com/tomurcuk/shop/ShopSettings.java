@@ -1,10 +1,16 @@
 package com.tomurcuk.shop;
 
 import java.time.Clock;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 import com.tomurcuk.shared.FieldError;
@@ -43,9 +49,16 @@ public class ShopSettings {
 	}
 
 	public record ProfileInput(String name, String shortName, String phone, String address, String descriptionShort,
-			String description, String openingHours, String featuredProductId, String legalName, String taxOffice,
-			String taxNumber, String email, String notifyPhone, Boolean notifySms) {
+			String description, String openingHours, String legalName, String taxOffice, String taxNumber, String email,
+			String notifyPhone, Boolean notifySms) {
 	}
+
+	/** Dükkânın sayfası; fotoğraf adresleri panelden yüklenenler ya da kayıtlı olanlardır. */
+	public record PageInput(String logoUrl, String coverPhotoUrl, String story, Integer foundedYear,
+			List<String> storyPhotos, String featuredProductId, String favoriteNote) {
+	}
+
+	static final int MAX_STORY_PHOTOS = 3;
 
 	public Profile profile(String shopId) {
 		Shop shop = shops.findById(shopId).orElseThrow();
@@ -82,10 +95,53 @@ public class ShopSettings {
 			throw new ValidationException(errors);
 		}
 		Shop shop = shops.findById(shopId).orElseThrow();
-		String featured = in.featuredProductId() == null || in.featuredProductId().isBlank() ? null
-				: in.featuredProductId();
-		shop.updateProfile(name, shortName, phone, address, descriptionShort, description, openingHours, featured,
-				legalName, taxOffice, taxNumber, email, notifyPhone, notifySms);
+		shop.updateProfile(name, shortName, phone, address, descriptionShort, description, openingHours, legalName,
+				taxOffice, taxNumber, email, notifyPhone, notifySms);
+	}
+
+	/**
+	 * Hatalar: `story`, `favoriteNote` (`too_long`), `foundedYear` (`option_invalid`: 1900 ile bu yıl
+	 * arası), `storyPhotos` (`too_many`, `photo_invalid`), `coverPhotoUrl`, `logoUrl` (`photo_invalid`).
+	 * `ownPhoto`: adres Tomurcuk'un deposundan mı; kayıtlı adres her zaman kabul edilir. Öne çıkan
+	 * ürünün dükkâna ait olduğunu çağıran doğrular.
+	 */
+	@Transactional
+	public void updatePage(String shopId, PageInput in, Predicate<String> ownPhoto) {
+		Shop shop = shops.findById(shopId).orElseThrow();
+		Set<String> current = new HashSet<>(shop.getStoryPhotos());
+		Optional.ofNullable(shop.getCoverPhotoUrl()).ifPresent(current::add);
+		Optional.ofNullable(shop.getLogoUrl()).ifPresent(current::add);
+		Predicate<String> allowed = url -> current.contains(url) || ownPhoto.test(url);
+		Map<String, FieldError> errors = new LinkedHashMap<>();
+		String story = Texts.check(errors, "story", in.story(), 1500, false);
+		String note = Texts.check(errors, "favoriteNote", in.favoriteNote(), 200, false);
+		Integer year = in.foundedYear();
+		if (year != null && (year < 1900 || year > LocalDate.now(clock).getYear())) {
+			errors.put("foundedYear", FieldError.of("option_invalid"));
+		}
+		List<String> photos = in.storyPhotos() == null ? List.of() : in.storyPhotos();
+		if (photos.size() > MAX_STORY_PHOTOS) {
+			errors.put("storyPhotos", FieldError.of("too_many", Map.of("max", MAX_STORY_PHOTOS)));
+		}
+		else if (photos.stream().anyMatch(url -> url == null || !allowed.test(url))) {
+			errors.put("storyPhotos", FieldError.of("photo_invalid"));
+		}
+		String cover = blankToNull(in.coverPhotoUrl());
+		if (cover != null && !allowed.test(cover)) {
+			errors.put("coverPhotoUrl", FieldError.of("photo_invalid"));
+		}
+		String logo = blankToNull(in.logoUrl());
+		if (logo != null && !allowed.test(logo)) {
+			errors.put("logoUrl", FieldError.of("photo_invalid"));
+		}
+		if (!errors.isEmpty()) {
+			throw new ValidationException(errors);
+		}
+		shop.updatePage(logo, cover, story, year, photos, blankToNull(in.featuredProductId()), note);
+	}
+
+	private static String blankToNull(String value) {
+		return value == null || value.isBlank() ? null : value.strip();
 	}
 
 	/** "HH:mm"; geçersizse `sameDayCutoff` alanında `option_invalid`. */

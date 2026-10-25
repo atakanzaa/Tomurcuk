@@ -52,6 +52,7 @@ Altı modül var; ilk üçü ürünün çekirdeği, geri kalanı onları tamaml�
 - Sipariş formu: alıcı adı ve telefonu, adres, ilçe/mahalle, teslim tarihi, saat aralığı, kart notu, gönderen adı (veya "isimsiz").
 - Instagram bio ve WhatsApp'a koyulacak tek link; ürün bazlı paylaşım linki.
 - Mobil öncelikli tasarım; siparişin %90'ı telefondan gelir.
+- Her dükkânın kendi sayfası: kapak fotoğrafı ve logo, kuruluş yılı ve hikâyesi, en çok üç atölye fotoğrafı, "Dükkânın favorisi" (çiçekçinin notuyla) ve son üç ayın "En çok gönderilen" ürünü.
 
 ### 2. Ödeme
 
@@ -164,7 +165,7 @@ Son müşteri sorunu önce çiçekçiye gider. Destek ekibi çiçekçiye destek 
 
 | Ekran | Ne yapar |
 | --- | --- |
-| Dükkân vitrini | Dükkân adı, logo, ürün listesi, teslim bölgeleri bilgisi |
+| Dükkân vitrini | Kapak, logo, dükkân adı, hikâye, dükkânın favorisi, en çok gönderilen, ürün listesi, teslim bölgeleri bilgisi |
 | Ürün detayı | Fotoğraflar, boy ve ek seçenekleri, fiyat |
 | Sipariş formu | Teslim bölgesi, tarih, saat aralığı, alıcı bilgisi, kart notu, isimsiz gönderim |
 | Ödeme | Kart ödemesi (sağlayıcı sayfası) veya havale/kapıda seçeneği |

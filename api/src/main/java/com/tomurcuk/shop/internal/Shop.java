@@ -12,6 +12,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Entity
 @Table(name = "shop")
@@ -58,6 +60,18 @@ public class Shop {
 
 	private String featuredProductId;
 
+	/** Dükkânın sayfası: kapak (3:2), hikâye, kuruluş yılı, atölye fotoğrafları (1:1), favori notu. */
+	private String coverPhotoUrl;
+
+	private String story;
+
+	private Integer foundedYear;
+
+	@JdbcTypeCode(SqlTypes.ARRAY)
+	private List<String> storyPhotos = new ArrayList<>();
+
+	private String favoriteNote;
+
 	/** Sözleşmelerde satıcı: unvan ya da ad soyad, vergi dairesi ve numarası, e-posta. */
 	private String legalName;
 
@@ -102,6 +116,8 @@ public class Shop {
 		this.taxOffice = "";
 		this.taxNumber = "";
 		this.email = "";
+		this.story = "";
+		this.favoriteNote = "";
 		this.createdAt = createdAt;
 	}
 
@@ -195,8 +211,8 @@ public class Shop {
 
 	/** Panelden dükkân bilgileri; slug panelden değişmez. */
 	public void updateProfile(String name, String shortName, String phone, String address, String descriptionShort,
-			String description, String openingHours, String featuredProductId, String legalName, String taxOffice,
-			String taxNumber, String email, String notifyPhone, boolean notifySms) {
+			String description, String openingHours, String legalName, String taxOffice, String taxNumber, String email,
+			String notifyPhone, boolean notifySms) {
 		this.name = name;
 		this.shortName = shortName;
 		this.phone = phone;
@@ -204,13 +220,43 @@ public class Shop {
 		this.descriptionShort = descriptionShort;
 		this.description = description;
 		this.openingHours = openingHours;
-		this.featuredProductId = featuredProductId;
 		this.legalName = legalName;
 		this.taxOffice = taxOffice;
 		this.taxNumber = taxNumber;
 		this.email = email;
 		this.notifyPhone = notifyPhone;
 		this.notifySms = notifySms;
+	}
+
+	public void updatePage(String logoUrl, String coverPhotoUrl, String story, Integer foundedYear,
+			List<String> storyPhotos, String featuredProductId, String favoriteNote) {
+		this.logoUrl = logoUrl;
+		this.coverPhotoUrl = coverPhotoUrl;
+		this.story = story;
+		this.foundedYear = foundedYear;
+		this.storyPhotos = new ArrayList<>(storyPhotos);
+		this.featuredProductId = featuredProductId;
+		this.favoriteNote = favoriteNote;
+	}
+
+	public String getCoverPhotoUrl() {
+		return coverPhotoUrl;
+	}
+
+	public String getStory() {
+		return story;
+	}
+
+	public Integer getFoundedYear() {
+		return foundedYear;
+	}
+
+	public List<String> getStoryPhotos() {
+		return List.copyOf(storyPhotos);
+	}
+
+	public String getFavoriteNote() {
+		return favoriteNote;
 	}
 
 	public void updateSameDayCutoff(LocalTime cutoff) {

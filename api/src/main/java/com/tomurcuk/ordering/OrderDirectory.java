@@ -1,5 +1,6 @@
 package com.tomurcuk.ordering;
 
+import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
@@ -20,10 +21,17 @@ public class OrderDirectory {
 
 	private static final Locale TR = Locale.forLanguageTag("tr");
 
+	static final int BESTSELLER_DAYS = 90;
+
+	static final int BESTSELLER_MIN = 3;
+
 	private final OrderStore orders;
 
-	OrderDirectory(OrderStore orders) {
+	private final Clock clock;
+
+	OrderDirectory(OrderStore orders, Clock clock) {
 		this.orders = orders;
+		this.clock = clock;
 	}
 
 	public Optional<Order> find(String orderId) {
@@ -47,6 +55,12 @@ public class OrderDirectory {
 		String text = query.strip().toLowerCase(TR);
 		String digits = text.replaceAll("\\D", "").replaceFirst("^0", "");
 		return orders.search(text, digits, 20);
+	}
+
+	/** Son 90 günde en az 3 siparişte teslim edilen ürünlerin en çok gideni; yoksa `productId` boş. */
+	public Bestseller bestseller(String shopId) {
+		return orders.bestseller(shopId, LocalDate.now(clock).minusDays(BESTSELLER_DAYS), BESTSELLER_MIN)
+			.orElse(new Bestseller(null, 0));
 	}
 
 	/** Teslim edilmeyi bekleyen siparişler: yeni, hazırlanıyor, yolda. */

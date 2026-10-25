@@ -4,7 +4,7 @@
 
 INSERT INTO shop (id, slug, name, short_name, phone, address, logo_url, plan, same_day_cutoff, time_zone, description, description_short, opening_hours, featured_product_id)
 VALUES
-    ('shop_nergis', 'nergis', 'Nergis Çiçek Atölyesi', 'Nergis', '0216 338 00 00', 'Caferağa Mah. Moda Cad. No: 41, Kadıköy', NULL, 'pro', '15:00', 'Europe/Istanbul', 'Moda''da 2009''dan beri. Buketleri her sabah halden gelen çiçeklerle hazırlıyor, Kadıköy, Üsküdar ve Ataşehir''e aynı gün teslim ediyoruz.', 'Moda''da 2009''dan beri. Kadıköy, Üsküdar ve Ataşehir''e aynı gün teslim ediyoruz.', 'Her gün 09:00–20:00', 'p_lale'),
+    ('shop_nergis', 'nergis', 'Nergis Çiçek Atölyesi', 'Nergis', '0216 338 00 00', 'Caferağa Mah. Moda Cad. No: 41, Kadıköy', 'mock:shop_logo', 'pro', '15:00', 'Europe/Istanbul', 'Buketleri her sabah halden gelen çiçeklerle hazırlıyoruz. Kadıköy, Üsküdar ve Ataşehir''e aynı gün teslim ediyoruz.', 'Her sabah halden gelen çiçeklerle. Kadıköy, Üsküdar ve Ataşehir''e aynı gün teslim ediyoruz.', 'Her gün 09:00–20:00', 'p_lale'),
     ('shop_lale', 'lale-bahcesi', 'Lale Bahçesi', 'Lale', '0212 000 00 00', 'Sinanpaşa Mah., Beşiktaş', NULL, 'starter', '14:00', 'Europe/Istanbul', '', '', 'Her gün 09:00–19:00', NULL),
     ('shop_papatya', 'papatya-cicekcilik', 'Papatya Çiçekçilik', 'Papatya', '0212 000 00 00', 'Cevizli Mah., Kartal', NULL, 'starter', '14:00', 'Europe/Istanbul', '', '', 'Her gün 09:00–19:00', NULL),
     ('shop_begonvil', 'begonvil-atolye', 'Begonvil Atölye', 'Begonvil', '0212 000 00 00', 'Atatürk Mah., Ataşehir', NULL, 'starter', '14:00', 'Europe/Istanbul', '', '', 'Her gün 09:00–19:00', NULL),
@@ -23,6 +23,15 @@ ON CONFLICT (id) DO UPDATE SET
     description_short = EXCLUDED.description_short,
     opening_hours = EXCLUDED.opening_hours,
     featured_product_id = EXCLUDED.featured_product_id;
+
+-- Nergis'in sayfası. Panelden değiştirildiyse (hikâye dolu) dokunulmaz.
+UPDATE shop SET
+    story = 'Nergis, 2009''da Moda Caddesi''nde bir çiçek tezgâhı olarak açıldı. Bugün atölyede üç kişiyiz; çiçekleri her sabah halden kendimiz seçiyor, buketleri o günün çiçeklerine göre hazırlıyoruz.' || E'\n\n' || 'Mahallemizin doğum günlerini, ilk buluşmalarını, geçmiş olsunlarını on beş yıldır biz taşıyoruz.',
+    founded_year = 2009,
+    cover_photo_url = 'mock:shop_cover',
+    story_photos = ARRAY['mock:story_tezgah', 'mock:story_kova', 'mock:story_atolye'],
+    favorite_note = 'Her pazartesi seradan yeni laleler geliyor; renkleri haftadan haftaya değişiyor. Hangisi gelirse en güzelini siz alıyorsunuz.'
+WHERE id = 'shop_nergis' AND story = '';
 
 -- Askıdaki örnek dükkân. Destek ekibi durumu değiştirdiyse (status_changed_at dolu) dokunulmaz.
 UPDATE shop SET status = 'suspended', status_reason = 'Pilot süresi doldu; dükkân yeniden açılmayı bekliyor.'

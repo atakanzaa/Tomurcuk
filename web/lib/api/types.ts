@@ -122,7 +122,16 @@ export interface Shop {
   /** Mobilde gösterilen kısa tanıtım metni. */
   descriptionShort: string;
   openingHours: string;
+  /** Dükkânın favorisi; vitrinde çiçekçinin notuyla öne çıkar. */
   featuredProductId: string | null;
+  /** Favorinin yanındaki not; kart notu etiketinde. */
+  favoriteNote: string;
+  /** 3:2 kapak fotoğrafı; yoksa vitrin kapaksız açılır. */
+  coverPhotoUrl: string | null;
+  story: string;
+  foundedYear: number | null;
+  /** En çok üç kare atölye fotoğrafı. */
+  storyPhotos: string[];
   /** Sözleşmelerde satıcı: unvan ya da ad soyad. Boşsa dükkân ayarlarından doldurulmamıştır. */
   legalName: string;
   taxOffice: string;
@@ -247,13 +256,29 @@ export interface ShopProfileInput {
   descriptionShort: string;
   description: string;
   openingHours: string;
-  featuredProductId: string;
   legalName: string;
   taxOffice: string;
   taxNumber: string;
   email: string;
   notifyPhone: string;
   notifySms: boolean;
+}
+
+/** Dükkânın sayfası; fotoğraflar panelden yüklenen adreslerdir. */
+export interface ShopPageInput {
+  logoUrl: string | null;
+  coverPhotoUrl: string | null;
+  story: string;
+  foundedYear: number | null;
+  storyPhotos: string[];
+  featuredProductId: string | null;
+  favoriteNote: string;
+}
+
+/** Son 90 günde en az 3 siparişte teslim edilen ürünlerin en çok gideni; yoksa `productId` boş. */
+export interface Bestseller {
+  productId: string | null;
+  orders: number;
 }
 
 /** İlçe → mahalleler (İstanbul). */
