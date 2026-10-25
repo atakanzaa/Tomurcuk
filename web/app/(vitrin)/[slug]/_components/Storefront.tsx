@@ -1,7 +1,7 @@
 import { notFound, permanentRedirect } from "next/navigation";
 import { Suspense } from "react";
 import { findShop, getCategories, getDeliveryZones, getProducts } from "@/lib/api";
-import { ShopLookupKind, type Category, type Product, type Shop } from "@/lib/api/types";
+import { ShopLookupKind, ShopStatus, type Category, type Product, type Shop } from "@/lib/api/types";
 import { NO_SELECTION, parseCatalogSelection } from "@/lib/catalog";
 import { cx } from "@/lib/cx";
 import { shopPath } from "@/lib/routes";
@@ -36,6 +36,7 @@ export async function Storefront({ params, searchParams }: StorefrontProps) {
   if (lookup.kind === ShopLookupKind.Missing) notFound();
 
   const { shop } = lookup;
+  if (shop.status === ShopStatus.Suspended) return <SuspendedStorefront shop={shop} />;
   const [categories, products, zones] = await Promise.all([
     getCategories(shop.id),
     getProducts(shop.id),
@@ -75,6 +76,24 @@ export async function Storefront({ params, searchParams }: StorefrontProps) {
         </Suspense>
       </main>
       <StoreFooter shop={shop} zones={zones} />
+    </>
+  );
+}
+
+/** Askıdaki dükkân: yalnızca adı ve durumu; ürünler ve sipariş yok. */
+function SuspendedStorefront({ shop }: { shop: Shop }) {
+  return (
+    <>
+      <StoreHeader shop={shop} categoryNav={null} />
+      <main>
+        <section className={cx(container.container, hero.hero)}>
+          <div className={hero.intro}>
+            <h1 className={hero.title}>{shop.name}</h1>
+            <DeliveryBand shop={shop} sameDayOpen={false} />
+          </div>
+        </section>
+      </main>
+      <StoreFooter shop={shop} zones={[]} />
     </>
   );
 }

@@ -3,6 +3,8 @@ import type {
   AuditEntry,
   OrderRef,
   ShopMatch,
+  ShopStatusDetail,
+  ShopStatusInput,
   ShopPick,
   CannedReply,
   CardInput,
@@ -186,6 +188,11 @@ export interface TomurcukApi {
   openShop(input: OpenShopInput): Promise<Result<PasswordLink, keyof OpenShopInput>>;
   /** Sahibe yeni şifre bağlantısı; eskisi geçersiz olur. Sahibi olmayan dükkânda null. */
   createPasswordLink(shopId: string): Promise<PasswordLink | null>;
+  /** Geçici kapatma `SHOP_PAUSE`, askıya alma ve kalıcı kapatma `SHOP_SUSPEND` ister. Bulunamayan dükkân null. */
+  changeShopStatus(
+    shopId: string,
+    input: ShopStatusInput,
+  ): Promise<Result<ShopStatusDetail, "status" | "reason" | "pausedUntil" | "form"> | null>;
 
   // Şifre belirleme bağlantısı (/sifre/<token>); oturumsuz.
   getPasswordHolder(token: string): Promise<PasswordHolder | null>;

@@ -1,5 +1,6 @@
 package com.tomurcuk.shop;
 
+import java.time.Clock;
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 import java.util.LinkedHashMap;
@@ -30,8 +31,11 @@ public class ShopSettings {
 
 	private final ShopRepository shops;
 
-	ShopSettings(ShopRepository shops) {
+	private final Clock clock;
+
+	ShopSettings(ShopRepository shops, Clock clock) {
 		this.shops = shops;
+		this.clock = clock;
 	}
 
 	/** Panelde düzenlenen hal: vitrindeki bilgiler ve yalnızca dükkânın gördüğü bildirim ayarı. */
@@ -45,7 +49,7 @@ public class ShopSettings {
 
 	public Profile profile(String shopId) {
 		Shop shop = shops.findById(shopId).orElseThrow();
-		return new Profile(ShopView.of(shop), shop.getNotifyPhone(), shop.isNotifySms());
+		return new Profile(ShopView.of(shop, clock.instant()), shop.getNotifyPhone(), shop.isNotifySms());
 	}
 
 	/** Alan alan doğrulanır; hata kodları web/lib/api/types.ts `CheckoutError`. */

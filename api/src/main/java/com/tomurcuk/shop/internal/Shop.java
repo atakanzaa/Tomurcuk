@@ -1,10 +1,12 @@
 package com.tomurcuk.shop.internal;
 
+import java.time.Instant;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.tomurcuk.shop.ShopPlan;
+import com.tomurcuk.shop.ShopStatus;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
@@ -30,7 +32,17 @@ public class Shop {
 
 	private String logoUrl;
 
-	private boolean active;
+	private ShopStatus status;
+
+	/** Destek ekibinin yazdığı gerekçe; askıdaki dükkânın panelinde görünür, vitrinde görünmez. */
+	private String statusReason;
+
+	/** Geçici kapatmanın bittiği an; geçince dükkân açık sayılır. */
+	private Instant pausedUntil;
+
+	private Instant statusChangedAt;
+
+	private String statusChangedBy;
 
 	private ShopPlan plan;
 
@@ -60,7 +72,7 @@ public class Shop {
 
 	private boolean notifySms;
 
-	private java.time.Instant createdAt;
+	private Instant createdAt;
 
 	@OneToMany
 	@JoinColumn(name = "shop_id")
@@ -71,14 +83,15 @@ public class Shop {
 
 	/** Destekten açılan dükkân; bilgilerin geri kalanını sahibi panelden doldurur. */
 	public Shop(String id, String slug, String name, String shortName, String phone, String address, ShopPlan plan,
-			LocalTime sameDayCutoff, String timeZone, java.time.Instant createdAt) {
+			LocalTime sameDayCutoff, String timeZone, Instant createdAt) {
 		this.id = id;
 		this.slug = slug;
 		this.name = name;
 		this.shortName = shortName;
 		this.phone = phone;
 		this.address = address;
-		this.active = true;
+		this.status = ShopStatus.OPEN;
+		this.statusReason = "";
 		this.plan = plan;
 		this.sameDayCutoff = sameDayCutoff;
 		this.timeZone = timeZone;
@@ -120,8 +133,36 @@ public class Shop {
 		return logoUrl;
 	}
 
-	public boolean isActive() {
-		return active;
+	/** Süresi geçen geçici kapatma açık sayılır. */
+	public ShopStatus effectiveStatus(Instant now) {
+		if (status == ShopStatus.PAUSED && pausedUntil != null && !now.isBefore(pausedUntil)) {
+			return ShopStatus.OPEN;
+		}
+		return status;
+	}
+
+	public String getStatusReason() {
+		return statusReason;
+	}
+
+	public Instant getPausedUntil() {
+		return pausedUntil;
+	}
+
+	public Instant getStatusChangedAt() {
+		return statusChangedAt;
+	}
+
+	public String getStatusChangedBy() {
+		return statusChangedBy;
+	}
+
+	public void changeStatus(ShopStatus status, String reason, Instant pausedUntil, Instant at, String by) {
+		this.status = status;
+		this.statusReason = reason;
+		this.pausedUntil = status == ShopStatus.PAUSED ? pausedUntil : null;
+		this.statusChangedAt = at;
+		this.statusChangedBy = by;
 	}
 
 	public ShopPlan getPlan() {
@@ -200,7 +241,7 @@ public class Shop {
 		return notifySms;
 	}
 
-	public java.time.Instant getCreatedAt() {
+	public Instant getCreatedAt() {
 		return createdAt;
 	}
 

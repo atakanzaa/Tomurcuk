@@ -17,7 +17,7 @@ public enum PlatformRole implements CodedEnum {
 
 	LEAD("lead", EnumSet.allOf(Permission.class)),
 
-	AGENT("agent", EnumSet.of(Permission.CATALOG_EDIT, Permission.SHOP_IMPERSONATE));
+	AGENT("agent", EnumSet.of(Permission.CATALOG_EDIT, Permission.SHOP_IMPERSONATE, Permission.SHOP_PAUSE));
 
 	private final String code;
 

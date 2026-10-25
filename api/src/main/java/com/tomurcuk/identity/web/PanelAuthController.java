@@ -80,8 +80,10 @@ class PanelAuthController {
 		Impersonation impersonation = principal.impersonationId() == null ? null
 				: impersonations.findActive(principal.impersonationId(), principal.userId().replaceFirst("^support:", ""))
 					.orElse(null);
+		String statusReason = shops.statusDetail(principal.shopId()).map(ShopDirectory.StatusDetail::reason).orElse("");
 		return new PanelSession(shop, new User(principal.userId(), principal.shopId(), principal.name(),
-				impersonation == null ? principal.email() : "", principal.role().code(), lastSeenAt), impersonation);
+				impersonation == null ? principal.email() : "", principal.role().code(), lastSeenAt), impersonation,
+				statusReason);
 	}
 
 	record Login(String email, String password) {
@@ -90,6 +92,7 @@ class PanelAuthController {
 	record User(String id, String shopId, String name, String email, String role, Instant lastSeenAt) {
 	}
 
-	record PanelSession(ShopView shop, User user, Impersonation impersonation) {
+	/** `statusReason`: dükkân siparişe kapalı ya da askıdaysa destek ekibinin gerekçesi. */
+	record PanelSession(ShopView shop, User user, Impersonation impersonation, String statusReason) {
 	}
 }

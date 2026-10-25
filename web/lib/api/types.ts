@@ -67,6 +67,35 @@ export const PaymentMethod = {
 export type PaymentMethod = ValueOf<typeof PaymentMethod>;
 
 /** shop. Veri modeline ek: shortName, previousSlugs, timeZone, description*, openingHours, featuredProductId. */
+export const ShopStatus = {
+  Open: "open",
+  /** Siparişe geçici kapalı; vitrin açık. */
+  Paused: "paused",
+  /** Askıda; vitrinde yalnızca adı, panel açık. */
+  Suspended: "suspended",
+  /** Kalıcı kapalı; vitrin 404, panel girişi yok. */
+  Closed: "closed",
+} as const;
+export type ShopStatus = ValueOf<typeof ShopStatus>;
+
+/** Durumun ayrıntısı; gerekçe yalnızca panelde ve destekte görünür. */
+export interface ShopStatusDetail {
+  status: ShopStatus;
+  reason: string;
+  pausedUntil: string | null;
+  changedAt: string | null;
+  changedBy: string | null;
+}
+
+export interface ShopStatusInput {
+  status: ShopStatus;
+  reason: string;
+  /** ISO an; yalnızca geçici kapatmada, en çok 30 gün sonrası. */
+  pausedUntil: string | null;
+  /** Kalıcı kapatmada açık siparişler görüldü. */
+  confirmOpenOrders: boolean;
+}
+
 export interface Shop {
   id: string;
   name: string;
@@ -78,8 +107,12 @@ export interface Shop {
   phone: string;
   address: string;
   logoUrl: string | null;
-  /** Abonelik bitince veya askıya alınınca false; vitrin sipariş almaz, veri silinmez. */
+  /** Sipariş alıyor mu: `status` açıksa true. */
   active: boolean;
+  /** Destek ekibinin belirlediği durum; kalıcı kapalı dükkânın vitrini bulunmaz. */
+  status: ShopStatus;
+  /** Geçici kapatmanın bitişi; geçince dükkân kendiliğinden açılır. */
+  pausedUntil: string | null;
   plan: ShopPlan;
   /** Aynı gün teslim için son sipariş saati. */
   sameDayCutoff: ClockTime;
@@ -460,6 +493,10 @@ export const CheckoutError = {
   // Panel: ürün formu.
   PriceInvalid: "price_invalid",
   PhotoInvalid: "photo_invalid",
+  // Dükkân durumu.
+  ShopUnavailable: "shop_unavailable",
+  ShopClosed: "shop_closed",
+  OpenOrders: "open_orders",
   /** Teslim fotoğrafı sipariş yola çıkmadan eklenmez. */
   DeliveryPhotoStatus: "delivery_photo_status",
   TooMany: "too_many",
@@ -560,6 +597,8 @@ export interface PanelSession {
   shop: Shop;
   user: ShopUser;
   impersonation: Impersonation | null;
+  /** Dükkân siparişe kapalı ya da askıdaysa destek ekibinin gerekçesi. */
+  statusReason: string;
 }
 
 /** special_day; yıl tutulmaz, her yıl tekrar eder. */
@@ -746,6 +785,9 @@ export interface ShopOverview extends ShopSummary {
   notes: SupportNote[];
   users: ShopUser[];
   tickets: TicketSummary[];
+  status: ShopStatusDetail;
+  /** Teslim edilmeyi bekleyen siparişler: yeni, hazırlanıyor, yolda. */
+  openOrders: number;
 }
 
 /** audit_log; yalnızca eklenir. */

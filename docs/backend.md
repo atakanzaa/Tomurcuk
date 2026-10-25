@@ -40,7 +40,7 @@ Her modül `com.tomurcuk.<modül>` paketidir. Kökteki sınıflar modülün dı�
 
 | Modül | İçerik |
 | --- | --- |
-| `shop` | dükkân, slug geçmişi (301), plan, saat dilimi, aynı gün son saati, abonelik durumu |
+| `shop` | dükkân, slug geçmişi (301), plan, saat dilimi, aynı gün son saati, durum (açık, siparişe geçici kapalı, askıda, kalıcı kapalı) |
 | `catalog` | kategori, ürün, seçenek, ürün sırası; panelden ürün yönetimi |
 | `media` | yüklenen fotoğraflar: ürün (4:5 kırpılır) ve teslim fotoğrafı (oranı korunur, uzun kenar en çok 1600); depo disk ya da Cloudflare R2 |
 | `delivery` | bölge, haftalık saat aralığı şablonu, kapalı gün, günlük kapasite, 10 dakikalık rezervasyon |
@@ -75,7 +75,7 @@ Modüller arası yan etkiler Modulith olaylarıyla taşınır, olay yayınları 
 | Vitrin ve sipariş akışı | `/api/public/shop-lookup/{slug}`, `/api/public/shops/{shopId}/...` (takip linkinden sözleşmeler: `/tracking/{token}/contract`) | yok |
 | Alıcı ana sayfası | `/api/public/discover/areas`, `/api/public/discover/shops?district&neighborhood&date`, `/api/public/discover/picks`, `/api/public/order-lookup` | yok |
 | Satıcı paneli | `/api/panel/...` (ürünler: `GET/POST /api/panel/products`, `GET/PUT/DELETE /api/panel/products/{id}`, `POST /api/panel/photos`; teslim fotoğrafı `POST /api/panel/orders/{id}/delivery-photo`, yolda ya da teslim edilmiş siparişe; sesli uyarı `GET /api/panel/orders/new`; özel gün `POST /api/panel/customers/{id}/special-days`, `PUT/DELETE .../special-days/{dayId}`) | dükkân kullanıcısı ya da dükkân adına oturum; ürün yazma `CATALOG_EDIT` |
-| Destek paneli | `/api/support/...` (dükkân açma: `GET /pilot-applications`, `POST /shops`, `POST /shops/{shopId}/password-link`) | platform kullanıcısı; dükkân açma `SHOP_ONBOARD` |
+| Destek paneli | `/api/support/...` (dükkân açma: `GET /pilot-applications`, `POST /shops`, `POST /shops/{shopId}/password-link`; dükkân durumu: `POST /shops/{shopId}/status`) | platform kullanıcısı; dükkân açma `SHOP_ONBOARD`; geçici kapatma `SHOP_PAUSE` (temsilci de), askıya alma ve kalıcı kapatma `SHOP_SUSPEND` |
 | Şifre belirleme | `GET /api/public/password-setup/{token}`, `POST /api/public/password-setup` (web `/sifre/{token}`); şifremi unuttum `POST /api/public/password-reset` (web `/sifremi-unuttum`), her durumda 204, aynı kullanıcıya 2 dakikada bir bağlantı | yok; bağlantı token'ı |
 | Panel ayarları | `GET /api/panel/settings`, `PUT .../profile`, `.../same-day-cutoff`, `.../slots`, `.../zones`, `POST/DELETE .../closed-days` | dükkân kullanıcısı; yazma `CATALOG_EDIT` |
 | İstanbul ilçe ve mahalleleri | `/api/public/places/istanbul` (`resources/places/istanbul.json`, kaynağı `NOTICE.txt`) | yok |
@@ -100,6 +100,22 @@ Frontend'deki mock'lar aşama aşama kalktı: her aşamada o modülün fonksiyon
 | 5. Bildirim (bitti, gerçek sağlayıcılar hariç) | `notification_log`, `SmsSender` ve `EmailSender` (yerelde log'a yazar), onay ve durum SMS'leri, yeni sipariş e-postası, yeniden deneme | — (arayüzde bildirim yok; destek panelindeki bildirim listesi 6. aşamada API'ye geçer) |
 | 6. Destek (bitti) | platform girişi ve TOTP, talepler, ekip notları, hazır cevaplar, dükkân adına oturum, gerekçeyle telefon açma, arama, dükkân özeti, denetim kaydı; panelden talepler; pilot başvuruları | kalan bütün fonksiyonlar; `web/lib/mock` silindi, `/destek/giris` eklendi |
 | 7. Yayın (bitti, uçtan uca deneme hariç) | Dockerfile'lar, ortam profilleri (`preview`, `staging`, `prod`), compose dosyaları ve Traefik, deploy/geri dönüş/smoke script'leri, GitHub Actions: PR önizleme, main'den staging, tag ve onayla prod; staging'de SMS yalnızca ekip numaralarına; prod'da gece yedeği. Ayrıntılar `deploy/README.md`. iyzico sandbox ve Netgsm ile uçtan uca deneme sunucular kurulunca | — |
+
+## Dükkân durumu
+
+Destek ekibi dükkânın durumunu değiştirir (`shop.status`, `V18`). Gerekçe zorunludur, işlem denetim kaydına yazılır ve dükkân sahiplerine e-posta gider (`ShopStatusChanged`).
+
+| Durum | Vitrin | Sipariş | Alıcı ana sayfası | Panel | İzin |
+| --- | --- | --- | --- | --- | --- |
+| `open` | normal | alınır | listelenir | açık | — |
+| `paused` | açık, "Şu an sipariş almıyoruz" bandı | `shop_unavailable` | listelenmez | açık, bantta gerekçe | `SHOP_PAUSE` |
+| `suspended` | yalnızca adı ve bant; ürün sayfaları vitrine yönlenir | `shop_unavailable` | listelenmez | açık, bantta gerekçe | `SHOP_SUSPEND` |
+| `closed` | 404 (eski adres de) | `shop_unavailable` | listelenmez | giriş `shop_closed`, açık oturumlar 401 | `SHOP_SUSPEND` |
+
+- Geçici kapatmanın bitişi (`paused_until`, en çok 30 gün) okunurken değerlendirilir; geçince dükkân açık sayılır, zamanlanmış iş yok.
+- Askıdaki ya da kapalı dükkânı yalnızca `SHOP_SUSPEND` açar; temsilci geçici kapatmayla da açamaz.
+- Teslim edilmeyi bekleyen siparişi olan dükkân, onay verilmeden kalıcı kapatılmaz (`open_orders`, meta: count). Var olan siparişler hiçbir durumda silinmez.
+- Taslak açıldıktan sonra dükkân kapanırsa sipariş verilirken yeniden kontrol edilir.
 
 ## Sipariş ve ödeme akışı
 
@@ -160,6 +176,7 @@ Kapsam bilerek dar tutulur; geliştirme hızı önce gelir.
 
 - Adapter'lar (`NetgsmSmsSenderTests`, `ResendEmailSenderTests`, `IyzicoPaymentProviderTests`, `R2PhotoStoreTests`): istek biçimi, imza ve yanıt kodları, sağlayıcıya bağlanmadan; staging'de SMS'in yalnızca ekip numaralarına gitmesi.
 - Aşama 6 (`SupportTests`): şifre ve TOTP birlikte; dükkân oturumuyla panele destek girişi yok; telefon maskeli, gerekçesiz açılmaz, açılış kayda geçer; dükkân adına oturum çalışan yetkisinde (iptal 403), işlem kayda geçer, 30 dakikada biter; denetim kaydı güncellenemez ve silinemez.
+- Dükkân durumu (`ShopStatusTests`): temsilci geçici kapatır, süre bitince sipariş yeniden alınır, askıya alamaz, gerekçesiz kapatamaz; askıdaki dükkânı temsilci açamaz, lider açar, kayıt ve e-posta düşer; açık siparişli dükkân onaysız kapatılmaz, kapalı dükkânın vitrini (eski adresiyle de) bulunmaz, panel girişi reddedilir, açık oturum 401 alır.
 - Ayarlar (`PanelSettingsTests`): çalışan ayar değiştiremez (403), bölge İstanbul listesinden (kayıtlı eski ad değişmedikçe kalır), kapasite düşünce dolu yer korunur, kaldırılan aralık takvimden çıkar ve kaydı durur, çakışan aralık reddedilir, kapalı güne sipariş verilemez.
 - Dükkân açma (`OnboardingTests`): lider dükkân açar, sahip bağlantıyla şifre belirleyip girer; bağlantı ikinci kez ve süresi geçince çalışmaz, yeni bağlantı eskisini geçersiz kılar; temsilci açamaz (403); alınmış ya da ayrılmış slug ve başka hesaptaki e-posta reddedilir, hata olunca dükkân açılmaz; şifre bağlantısı sahibine e-postayla gider; şifremi unuttum kayıtsız adreste de 204 döner ve e-posta göndermez, 2 dakika içinde ikinci bağlantı gitmez, sıfırlama bağlantısı 1 saat sonra çalışmaz.
 - Ürün yönetimi (`PanelCatalogTests`): boyların tam fiyatı ürün fiyatı ve ek fiyata çevrilir, satıştan kalkan ürün vitrinde yok, fotoğraf 4:5 kırpılır ve yalnızca yüklenen adres kabul edilir, çalışan ürün değiştiremez (403), başka dükkânın ürünü bulunamaz.

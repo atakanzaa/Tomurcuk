@@ -113,7 +113,8 @@ Son müşteri sorunu önce çiçekçiye gider. Destek ekibi çiçekçiye destek 
 | İade başlatma | Evet | Evet | Hayır | Evet | Hayır |
 | Ürün, fiyat, teslimat ayarı | Evet | Evet | Evet (dükkân adına) | Evet | Hayır |
 | Dükkân adına giriş | Evet | Evet | Evet; süreli ve kayıtlı | — | — |
-| Dükkân askıya alma | Evet | Evet | Hayır | — | — |
+| Siparişleri geçici kapatma | Evet | Evet | Evet | — | — |
+| Dükkân askıya alma, kalıcı kapatma | Evet | Evet | Hayır | — | — |
 | Ödeme hesabı (IBAN, alt üye işyeri) | Hayır | Hayır | Hayır | Evet | Hayır |
 | Abonelik ve plan değişikliği | Evet | Evet | Görüntüler | Görüntüler | Hayır |
 | Kullanıcı ve rol yönetimi | Evet | Temsilci ekler | Hayır | Kendi çalışanları | Hayır |

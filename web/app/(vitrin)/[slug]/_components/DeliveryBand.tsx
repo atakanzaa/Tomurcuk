@@ -3,6 +3,7 @@ import { connection } from "next/server";
 import { KraftBand } from "@/components/ui/KraftBand";
 import type { Shop } from "@/lib/api/types";
 import { withTimeSuffix, zonedNow } from "@/lib/format";
+import { closedNotice } from "@/lib/shop-status";
 import styles from "./Hero.module.css";
 
 const clock = <Clock size={20} className={styles.bandIcon} aria-hidden="true" />;
@@ -12,7 +13,7 @@ export function DeliveryBand({ shop, sameDayOpen }: { shop: Shop; sameDayOpen: b
   if (!shop.active) {
     return (
       <KraftBand className={styles.band}>
-        <strong>Şu an sipariş almıyoruz.</strong> Bilgi için {shop.phone} numarasından bize ulaşın.
+        <strong>Şu an sipariş almıyoruz.</strong> {closedNotice(shop)}
       </KraftBand>
     );
   }

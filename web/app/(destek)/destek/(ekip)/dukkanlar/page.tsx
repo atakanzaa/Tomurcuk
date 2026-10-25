@@ -7,7 +7,9 @@ import { getShopSummaries, getSupportUser } from "@/lib/api";
 import { Permission, supportCan } from "@/lib/permissions";
 import { formatDayMonth, relativeDayName } from "@/lib/dates";
 import { zonedNow } from "@/lib/format";
+import { ShopStatus } from "@/lib/api/types";
 import { planLabel } from "@/lib/shop";
+import { shopStatusLabel } from "@/lib/shop-status";
 import styles from "../_components/support.module.css";
 
 export const metadata: Metadata = { title: "Dükkânlar" };
@@ -60,7 +62,9 @@ async function Shops() {
                   </td>
                   <td className={styles.nowrap}>{planLabel[s.shop.plan]}</td>
                   <td>
-                    <StatusTag tone={s.shop.active ? "delivered" : "failed"}>{s.shop.active ? "Aktif" : "Askıda"}</StatusTag>
+                    <StatusTag tone={s.shop.active ? "delivered" : s.shop.status === ShopStatus.Paused ? "preparing" : "failed"}>
+                      {shopStatusLabel[s.shop.status]}
+                    </StatusTag>
                   </td>
                   <td>{s.monthlyOrders}</td>
                   <td className={s.openTickets ? undefined : styles.small}>{s.openTickets}</td>

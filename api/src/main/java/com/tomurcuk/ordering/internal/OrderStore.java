@@ -342,6 +342,13 @@ public class OrderStore {
 	}
 
 	/** `since`'ten bu yana açılan, iptal edilmemiş sipariş sayısı. */
+	public int countOpen(String shopId) {
+		return jdbc.sql("SELECT count(*) FROM orders WHERE shop_id = :shopId AND status IN ('new', 'preparing', 'onway')")
+			.param("shopId", shopId)
+			.query(Integer.class)
+			.single();
+	}
+
 	public int countSince(String shopId, java.time.Instant since) {
 		return jdbc.sql("SELECT count(*) FROM orders WHERE shop_id = :shopId AND created_at >= :since AND status <> 'cancelled'")
 			.param("shopId", shopId)

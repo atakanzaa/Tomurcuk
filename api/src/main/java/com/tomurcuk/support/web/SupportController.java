@@ -8,7 +8,9 @@ import com.tomurcuk.identity.Impersonation;
 import com.tomurcuk.identity.Impersonations;
 import com.tomurcuk.identity.PlatformPrincipal;
 import com.tomurcuk.marketing.PilotApplications;
+import com.tomurcuk.shop.ShopDirectory;
 import com.tomurcuk.support.internal.Onboarding;
+import com.tomurcuk.support.internal.ShopControl;
 import com.tomurcuk.support.internal.SupportDesk;
 import com.tomurcuk.support.internal.Views;
 import org.springframework.http.HttpStatus;
@@ -37,12 +39,23 @@ class SupportController {
 
 	private final PilotApplications applications;
 
+	private final ShopControl shopControl;
+
 	SupportController(SupportDesk desk, Impersonations impersonations, Onboarding onboarding,
-			PilotApplications applications) {
+			PilotApplications applications, ShopControl shopControl) {
 		this.desk = desk;
 		this.impersonations = impersonations;
 		this.onboarding = onboarding;
 		this.applications = applications;
+		this.shopControl = shopControl;
+	}
+
+	/** Geçici kapatma, askıya alma, kalıcı kapatma ve yeniden açma; gerekçe zorunlu. */
+	@PostMapping("/shops/{shopId}/status")
+	ShopDirectory.StatusDetail changeShopStatus(@AuthenticationPrincipal PlatformPrincipal user,
+			@PathVariable String shopId, @RequestBody ShopControl.StatusInput body) {
+		return shopControl.change(user, shopId, body)
+			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 	}
 
 	@GetMapping("/pilot-applications")

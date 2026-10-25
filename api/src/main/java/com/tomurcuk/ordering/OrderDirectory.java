@@ -49,6 +49,11 @@ public class OrderDirectory {
 		return orders.search(text, digits, 20);
 	}
 
+	/** Teslim edilmeyi bekleyen siparişler: yeni, hazırlanıyor, yolda. */
+	public int countOpen(String shopId) {
+		return orders.countOpen(shopId);
+	}
+
 	public int countSince(String shopId, Instant since) {
 		return orders.countSince(shopId, since);
 	}

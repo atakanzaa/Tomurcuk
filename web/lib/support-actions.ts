@@ -1,8 +1,9 @@
 "use server";
 
-import { refresh } from "next/cache";
+import { refresh, updateTag } from "next/cache";
 import { redirect } from "next/navigation";
-import { addShopNote, escalateTicket, replyToTicket, revealPhone, startImpersonation } from "@/lib/api";
+import { addShopNote, changeShopStatus, escalateTicket, replyToTicket, revealPhone, startImpersonation } from "@/lib/api";
+import { ShopStatus } from "@/lib/api/types";
 import { formValues, type FormState } from "@/lib/checkout/form-state";
 import { toMessages } from "@/lib/checkout/messages";
 import { writeImpersonation } from "@/lib/auth/cookie";
@@ -67,4 +68,34 @@ export async function impersonate(shopId: string, prev: FormState, formData: For
   if (!session) return { version: prev.version + 1, errors: { reason: "Oturum açılamadı. Sayfayı yenileyin." }, values: formValues(formData) };
   await writeImpersonation(session.id, session.endsAt);
   redirect("/panel");
+}
+
+/** Geçici kapatma süresinin seçenekleri; saat dilimine bağlı olmasın diye süre olarak. */
+const PAUSE_HOURS: Record<string, number> = { "1s": 1, "3s": 3, "1g": 24, "3g": 72, "7g": 168 };
+
+/**
+ * Dükkânın durumu: geçici kapatma, askıya alma, kalıcı kapatma, yeniden açma. Vitrin ve alıcı
+ * ana sayfasının önbelleği hemen yenilenir.
+ */
+export async function changeStatusAction(
+  shop: { id: string; slugs: string[] },
+  prev: FormState,
+  formData: FormData,
+): Promise<FormState> {
+  const status = str(formData, "status") as ShopStatus;
+  const hours = PAUSE_HOURS[str(formData, "duration")];
+  const result = await changeShopStatus(shop.id, {
+    status,
+    reason: str(formData, "reason"),
+    pausedUntil: status === ShopStatus.Paused && hours ? new Date(Date.now() + hours * 3_600_000).toISOString() : null,
+    confirmOpenOrders: formData.get("confirmOpenOrders") === "on",
+  });
+  if (!result) return { version: prev.version + 1, errors: { form: "Dükkân bulunamadı. Sayfayı yenileyin." }, values: formValues(formData) };
+  if (!result.ok) return { version: prev.version + 1, errors: toMessages(result.errors), values: formValues(formData) };
+  updateTag(`shop:${shop.id}`);
+  updateTag(`products:${shop.id}`);
+  shop.slugs.forEach((slug) => updateTag(`shop-slug:${slug}`));
+  updateTag("discover");
+  refresh();
+  return { version: prev.version + 1, errors: {}, values: { done: "1" } };
 }

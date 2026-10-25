@@ -129,3 +129,51 @@
   font-size: 13px;
   font-weight: 400;
 }
+
+/* Dükkânın durumu ve değiştirme düğmeleri. */
+.statusRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) 0;
+  border-top: 1px solid var(--line);
+}
+
+.statusText {
+  margin: 0;
+  font-size: 15px;
+  line-height: 22px;
+}
+
+.statusActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.statusError {
+  margin: 0;
+  padding: 10px var(--space-3);
+  border-radius: var(--radius-m);
+  background: var(--danger-soft);
+  color: var(--danger-ink);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.confirm {
+  display: flex;
+  gap: var(--space-2);
+  align-items: flex-start;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.confirm input {
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  flex: none;
+}

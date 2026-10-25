@@ -142,6 +142,7 @@ export const endImpersonation = write("endImpersonation");
 export const getPilotApplications = read("getPilotApplications");
 export const openShop = write("openShop");
 export const createPasswordLink = write("createPasswordLink");
+export const changeShopStatus = write("changeShopStatus");
 
 // Şifre belirleme bağlantısı
 export const getPasswordHolder = read("getPasswordHolder");

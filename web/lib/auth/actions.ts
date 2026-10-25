@@ -23,12 +23,12 @@ export async function login(prev: FormState, formData: FormData): Promise<FormSt
   if (Object.keys(errors).length) return { version: prev.version + 1, errors, values };
 
   const result = await loginToApi("panel", { email, password });
-  if (!result) {
-    return {
-      version: prev.version + 1,
-      errors: { form: "E-posta ya da şifre yanlış. Bilgilerinizi kontrol edip yeniden deneyin." },
-      values,
-    };
+  if ("error" in result) {
+    const message =
+      result.error === "shop_closed"
+        ? "Dükkânınız Tomurcuk'ta kapatıldı; panel girişi kapalı. Siparişlerinizin kopyası için destek ekibine yazın."
+        : "E-posta ya da şifre yanlış. Bilgilerinizi kontrol edip yeniden deneyin.";
+    return { version: prev.version + 1, errors: { form: message }, values };
   }
   await writeSession("panel", result.session);
   redirect("/panel");
@@ -53,7 +53,7 @@ export async function supportLogin(prev: FormState, formData: FormData): Promise
   if (Object.keys(errors).length) return { version: prev.version + 1, errors, values };
 
   const result = await loginToApi("support", { email, password, code });
-  if (!result) {
+  if ("error" in result) {
     return {
       version: prev.version + 1,
       errors: { form: "Bilgiler ya da doğrulama kodu yanlış. Kod 30 saniyede bir değişir; yenisini yazıp tekrar deneyin." },

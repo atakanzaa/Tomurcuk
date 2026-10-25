@@ -11,6 +11,7 @@ export const Permission = {
   CatalogEdit: "CATALOG_EDIT",
   AuditViewAll: "AUDIT_VIEW_ALL",
   ShopOnboard: "SHOP_ONBOARD",
+  ShopPause: "SHOP_PAUSE",
 } as const;
 export type Permission = (typeof Permission)[keyof typeof Permission];
 
@@ -18,7 +19,8 @@ const supportMatrix: Record<SupportRole, Permission[]> = {
   [SupportRole.Owner]: Object.values(Permission),
   [SupportRole.Lead]: Object.values(Permission),
   // Temsilci telefonu maskeli görür, gerekçeyle açar; iptal için lidere aktarır.
-  [SupportRole.Agent]: [Permission.ShopImpersonate, Permission.CatalogEdit],
+  // Temsilci siparişleri geçici kapatabilir; askıya alma ve kalıcı kapatma liderde.
+  [SupportRole.Agent]: [Permission.ShopImpersonate, Permission.CatalogEdit, Permission.ShopPause],
 };
 
 const shopMatrix: Record<ShopRole, Permission[]> = {

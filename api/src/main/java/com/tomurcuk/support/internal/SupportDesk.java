@@ -230,7 +230,8 @@ public class SupportDesk {
 						.stream()
 						.filter(t -> !t.status().equals("resolved"))
 						.map(this::summary)
-						.toList());
+						.toList(),
+					shops.statusDetail(shopId).orElseThrow(), orders.countOpen(shopId));
 		});
 	}
 
@@ -448,6 +449,10 @@ public class SupportDesk {
 			case "new_order_email" -> "yeni sipariş";
 			case "impersonation_email" -> "destek ekibi panelinize girdi";
 			case "daily_summary" -> "günün siparişleri özeti";
+			case "new_order_sms" -> "yeni sipariş SMS'i";
+			case "password_link_email" -> "şifre belirleme bağlantısı";
+			case "password_reset_email" -> "şifre yenileme bağlantısı";
+			case "shop_status_email" -> "dükkân durumu değişti";
 			default -> kind;
 		};
 	}
