@@ -2,13 +2,13 @@
 -- prod'a girmez. Tekrar çalıştırılabilir: kayıt varsa günceller. web/lib/mock/data.ts ile aynı id'leri
 -- kullanır; geçiş süresince mock'ta kalan akışlar bu id'lerle API'deki veriye bağlanır.
 
-INSERT INTO shop (id, slug, name, short_name, phone, address, logo_url, active, plan, same_day_cutoff, time_zone, description, description_short, opening_hours, featured_product_id)
+INSERT INTO shop (id, slug, name, short_name, phone, address, logo_url, plan, same_day_cutoff, time_zone, description, description_short, opening_hours, featured_product_id)
 VALUES
-    ('shop_nergis', 'nergis', 'Nergis Çiçek Atölyesi', 'Nergis', '0216 338 00 00', 'Caferağa Mah. Moda Cad. No: 41, Kadıköy', NULL, TRUE, 'pro', '15:00', 'Europe/Istanbul', 'Moda''da 2009''dan beri. Buketleri her sabah halden gelen çiçeklerle hazırlıyor, Kadıköy, Üsküdar ve Ataşehir''e aynı gün teslim ediyoruz.', 'Moda''da 2009''dan beri. Kadıköy, Üsküdar ve Ataşehir''e aynı gün teslim ediyoruz.', 'Her gün 09:00–20:00', 'p_lale'),
-    ('shop_lale', 'lale-bahcesi', 'Lale Bahçesi', 'Lale', '0212 000 00 00', 'Sinanpaşa Mah., Beşiktaş', NULL, TRUE, 'starter', '14:00', 'Europe/Istanbul', '', '', 'Her gün 09:00–19:00', NULL),
-    ('shop_papatya', 'papatya-cicekcilik', 'Papatya Çiçekçilik', 'Papatya', '0212 000 00 00', 'Cevizli Mah., Kartal', NULL, TRUE, 'starter', '14:00', 'Europe/Istanbul', '', '', 'Her gün 09:00–19:00', NULL),
-    ('shop_begonvil', 'begonvil-atolye', 'Begonvil Atölye', 'Begonvil', '0212 000 00 00', 'Atatürk Mah., Ataşehir', NULL, TRUE, 'starter', '14:00', 'Europe/Istanbul', '', '', 'Her gün 09:00–19:00', NULL),
-    ('shop_orkide', 'orkide-evi', 'Orkide Evi', 'Orkide', '0212 000 00 00', 'Zeytinlik Mah., Bakırköy', NULL, FALSE, 'starter', '14:00', 'Europe/Istanbul', '', '', 'Her gün 09:00–19:00', NULL)
+    ('shop_nergis', 'nergis', 'Nergis Çiçek Atölyesi', 'Nergis', '0216 338 00 00', 'Caferağa Mah. Moda Cad. No: 41, Kadıköy', 'mock:shop_logo', 'pro', '15:00', 'Europe/Istanbul', 'Buketleri her sabah halden gelen çiçeklerle hazırlıyoruz. Kadıköy, Üsküdar ve Ataşehir''e aynı gün teslim ediyoruz.', 'Her sabah halden gelen çiçeklerle. Kadıköy, Üsküdar ve Ataşehir''e aynı gün teslim ediyoruz.', 'Her gün 09:00–20:00', 'p_lale'),
+    ('shop_lale', 'lale-bahcesi', 'Lale Bahçesi', 'Lale', '0212 000 00 00', 'Sinanpaşa Mah., Beşiktaş', NULL, 'starter', '14:00', 'Europe/Istanbul', '', '', 'Her gün 09:00–19:00', NULL),
+    ('shop_papatya', 'papatya-cicekcilik', 'Papatya Çiçekçilik', 'Papatya', '0212 000 00 00', 'Cevizli Mah., Kartal', NULL, 'starter', '14:00', 'Europe/Istanbul', '', '', 'Her gün 09:00–19:00', NULL),
+    ('shop_begonvil', 'begonvil-atolye', 'Begonvil Atölye', 'Begonvil', '0212 000 00 00', 'Atatürk Mah., Ataşehir', NULL, 'starter', '14:00', 'Europe/Istanbul', '', '', 'Her gün 09:00–19:00', NULL),
+    ('shop_orkide', 'orkide-evi', 'Orkide Evi', 'Orkide', '0212 000 00 00', 'Zeytinlik Mah., Bakırköy', NULL, 'starter', '14:00', 'Europe/Istanbul', '', '', 'Her gün 09:00–19:00', NULL)
 ON CONFLICT (id) DO UPDATE SET
     slug = EXCLUDED.slug,
     name = EXCLUDED.name,
@@ -16,7 +16,6 @@ ON CONFLICT (id) DO UPDATE SET
     phone = EXCLUDED.phone,
     address = EXCLUDED.address,
     logo_url = EXCLUDED.logo_url,
-    active = EXCLUDED.active,
     plan = EXCLUDED.plan,
     same_day_cutoff = EXCLUDED.same_day_cutoff,
     time_zone = EXCLUDED.time_zone,
@@ -24,6 +23,19 @@ ON CONFLICT (id) DO UPDATE SET
     description_short = EXCLUDED.description_short,
     opening_hours = EXCLUDED.opening_hours,
     featured_product_id = EXCLUDED.featured_product_id;
+
+-- Nergis'in sayfası. Panelden değiştirildiyse (hikâye dolu) dokunulmaz.
+UPDATE shop SET
+    story = 'Nergis, 2009''da Moda Caddesi''nde bir çiçek tezgâhı olarak açıldı. Bugün atölyede üç kişiyiz; çiçekleri her sabah halden kendimiz seçiyor, buketleri o günün çiçeklerine göre hazırlıyoruz.' || E'\n\n' || 'Mahallemizin doğum günlerini, ilk buluşmalarını, geçmiş olsunlarını on beş yıldır biz taşıyoruz.',
+    founded_year = 2009,
+    cover_photo_url = 'mock:shop_cover',
+    story_photos = ARRAY['mock:story_tezgah', 'mock:story_kova', 'mock:story_atolye'],
+    favorite_note = 'Her pazartesi seradan yeni laleler geliyor; renkleri haftadan haftaya değişiyor. Hangisi gelirse en güzelini siz alıyorsunuz.'
+WHERE id = 'shop_nergis' AND story = '';
+
+-- Askıdaki örnek dükkân. Destek ekibi durumu değiştirdiyse (status_changed_at dolu) dokunulmaz.
+UPDATE shop SET status = 'suspended', status_reason = 'Pilot süresi doldu; dükkân yeniden açılmayı bekliyor.'
+WHERE id = 'shop_orkide' AND status_changed_at IS NULL;
 
 INSERT INTO shop_slug_history (slug, shop_id)
 VALUES
@@ -133,7 +145,9 @@ VALUES
     ('cu_burak', 'shop_nergis', 'Burak Çelik', '0532 640 77 15', NULL, NULL, TRUE),
     ('cu_zeynep', 'shop_nergis', 'Zeynep Aksoy', '0536 402 11 58', NULL, NULL, TRUE),
     ('cu_okan', 'shop_nergis', 'Okan Yıldız', '0533 980 12 64', NULL, NULL, TRUE),
-    ('cu_nilay', 'shop_nergis', 'Nilay Koç', '0532 111 22 33', NULL, NULL, FALSE)
+    ('cu_nilay', 'shop_nergis', 'Nilay Koç', '0532 111 22 33', NULL, NULL, FALSE),
+    ('cu_lb_mert', 'shop_lale', 'Mert Kılıç', '0532 604 18 22', NULL, NULL, FALSE),
+    ('cu_bg_deniz', 'shop_begonvil', 'Deniz Tunç', '0541 377 20 85', NULL, NULL, FALSE)
 ON CONFLICT (id) DO UPDATE SET
     name = EXCLUDED.name,
     phone = EXCLUDED.phone,

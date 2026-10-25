@@ -6,7 +6,9 @@ import {
   removeClosedDay,
   saveDeliveryZones,
   saveSameDayCutoff,
+  saveShopPage,
   saveShopProfile,
+  uploadShopPhoto,
   saveTimeSlots,
 } from "@/lib/api";
 import type { FieldErrors, SlotSetting, ZoneSetting } from "@/lib/api/types";
@@ -66,7 +68,6 @@ export async function saveProfileForm(prev: SettingsFormState, formData: FormDat
     descriptionShort: str(formData, "descriptionShort"),
     description: str(formData, "description"),
     openingHours: str(formData, "openingHours"),
-    featuredProductId: str(formData, "featuredProductId"),
     legalName: str(formData, "legalName"),
     taxOffice: str(formData, "taxOffice"),
     taxNumber: str(formData, "taxNumber"),
@@ -132,4 +133,35 @@ export async function removeClosedDayAction(formData: FormData) {
   await removeClosedDay(shop.id, str(formData, "date"));
   refreshShowcase(shop);
   refresh();
+}
+
+/** Sayfanın fotoğrafı: seçilir seçilmez yüklenir; adres sayfa kaydedilirken listeye girer. */
+export async function uploadPagePhoto(kind: "cover" | "square", formData: FormData): Promise<{ url: string } | { error: string }> {
+  const { shop } = await loadPanel();
+  const file = formData.get("file");
+  if (!(file instanceof Blob) || file.size === 0) return { error: "Fotoğraf seçilmedi." };
+  const result = await uploadShopPhoto(shop.id, kind, file);
+  if (result.ok) return { url: result.value.url };
+  return { error: settingsErrorMessages(result.errors).photo ?? "Fotoğraf yüklenemedi. Yeniden deneyin." };
+}
+
+/** Dükkânın sayfası; fotoğraflar `payload` içinde JSON olarak gelir. */
+export async function savePageForm(prev: SettingsFormState, formData: FormData): Promise<SettingsFormState> {
+  const { shop } = await loadPanel();
+  const values = formValues(formData);
+  const photos = parseJson<{ logoUrl: string | null; coverPhotoUrl: string | null; storyPhotos: string[] }>(formData);
+  const year = str(formData, "foundedYear").trim();
+  const result = await saveShopPage(shop.id, {
+    logoUrl: photos?.logoUrl ?? null,
+    coverPhotoUrl: photos?.coverPhotoUrl ?? null,
+    storyPhotos: photos?.storyPhotos ?? [],
+    story: str(formData, "story"),
+    foundedYear: year ? (/^\d{4}$/.test(year) ? Number(year) : 0) : null,
+    featuredProductId: str(formData, "featuredProductId") || null,
+    favoriteNote: str(formData, "favoriteNote"),
+  });
+  if (!result.ok) return failed(prev, result.errors, values);
+  refreshShowcase(shop);
+  refresh();
+  return done(prev, "Sayfanız kaydedildi. Vitrininizde görünüyor.");
 }

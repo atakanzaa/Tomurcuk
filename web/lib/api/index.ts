@@ -39,6 +39,14 @@ export async function getProduct(shopId: string, productId: string) {
   return impl.getProduct(shopId, productId);
 }
 
+/** Sipariş verisinden; saatte bir yenilenir, ürün değişince de. */
+export async function getBestseller(shopId: string) {
+  "use cache";
+  cacheLife("hours");
+  cacheTag(`products:${shopId}`);
+  return impl.getBestseller(shopId);
+}
+
 export async function getDeliveryZones(shopId: string) {
   "use cache";
   cacheLife("minutes");
@@ -107,6 +115,8 @@ export const deleteProduct = write("deleteProduct");
 export const uploadProductPhoto = write("uploadProductPhoto");
 export const getPanelSettings = read("getPanelSettings");
 export const saveShopProfile = write("saveShopProfile");
+export const saveShopPage = write("saveShopPage");
+export const uploadShopPhoto = write("uploadShopPhoto");
 export const saveSameDayCutoff = write("saveSameDayCutoff");
 export const saveTimeSlots = write("saveTimeSlots");
 export const saveDeliveryZones = write("saveDeliveryZones");
@@ -142,6 +152,7 @@ export const endImpersonation = write("endImpersonation");
 export const getPilotApplications = read("getPilotApplications");
 export const openShop = write("openShop");
 export const createPasswordLink = write("createPasswordLink");
+export const changeShopStatus = write("changeShopStatus");
 
 // Şifre belirleme bağlantısı
 export const getPasswordHolder = read("getPasswordHolder");
@@ -169,3 +180,31 @@ export async function getShopPicks() {
 
 export const discoverShops = read("discoverShops");
 export const findOrder = write("findOrder");
+
+// Yorumlar. Okunanlar herkes için aynıdır, önbelleğe alınır; yorum yazılınca ya da gizlenince
+// `reviews:` ve `reviews` etiketleriyle yenilenir.
+export async function getShopRatings(shopId: string) {
+  "use cache";
+  cacheLife("minutes");
+  cacheTag(`reviews:${shopId}`);
+  return impl.getShopRatings(shopId);
+}
+
+export async function getProductReviews(shopId: string, productId: string) {
+  "use cache";
+  cacheLife("minutes");
+  cacheTag(`reviews:${shopId}`);
+  return impl.getProductReviews(shopId, productId);
+}
+
+export async function getRecentReviews() {
+  "use cache";
+  cacheLife("minutes");
+  cacheTag("reviews");
+  return impl.getRecentReviews();
+}
+
+export const getReviewState = read("getReviewState");
+export const writeReview = write("writeReview");
+export const getPanelReviews = read("getPanelReviews");
+export const hideReview = write("hideReview");

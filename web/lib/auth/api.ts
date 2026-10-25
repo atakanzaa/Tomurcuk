@@ -9,15 +9,22 @@ const LOGIN_PATHS: Record<SessionKind, string> = {
 
 /**
  * Giriş. API oturumu açar ve kimliğini Set-Cookie'de döner; değer tarayıcıya Next'in kendi
- * cookie'siyle geçer. Yanlış bilgide (422) null; hangisinin yanlış olduğu söylenmez.
+ * cookie'siyle geçer. 422'de hata kodu döner: yanlış bilgide `credentials_invalid` (hangisinin
+ * yanlış olduğu söylenmez), kalıcı kapatılan dükkânda `shop_closed`.
  */
-export async function loginToApi(kind: SessionKind, body: Record<string, string>): Promise<{ session: string } | null> {
+export async function loginToApi(
+  kind: SessionKind,
+  body: Record<string, string>,
+): Promise<{ session: string } | { error: string }> {
   const response = await fetch(apiUrl(LOGIN_PATHS[kind]), {
     method: "POST",
     headers: { "Content-Type": "application/json", Accept: "application/json" },
     body: JSON.stringify(body),
   });
-  if (response.status === 422) return null;
+  if (response.status === 422) {
+    const data = (await response.json().catch(() => null)) as { errors?: { form?: { code?: string } } } | null;
+    return { error: data?.errors?.form?.code ?? "credentials_invalid" };
+  }
   if (!response.ok) throw new Error(`Giriş yapılamadı: API ${response.status}`);
   const session = response.headers
     .getSetCookie()

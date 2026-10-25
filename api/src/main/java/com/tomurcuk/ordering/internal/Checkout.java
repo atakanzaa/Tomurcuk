@@ -107,6 +107,9 @@ public class Checkout {
 	}
 
 	public Draft createDraft(String shopId, String productId, List<String> optionIds) {
+		if (!shops.find(shopId).map(ShopInfo::acceptsOrders).orElse(false)) {
+			throw ValidationException.of("product", FieldError.of("shop_unavailable"));
+		}
 		ProductInfo product = catalog.findActiveProduct(shopId, productId)
 			.orElseThrow(() -> ValidationException.of("product", FieldError.of("product_unavailable")));
 		Draft.Item item = buildItem(product, optionIds == null ? List.of() : optionIds);
@@ -189,6 +192,10 @@ public class Checkout {
 		Draft draft = drafts.findLive(shopId, draftId, false).orElseThrow(() -> incomplete("draft"));
 		if (draft.orderId() != null) {
 			return placed(orders.find(shopId, draft.orderId()).orElseThrow(() -> incomplete("draft")), input.clientIp());
+		}
+		// Taslak açıldıktan sonra dükkân siparişe kapandıysa sipariş verilmez.
+		if (!shop.acceptsOrders()) {
+			throw ValidationException.of("draft", FieldError.of("shop_unavailable"));
 		}
 		if (draft.delivery() == null || draft.card() == null) {
 			throw incomplete("draft");

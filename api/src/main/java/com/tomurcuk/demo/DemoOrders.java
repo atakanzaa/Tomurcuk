@@ -62,6 +62,8 @@ class DemoOrders implements ApplicationRunner {
 		fixture.get("orders").forEach(order -> ids.add(order.get("id").asString()));
 		jdbc.sql("DELETE FROM orders WHERE id IN (:ids)").param("ids", ids).update();
 		fixture.get("orders").forEach(order -> insert(order, shift));
+		// Yorumlar siparişle birlikte silinir (ON DELETE CASCADE); ürünleri siparişin kalemlerinden.
+		fixture.get("reviews").forEach(review -> insertReview(review, shift));
 
 		// Özel günler taban güne göre (2, 4, 6 gün sonra); hatırlatma listesi her gün dolu görünür.
 		LocalDate baseDate = LocalDate.parse(fixture.get("baseDate").asString());
@@ -173,6 +175,32 @@ class DemoOrders implements ApplicationRunner {
 				.param("at", Instants.sql(shifted(text(event, "at"), shift)))
 				.update();
 		}
+	}
+
+	private void insertReview(JsonNode r, long shift) {
+		String orderId = text(r, "orderId");
+		String reviewId = "rv_" + orderId;
+		jdbc.sql("""
+				INSERT INTO review (id, order_id, shop_id, order_number, rating, text, author_name, district, created_at)
+				SELECT :id, o.id, o.shop_id, o.number, :rating, :text, :author, :district, :createdAt
+				FROM orders o WHERE o.id = :orderId
+				""")
+			.param("id", reviewId)
+			.param("orderId", orderId)
+			.param("rating", r.get("rating").asInt())
+			.param("text", text(r, "text"))
+			.param("author", text(r, "authorName"))
+			.param("district", text(r, "district"))
+			.param("createdAt", Instants.sql(shifted(text(r, "createdAt"), shift)))
+			.update();
+		jdbc.sql("""
+				INSERT INTO review_product (review_id, product_id, product_name)
+				SELECT DISTINCT ON (product_id) :id, product_id, product_name FROM order_item
+				WHERE order_id = :orderId AND product_id IS NOT NULL
+				""")
+			.param("id", reviewId)
+			.param("orderId", orderId)
+			.update();
 	}
 
 	private static Instant shifted(String iso, long days) {

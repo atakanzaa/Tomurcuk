@@ -44,6 +44,23 @@
   font-weight: 600;
 }
 
+.statusBand {
+  padding: var(--space-2) var(--space-4);
+  background: var(--pollen-soft);
+  color: var(--pollen-ink);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.statusBand[data-tone="suspended"] {
+  background: var(--danger-soft);
+  color: var(--danger-ink);
+}
+
+.statusBand a {
+  color: inherit;
+}
+
 .impersonation {
   display: flex;
   flex-wrap: wrap;
@@ -381,7 +398,8 @@
 @media print {
   .tabBar,
   .sidebar,
-  .impersonation {
+  .impersonation,
+  .statusBand {
     display: none;
   }
 

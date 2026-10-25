@@ -6,17 +6,20 @@ import { Suspense } from "react";
 import { StatusTag } from "@/components/ui/StatusTag";
 import { getShopOverview, getSupportUser } from "@/lib/api";
 import { Permission, supportCan } from "@/lib/permissions";
-import { ShopRole, TicketPriority } from "@/lib/api/types";
+import { ShopRole, ShopStatus, TicketPriority } from "@/lib/api/types";
 import { cx } from "@/lib/cx";
 import { formatDayMonth, relativeDayName } from "@/lib/dates";
 import { formatPrice, formatShortTimeRange, withAblativeSuffix, zonedNow } from "@/lib/format";
 import { shortName } from "@/lib/mask";
 import { orderStatusLabel, orderStatusTone } from "@/lib/order";
 import { planLabel } from "@/lib/shop";
+import { formatReopening, shopStatusLabel } from "@/lib/shop-status";
 import { durationText, minutesSince } from "@/lib/support";
 import support from "../../_components/support.module.css";
 import { PasswordLinkButton } from "../../_components/PasswordLinkButton";
+import { ReviewModeration } from "./ReviewModeration";
 import { ShopDialogs } from "./ShopDialogs";
+import { ShopStatusControls } from "./ShopStatusControls";
 import styles from "./overview.module.css";
 
 export const metadata: Metadata = { title: "Dükkân özeti" };
@@ -74,11 +77,30 @@ async function Overview({ params }: Pick<PageProps<"/destek/dukkanlar/[id]">, "p
         </div>
       </div>
 
+      <section className={styles.statusRow} aria-label="Dükkânın durumu">
+        <p className={styles.statusText}>
+          <strong className={shop.shop.active ? styles.active : styles.suspended}>{shopStatusLabel[shop.status.status]}</strong>
+          {shop.status.status === ShopStatus.Paused && shop.status.pausedUntil && (
+            <>, {formatReopening(shop.status.pausedUntil, TZ)} itibarıyla açılır</>
+          )}
+          {shop.status.reason && <>. {shop.status.reason}</>}
+          {shop.status.changedBy && shop.status.changedAt && (
+            <span className={support.muted}>
+              {" "}
+              ({shop.status.changedBy}, {dayText(shop.status.changedAt)})
+            </span>
+          )}
+        </p>
+        <ShopStatusControls
+          shop={{ id: shop.shop.id, shortName: shop.shop.shortName, slugs: [shop.shop.slug, ...shop.shop.previousSlugs] }}
+          status={shop.status}
+          openOrders={shop.openOrders}
+          canPause={supportCan(user.role, Permission.ShopPause)}
+          canSuspend={supportCan(user.role, Permission.ShopSuspend)}
+        />
+      </section>
+
       <dl className={styles.facts}>
-        <div className={styles.fact}>
-          <dt>Durum</dt>
-          <dd className={shop.shop.active ? styles.active : styles.suspended}>{shop.shop.active ? "Aktif" : "Askıda"}</dd>
-        </div>
         <div className={styles.fact}>
           <dt>Bu ay sipariş</dt>
           <dd>{shop.monthlyOrders}</dd>
@@ -170,6 +192,11 @@ async function Overview({ params }: Pick<PageProps<"/destek/dukkanlar/[id]">, "p
               Bu ay {shop.smsUsed} SMS gönderildi, paket sınırı {shop.smsLimit}.
               {shop.smsUsed > shop.smsLimit && " Sınır aşıldı; ek paket gerekebilir."}
             </span>
+          </section>
+
+          <section>
+            <h2 className={support.h2}>Yorumlar</h2>
+            <ReviewModeration shopId={shop.shop.id} reviews={shop.reviews} />
           </section>
         </div>
 

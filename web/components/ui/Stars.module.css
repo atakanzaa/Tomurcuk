@@ -1,0 +1,19 @@
+.stars {
+  display: inline-flex;
+  gap: 2px;
+  vertical-align: -3px;
+}
+
+.star {
+  flex: none;
+}
+
+.filled {
+  fill: var(--pollen);
+}
+
+.empty {
+  fill: transparent;
+  stroke: var(--line-strong);
+  stroke-width: 1.2;
+}

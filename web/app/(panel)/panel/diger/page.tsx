@@ -21,9 +21,13 @@ export default function MorePage() {
       <nav aria-label="Diğer sayfalar" className={panel.section}>
         {[
           { href: "/panel/urunler", label: "Ürünler" },
+          { href: "/panel/yorumlar", label: "Yorumlar" },
           { href: "/panel/teslimat", label: "Teslimat ayarları" },
           { href: "/panel/ayarlar", label: "Dükkân ayarları" },
-          { href: "/panel/fisler?gun=bugun", label: "Bugünün fişlerini yazdır" },
+          {
+            href: "/panel/fisler?gun=bugun",
+            label: "Bugünün fişlerini yazdır",
+          },
           { href: "/panel/yardim", label: "Yardım ve destek" },
         ].map((item) => (
           <Link key={item.href} href={item.href} className={styles.menuLink}>

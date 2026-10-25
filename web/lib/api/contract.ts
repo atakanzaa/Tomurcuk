@@ -2,7 +2,18 @@ import type {
   Area,
   AuditEntry,
   OrderRef,
+  ProductReviews,
+  RecentReview,
+  Review,
+  ReviewField,
+  ReviewInput,
+  ReviewState,
+  ShopRatings,
   ShopMatch,
+  ShopStatusDetail,
+  ShopPageInput,
+  Bestseller,
+  ShopStatusInput,
   ShopPick,
   CannedReply,
   CardInput,
@@ -63,6 +74,8 @@ export interface TomurcukApi {
   getCategories(shopId: string): Promise<Category[]>;
   /** Yalnızca aktif ürünler, `order` sırasıyla. */
   getProducts(shopId: string): Promise<Product[]>;
+  /** Son 90 günde en az 3 siparişte teslim edilen ürünlerin en çok gideni. */
+  getBestseller(shopId: string): Promise<Bestseller>;
   getProduct(shopId: string, productId: string): Promise<Product | null>;
   /** Yalnızca aktif bölgeler. */
   getDeliveryZones(shopId: string): Promise<DeliveryZone[]>;
@@ -145,6 +158,9 @@ export interface TomurcukApi {
   getPanelSettings(shopId: string): Promise<PanelSettings>;
   /** Ayarları yalnızca dükkân sahibi değiştirir (CATALOG_EDIT). */
   saveShopProfile(shopId: string, input: ShopProfileInput): Promise<Result<true, keyof ShopProfileInput>>;
+  saveShopPage(shopId: string, input: ShopPageInput): Promise<Result<true, keyof ShopPageInput>>;
+  /** Kapak 3:2, logo ve atölye fotoğrafı kare kırpılır; adres sayfa kaydedilirken listeye girer. */
+  uploadShopPhoto(shopId: string, kind: "cover" | "square", file: Blob): Promise<Result<{ url: string }, "photo">>;
   saveSameDayCutoff(shopId: string, cutoff: string): Promise<Result<true, "sameDayCutoff">>;
   /** Liste olduğu gibi yazılır; gelmeyen aralık ve bölge pasife alınır. */
   saveTimeSlots(shopId: string, slots: SlotSetting[]): Promise<Result<true, "slots">>;
@@ -186,6 +202,11 @@ export interface TomurcukApi {
   openShop(input: OpenShopInput): Promise<Result<PasswordLink, keyof OpenShopInput>>;
   /** Sahibe yeni şifre bağlantısı; eskisi geçersiz olur. Sahibi olmayan dükkânda null. */
   createPasswordLink(shopId: string): Promise<PasswordLink | null>;
+  /** Geçici kapatma `SHOP_PAUSE`, askıya alma ve kalıcı kapatma `SHOP_SUSPEND` ister. Bulunamayan dükkân null. */
+  changeShopStatus(
+    shopId: string,
+    input: ShopStatusInput,
+  ): Promise<Result<ShopStatusDetail, "status" | "reason" | "pausedUntil" | "form"> | null>;
 
   // Şifre belirleme bağlantısı (/sifre/<token>); oturumsuz.
   getPasswordHolder(token: string): Promise<PasswordHolder | null>;
@@ -203,4 +224,18 @@ export interface TomurcukApi {
   getShopPicks(): Promise<ShopPick[]>;
   /** Sipariş numarası ve gönderen telefonu bütün dükkânlarda eşleşirse takip adresi. */
   findOrder(input: { number: string; phone: string }): Promise<OrderRef | null>;
+
+  // Yorumlar. Yalnızca teslim edilen siparişin göndereni takip linkinden, teslimden sonraki 30
+  // gün içinde yazar; her siparişe bir yorum.
+  /** Başka dükkânın takip kodu null. */
+  getReviewState(shopId: string, token: string): Promise<ReviewState | null>;
+  writeReview(shopId: string, token: string, input: ReviewInput): Promise<Result<Review, ReviewField> | null>;
+  getShopRatings(shopId: string): Promise<ShopRatings>;
+  getProductReviews(shopId: string, productId: string): Promise<ProductReviews>;
+  /** Farklı dükkânlardan en yeni 6 yorum. */
+  getRecentReviews(): Promise<RecentReview[]>;
+  /** Panel: dükkânın yorumları, gizlenenler dahil. */
+  getPanelReviews(): Promise<Review[]>;
+  /** Destek ekibinin bütün rolleri; gerekçe zorunlu, denetim kaydına yazılır. Zaten gizliyse null. */
+  hideReview(reviewId: string, reason: string): Promise<Result<Review, "reason"> | null>;
 }

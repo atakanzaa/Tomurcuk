@@ -314,6 +314,10 @@ export function BuyerPrivacy({ shop }: Pick<DocumentProps, "shop">) {
           <li>Teslim alacak kişinin adı, telefon numarası ve teslim adresi.</li>
           <li>Kart notu, sipariş içeriği, tutar ve ödeme durumu. Kart numarası işlenmez.</li>
           <li>Siparişin verildiği IP adresi ve işlem kayıtları.</li>
+          <li>
+            Yorum yazarsanız: puanınız, yorumunuz, adınız ve soyadınızın baş harfi (ör. &quot;Elif Y.&quot;) ve teslim
+            semti. &quot;Adım görünmesin&quot; seçilirse ad yerine &quot;Bir alıcı&quot; yazar.
+          </li>
         </ul>
       </Section>
       <Section title="Amaç ve hukuki sebep">
@@ -323,6 +327,12 @@ export function BuyerPrivacy({ shop }: Pick<DocumentProps, "shop">) {
           sözleşmenin kurulması ve ifası (KVKK m. 5/2-c), hukuki yükümlülük (m. 5/2-ç) ve dolandırıcılığın önlenmesi
           gibi meşru menfaatler (m. 5/2-f). Teslim alacak kişinin bilgileri, siparişi veren tarafından teslimat için
           verilir.
+        </p>
+        <p>
+          Yorumlar ürünün sayfasında, dükkânın vitrininde ve Tomurcuk ana sayfasında, dükkânın adıyla birlikte herkese
+          açık yayımlanır. Yorumu kendi isteğinizle yazıp yayımladığınız için hukuki sebep, verinin ilgili kişi
+          tarafından alenileştirilmesidir (m. 5/2-d). Yorumunuzun kaldırılmasını dükkândan ya da Tomurcuk&apos;tan
+          isteyebilirsiniz.
         </p>
       </Section>
       <Section title="Aktarım">
@@ -335,7 +345,7 @@ export function BuyerPrivacy({ shop }: Pick<DocumentProps, "shop">) {
       <Section title="Saklama süresi">
         <p>
           Sipariş kayıtları yasal saklama süreleri boyunca, ticari kayıtlarda 10 yıl saklanır; süre bitince silinir ya
-          da anonim hâle getirilir.
+          da anonim hâle getirilir. Yorumlar, kaldırılmaları istenene kadar yayımda kalır.
         </p>
       </Section>
       <Section title="Haklarınız">

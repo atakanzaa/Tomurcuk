@@ -1,7 +1,7 @@
 // Tarayıcıda fotoğrafı yüklemeden önce hazırlar: telefonun döndürme bilgisini uygular, küçültür ve
 // JPEG yapar. Yükleme küçülür, konum gibi EXIF bilgileri tarayıcıdan çıkmaz. Sunucu aynı işi
-// yeniden yapar (api PhotoImages). Ürün fotoğrafı ortadan 4:5 kırpılır, en çok 1200×1500; teslim
-// fotoğrafı kırpılmaz, uzun kenarı en çok 1600.
+// yeniden yapar (api PhotoImages). Ürün fotoğrafı ortadan 4:5 kırpılır (en çok 1200×1500), kapak
+// 3:2, logo ve atölye fotoğrafı kare; teslim fotoğrafı kırpılmaz, uzun kenarı en çok 1600.
 
 const WIDTH = 1200;
 
@@ -35,16 +35,25 @@ async function toJpeg(file: File, crop: (width: number, height: number) => Crop)
   return new Promise((resolve) => canvas.toBlob((blob) => resolve(blob ?? file), "image/jpeg", 0.88));
 }
 
-export function toProductJpeg(file: File): Promise<Blob> {
+/** Ortadan `rw:rh` oranına kırpar, genişliği en çok `maxW`. */
+export function toCroppedJpeg(file: File, rw: number, rh: number, maxW: number): Promise<Blob> {
   return toJpeg(file, (width, height) => {
     let w = width;
     let h = height;
-    if (width * 5 > height * 4) w = Math.round((height * 4) / 5);
-    else h = Math.round((width * 5) / 4);
-    const outW = Math.min(WIDTH, w);
-    return { x: (width - w) / 2, y: (height - h) / 2, w, h, outW, outH: Math.round((outW * 5) / 4) };
+    if (width * rh > height * rw) w = Math.round((height * rw) / rh);
+    else h = Math.round((width * rh) / rw);
+    const outW = Math.min(maxW, w);
+    return { x: (width - w) / 2, y: (height - h) / 2, w, h, outW, outH: Math.round((outW * rh) / rw) };
   });
 }
+
+export const toProductJpeg = (file: File) => toCroppedJpeg(file, 4, 5, WIDTH);
+
+/** Dükkânın kapak fotoğrafı, 3:2 (api PhotoKind.COVER). */
+export const toCoverJpeg = (file: File) => toCroppedJpeg(file, 3, 2, 1800);
+
+/** Logo ve atölye fotoğrafı, kare (api PhotoKind.SQUARE). */
+export const toSquareJpeg = (file: File) => toCroppedJpeg(file, 1, 1, 1000);
 
 export function toDeliveryJpeg(file: File): Promise<Blob> {
   return toJpeg(file, (width, height) => {

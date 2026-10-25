@@ -1,0 +1,94 @@
+/* Dükkânın sayfası: kapak, logo ve atölye fotoğrafları. Ürün formundaki fotoğraf kutularıyla aynı dil. */
+.photoRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  align-items: flex-start;
+}
+
+.slot {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.slotLabel {
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 500;
+}
+
+.photo {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-m);
+  background: var(--kraft);
+  background-image: var(--kraft-fiber);
+}
+
+/* Kapak kutusu satırda 360px'e kadar genişler; dar ekranda daralır. */
+.photoRow > .slot:first-child {
+  flex: 0 1 360px;
+  min-width: 0;
+}
+
+.cover {
+  width: 100%;
+  aspect-ratio: 3 / 2;
+}
+
+.square {
+  width: 120px;
+  aspect-ratio: 1 / 1;
+}
+
+.add {
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 6px;
+  border: 1.5px dashed var(--line-strong);
+  border-radius: var(--radius-m);
+  background: transparent;
+  color: var(--ink);
+  font: 500 13px/18px var(--font-sans);
+  cursor: pointer;
+}
+
+.add:hover {
+  background: var(--paper-raised);
+}
+
+.pending {
+  display: grid;
+  place-items: center;
+  color: var(--ink-muted);
+  font-size: 13px;
+}
+
+.remove {
+  position: absolute;
+  top: var(--space-1);
+  right: var(--space-1);
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--paper-raised) 88%, transparent);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.squares {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.error {
+  margin: 0;
+  color: var(--danger);
+  font-size: 13px;
+  line-height: 18px;
+}

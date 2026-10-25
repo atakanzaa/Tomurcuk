@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.tomurcuk.ordering.Bestseller;
 import com.tomurcuk.ordering.Order;
 import com.tomurcuk.shared.Instants;
 import com.tomurcuk.ordering.OrderSource;
@@ -133,7 +134,7 @@ public class OrderStore {
 		return findWhere("o.shop_id = :shopId AND o.id = :value", shopId, orderId);
 	}
 
-	Optional<Order> findByTrackingToken(String shopId, String token) {
+	public Optional<Order> findByTrackingToken(String shopId, String token) {
 		return findWhere("o.shop_id = :shopId AND o.tracking_token = :value", shopId, token);
 	}
 
@@ -342,6 +343,32 @@ public class OrderStore {
 	}
 
 	/** `since`'ten bu yana açılan, iptal edilmemiş sipariş sayısı. */
+	/** `since`ten bu yana teslim edilen siparişlerde en çok geçen ürün; en az `min` sipariş. */
+	public Optional<Bestseller> bestseller(String shopId, LocalDate since, int min) {
+		return jdbc.sql("""
+				SELECT i.product_id, count(DISTINCT o.id) AS orders
+				FROM orders o JOIN order_item i ON i.order_id = o.id
+				WHERE o.shop_id = :shopId AND o.status = 'delivered' AND o.delivery_date >= :since
+				  AND i.product_id IS NOT NULL
+				GROUP BY i.product_id
+				HAVING count(DISTINCT o.id) >= :min
+				ORDER BY orders DESC, i.product_id
+				LIMIT 1
+				""")
+			.param("shopId", shopId)
+			.param("since", since)
+			.param("min", min)
+			.query((rs, n) -> new Bestseller(rs.getString("product_id"), rs.getInt("orders")))
+			.optional();
+	}
+
+	public int countOpen(String shopId) {
+		return jdbc.sql("SELECT count(*) FROM orders WHERE shop_id = :shopId AND status IN ('new', 'preparing', 'onway')")
+			.param("shopId", shopId)
+			.query(Integer.class)
+			.single();
+	}
+
 	public int countSince(String shopId, java.time.Instant since) {
 		return jdbc.sql("SELECT count(*) FROM orders WHERE shop_id = :shopId AND created_at >= :since AND status <> 'cancelled'")
 			.param("shopId", shopId)

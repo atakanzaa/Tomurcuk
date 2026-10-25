@@ -1,5 +1,6 @@
 package com.tomurcuk.settings.web;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -11,10 +12,13 @@ import com.tomurcuk.delivery.DeliverySettings.SlotRow;
 import com.tomurcuk.delivery.DeliverySettings.ZoneRow;
 import com.tomurcuk.identity.Permission;
 import com.tomurcuk.identity.ShopPrincipal;
+import com.tomurcuk.media.PhotoKind;
+import com.tomurcuk.media.Photos;
 import com.tomurcuk.shared.FieldError;
 import com.tomurcuk.shared.ValidationException;
 import com.tomurcuk.shop.ShopSettings;
 import com.tomurcuk.shop.ShopSettings.Profile;
+import com.tomurcuk.shop.ShopSettings.PageInput;
 import com.tomurcuk.shop.ShopSettings.ProfileInput;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -27,8 +31,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 /**
@@ -46,10 +52,13 @@ class PanelSettingsController {
 
 	private final Catalog catalog;
 
-	PanelSettingsController(ShopSettings shop, DeliverySettings delivery, Catalog catalog) {
+	private final Photos photos;
+
+	PanelSettingsController(ShopSettings shop, DeliverySettings delivery, Catalog catalog, Photos photos) {
 		this.shop = shop;
 		this.delivery = delivery;
 		this.catalog = catalog;
+		this.photos = photos;
 	}
 
 	/** web/lib/api/types.ts `PanelSettings` */
@@ -66,11 +75,39 @@ class PanelSettingsController {
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	void profile(@AuthenticationPrincipal ShopPrincipal user, @RequestBody ProfileInput body) {
 		requireEdit(user);
+		shop.updateProfile(user.shopId(), body);
+	}
+
+	/** Dükkânın sayfası: kapak, logo, hikâye, atölye fotoğrafları, favori ürün ve notu. */
+	@PutMapping("/page")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	void page(@AuthenticationPrincipal ShopPrincipal user, @RequestBody PageInput body) {
+		requireEdit(user);
 		String featured = body.featuredProductId();
 		if (featured != null && !featured.isBlank() && catalog.findActiveProduct(user.shopId(), featured).isEmpty()) {
 			throw ValidationException.of("featuredProductId", FieldError.of("option_invalid"));
 		}
-		shop.updateProfile(user.shopId(), body);
+		shop.updatePage(user.shopId(), body, photos::owns);
+	}
+
+	/**
+	 * Sayfanın fotoğrafı; çok parçalı form, alan adı `file`. `kind`: `cover` (3:2) ya da `square`
+	 * (logo ve atölye, kare). Adres sayfa kaydedilirken listeye girer.
+	 */
+	@PostMapping("/photos")
+	@ResponseStatus(HttpStatus.CREATED)
+	Map<String, String> uploadPhoto(@AuthenticationPrincipal ShopPrincipal user, @RequestParam("kind") String kind,
+			@RequestParam("file") MultipartFile file) throws IOException {
+		requireEdit(user);
+		PhotoKind photoKind = switch (kind) {
+			case "cover" -> PhotoKind.COVER;
+			case "square" -> PhotoKind.SQUARE;
+			default -> throw ValidationException.of("photo", FieldError.of("photo_invalid"));
+		};
+		if (file.isEmpty()) {
+			throw ValidationException.of("photo", FieldError.of("photo_invalid"));
+		}
+		return Map.of("url", photos.store(photoKind, file.getBytes()));
 	}
 
 	@PutMapping("/same-day-cutoff")

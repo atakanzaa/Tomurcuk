@@ -7,7 +7,8 @@ import { Button } from "@/components/ui/Button";
 import { GiftTag } from "@/components/ui/GiftTag";
 import { Logo, LogoMark } from "@/components/ui/Logo";
 import { ProductItem } from "@/components/ui/ProductItem";
-import { discoverShops, getAreas, getShopPicks } from "@/lib/api";
+import { Stars } from "@/components/ui/Stars";
+import { discoverShops, getAreas, getRecentReviews, getShopPicks } from "@/lib/api";
 import { Availability, type Area, type IsoDate, type ProductCard, type ShopMatch } from "@/lib/api/types";
 import { BOOKING_WINDOW_DAYS } from "@/lib/checkout/limits";
 import { addDays, daysBetween, formatDayMonth, formatDeliveryDay, formatLongDate, relativeDayName } from "@/lib/dates";
@@ -92,6 +93,10 @@ export default function HomePage({ searchParams }: PageProps<"/">) {
 
         <Suspense fallback={null}>
           <Picks />
+        </Suspense>
+
+        <Suspense fallback={null}>
+          <RecentReviews />
         </Suspense>
 
         <section id="nasil" className={`${styles.wrap} ${styles.split}`} aria-labelledby="nasil-baslik">
@@ -316,6 +321,44 @@ function Thumb({ slug, product }: { slug: string; product: ProductCard }) {
         {priceLabel(product)}
       </span>
     </Link>
+  );
+}
+
+/** "Alıcılar ne diyor": farklı dükkânlardan son yorumlar; her birinde teslim eden dükkân. */
+async function RecentReviews() {
+  await connection();
+  const reviews = await getRecentReviews();
+  if (reviews.length === 0) return null;
+  return (
+    <section className={`${styles.wrap} ${home.reviews}`} aria-labelledby="yorum-baslik">
+      <div className={home.reviewsHead}>
+        <h2 id="yorum-baslik" className={styles.h2}>
+          Alıcılar ne diyor
+        </h2>
+        <p className={home.reviewsNote}>
+          Yorumları yalnızca siparişini teslim alanlar yazabiliyor. Her yorumun yanında çiçeğin hangi dükkândan geldiği
+          yazıyor.
+        </p>
+      </div>
+      <ul className={home.reviewList}>
+        {reviews.map((review) => (
+          <li key={review.id} className={home.review}>
+            <span className={home.reviewTop}>
+              <Stars rating={review.rating} size={14} />
+              {review.productName && <span className={home.reviewMuted}>{review.productName}</span>}
+            </span>
+            <p className={home.reviewText}>{review.text}</p>
+            <span className={home.reviewMuted}>
+              {review.authorName}
+              {review.district && `, ${review.district}`}. Teslim eden:{" "}
+              <Link href={shopPath(review.shopSlug)} className={home.reviewShop}>
+                {review.shopName}
+              </Link>
+            </span>
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }
 

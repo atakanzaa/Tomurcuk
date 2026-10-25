@@ -1,5 +1,6 @@
 package com.tomurcuk.shop;
 
+import java.time.Instant;
 import java.util.List;
 
 import com.tomurcuk.shared.ClockTimes;
@@ -16,7 +17,11 @@ public record ShopView(
 		String phone,
 		String address,
 		String logoUrl,
+		/** Sipariş alıyor mu; `status` açıksa. */
 		boolean active,
+		ShopStatus status,
+		/** Geçici kapatmanın bitişi; vitrin "… itibarıyla yeniden sipariş alıyoruz" der. */
+		Instant pausedUntil,
 		ShopPlan plan,
 		String sameDayCutoff,
 		String timeZone,
@@ -24,12 +29,20 @@ public record ShopView(
 		String descriptionShort,
 		String openingHours,
 		String featuredProductId,
+		/** Favori ürünün yanındaki çiçekçi notu; kart notu etiketinde görünür. */
+		String favoriteNote,
+		String coverPhotoUrl,
+		String story,
+		Integer foundedYear,
+		List<String> storyPhotos,
 		String legalName,
 		String taxOffice,
 		String taxNumber,
 		String email) {
 
-	public static ShopView of(Shop shop) {
+	/** `now`: geçici kapatmanın süresi bu ana göre değerlendirilir. */
+	public static ShopView of(Shop shop, Instant now) {
+		ShopStatus status = shop.effectiveStatus(now);
 		return new ShopView(
 				shop.getId(),
 				shop.getName(),
@@ -39,7 +52,9 @@ public record ShopView(
 				shop.getPhone(),
 				shop.getAddress(),
 				shop.getLogoUrl(),
-				shop.isActive(),
+				status == ShopStatus.OPEN,
+				status,
+				status == ShopStatus.PAUSED ? shop.getPausedUntil() : null,
 				shop.getPlan(),
 				ClockTimes.format(shop.getSameDayCutoff()),
 				shop.getTimeZone(),
@@ -47,6 +62,11 @@ public record ShopView(
 				shop.getDescriptionShort(),
 				shop.getOpeningHours(),
 				shop.getFeaturedProductId(),
+				shop.getFavoriteNote(),
+				shop.getCoverPhotoUrl(),
+				shop.getStory(),
+				shop.getFoundedYear(),
+				shop.getStoryPhotos(),
 				shop.getLegalName(),
 				shop.getTaxOffice(),
 				shop.getTaxNumber(),

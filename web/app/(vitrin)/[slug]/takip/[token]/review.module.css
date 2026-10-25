@@ -1,0 +1,113 @@
+/* Takip sayfasındaki yorum bölümü; teslim adımlarının altında, ince çizgiyle ayrılır. */
+.form,
+.done {
+  display: grid;
+  gap: var(--space-4);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--line);
+}
+
+.head {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.title {
+  margin: 0;
+  font-size: 18px;
+  line-height: 24px;
+  font-weight: 600;
+}
+
+.help,
+.muted {
+  margin: 0;
+  color: var(--ink-muted);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.error {
+  margin: 0;
+  color: var(--danger);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.rating {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.legend {
+  padding: 0;
+  margin-bottom: var(--space-2);
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 500;
+}
+
+.stars {
+  display: flex;
+  gap: var(--space-1);
+}
+
+/* 48px dokunma hedefi; odak halkası klavyede yıldızın çevresinde. */
+.star {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-m);
+  cursor: pointer;
+}
+
+.star:has(input:focus-visible) {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.check {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  cursor: pointer;
+}
+
+.check input {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  margin: 2px 0 0;
+  accent-color: var(--stem);
+}
+
+.checkText {
+  display: grid;
+  gap: 2px;
+  font-size: 16px;
+  line-height: 22px;
+}
+
+.smallPrint {
+  color: var(--ink-muted);
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.doneHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.doneText {
+  margin: 0;
+  font-size: 16px;
+  line-height: 24px;
+}

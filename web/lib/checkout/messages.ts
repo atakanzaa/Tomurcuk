@@ -7,6 +7,7 @@ import { formatPrice, withTimeSuffix } from "@/lib/format";
 const requiredMessages: Record<string, string> = {
   recipientName: "Alıcının adını yazın.",
   title: "Hangi gün olduğunu yazın, ör. Annesinin doğum günü.",
+  reason: "Gerekçe yazın; dükkân sahibine e-postayla ve denetim kaydına bu metin gider.",
   recipientPhone: "Alıcının telefonunu yazın. Kurye teslimattan önce bu numarayı arar.",
   neighborhood: "Mahalleyi yazın.",
   address: "Açık adresi yazın: sokak, bina ve daire numarası.",
@@ -41,6 +42,7 @@ export function checkoutErrorMessage(
       return "Bir boy seçin.";
     case CheckoutError.OptionInvalid:
       if (field === "orderNumber") return "Bu numarayla bir siparişiniz yok. Numarayı kontrol edin ya da boş bırakın.";
+      if (field === "rating") return "Bir ile beş yıldız arasında bir puan seçin.";
       return field === "items"
         ? "En az bir ürün seçin; adet 1 ile 20 arasında olmalı."
         : "Seçtiğiniz ekleme artık yok. Sayfayı yenileyip yeniden seçin.";
@@ -79,6 +81,12 @@ export function checkoutErrorMessage(
       return "Fotoğraf okunamadı. JPEG ya da PNG, en az 300 piksel genişliğinde bir fotoğraf seçin.";
     case CheckoutError.DeliveryPhotoStatus:
       return "Teslim fotoğrafı sipariş yola çıkınca eklenir.";
+    case CheckoutError.ShopUnavailable:
+      return "Dükkân şu an sipariş almıyor. Daha sonra yeniden deneyin ya da dükkânı arayın.";
+    case CheckoutError.ShopClosed:
+      return "Dükkânınız Tomurcuk'ta kapatıldı; panel girişi kapalı.";
+    case CheckoutError.OpenOrders:
+      return `Dükkânın teslim edilmeyi bekleyen ${meta.count} siparişi var. Kapatmak için bunu onaylayın.`;
     case CheckoutError.TooMany:
       return `En fazla ${meta.max} tane ekleyebilirsiniz.`;
     case CheckoutError.SlotOverlap:
@@ -97,6 +105,12 @@ export function checkoutErrorMessage(
       return "Bu e-postayla açılmış bir hesap var. Başka bir e-posta yazın.";
     case CheckoutError.PasswordShort:
       return `Şifre en az ${meta.min} karakter olmalı.`;
+    case CheckoutError.NotDelivered:
+      return "Yorumu sipariş teslim edildikten sonra yazabilirsiniz.";
+    case CheckoutError.ReviewClosed:
+      return "Yorumlar teslimattan sonraki 30 gün içinde yazılır; bu siparişin süresi geçti.";
+    case CheckoutError.AlreadyReviewed:
+      return "Bu sipariş için yorumunuz alındı. Her siparişe bir yorum yazılır.";
     case CheckoutError.LinkInvalid:
       return "Bu bağlantının süresi geçmiş ya da kullanılmış. Tomurcuk ekibinden yeni bağlantı isteyin.";
   }

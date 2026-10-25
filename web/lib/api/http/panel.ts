@@ -26,6 +26,8 @@ export type PanelApi = Pick<
   | "uploadProductPhoto"
   | "getPanelSettings"
   | "saveShopProfile"
+  | "saveShopPage"
+  | "uploadShopPhoto"
   | "saveSameDayCutoff"
   | "saveTimeSlots"
   | "saveDeliveryZones"
@@ -81,6 +83,12 @@ export const httpPanelApi: PanelApi = {
   },
   getPanelSettings: () => get<PanelSettings>("/api/panel/settings"),
   saveShopProfile: (_shopId, input) => send("PUT", "/api/panel/settings/profile", input),
+  saveShopPage: (_shopId, input) => send("PUT", "/api/panel/settings/page", input),
+  uploadShopPhoto: (_shopId, kind, file) => {
+    const body = new FormData();
+    body.set("file", file, "foto.jpg");
+    return send("POST", `/api/panel/settings/photos?kind=${kind}`, body);
+  },
   saveSameDayCutoff: (_shopId, sameDayCutoff) => send("PUT", "/api/panel/settings/same-day-cutoff", { sameDayCutoff }),
   saveTimeSlots: (_shopId, slots) => send("PUT", "/api/panel/settings/slots", slots),
   saveDeliveryZones: (_shopId, zones) => send("PUT", "/api/panel/settings/zones", zones),

@@ -11,8 +11,6 @@ import styles from "../_components/settings.module.css";
 
 interface ProfileFormProps {
   profile: PanelSettings["profile"];
-  /** Öne çıkan ürün seçimi: satıştaki ürünler. */
-  products: { id: string; name: string }[];
   /** Çalışan görür ama değiştiremez. */
   readOnly: boolean;
 }
@@ -20,7 +18,7 @@ interface ProfileFormProps {
 const initialState: SettingsFormState = { version: 0, errors: {}, values: {}, notice: initialNotice };
 
 /** Dükkân bilgileri, sözleşmelerdeki satıcı bilgileri ve yeni sipariş SMS'i tek formda. */
-export function ProfileForm({ profile, products, readOnly }: ProfileFormProps) {
+export function ProfileForm({ profile, readOnly }: ProfileFormProps) {
   const [state, action, pending] = useActionState(saveProfileForm, initialState);
   const { shop } = profile;
   const v = (key: string, fallback: string | null) => state.values[key] ?? fallback ?? "";
@@ -81,21 +79,6 @@ export function ProfileForm({ profile, products, readOnly }: ProfileFormProps) {
               maxLength={1000}
               error={e.description}
             />
-            <Field
-              className={styles.wide}
-              as="select"
-              label="Vitrinde öne çıkan ürün"
-              name="featuredProductId"
-              defaultValue={v("featuredProductId", shop.featuredProductId)}
-              error={e.featuredProductId}
-            >
-              <option value="">Seçilmedi</option>
-              {products.map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.name}
-                </option>
-              ))}
-            </Field>
           </div>
         </section>
 

@@ -2,6 +2,7 @@ package com.tomurcuk.identity.internal;
 
 import com.tomurcuk.audit.AuditLog;
 import com.tomurcuk.identity.Impersonations;
+import com.tomurcuk.shop.ShopDirectory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -31,7 +32,7 @@ class SecurityConfig {
 
 	@Bean
 	SecurityFilterChain api(HttpSecurity http, SecurityContextRepository contexts, Impersonations impersonations,
-			AuditLog audit) throws Exception {
+			AuditLog audit, ShopDirectory shops) throws Exception {
 		return http
 			.authorizeHttpRequests(requests -> requests
 				.requestMatchers("/api/public/**", "/actuator/health/**", "/v3/api-docs/**", "/api/panel/auth/login",
@@ -44,6 +45,7 @@ class SecurityConfig {
 				.anyRequest()
 				.denyAll())
 			.addFilterBefore(new ImpersonationFilter(impersonations, audit), AuthorizationFilter.class)
+			.addFilterAfter(new ClosedShopFilter(shops), ImpersonationFilter.class)
 			.securityContext(context -> context.securityContextRepository(contexts))
 			.csrf(AbstractHttpConfigurer::disable)
 			.formLogin(AbstractHttpConfigurer::disable)

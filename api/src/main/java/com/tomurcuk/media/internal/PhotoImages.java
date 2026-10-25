@@ -18,19 +18,15 @@ import javax.imageio.ImageWriter;
 import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.ImageOutputStream;
 
+import com.tomurcuk.media.PhotoKind;
+
 /**
  * Yüklenen fotoğrafı hazırlar ve JPEG olarak yeniden yazar; yeniden yazmak konum gibi EXIF
- * bilgilerini de siler. Ürün fotoğrafı ortadan 4:5 kırpılır, en çok 1200×1500; teslim fotoğrafı
- * kırpılmaz, uzun kenarı en çok 1600. Telefonun döndürme bilgisini tarayıcı uygular; panel
- * fotoğrafı yüklemeden önce JPEG'e çevirir.
+ * bilgilerini de siler. Oran ve ölçü fotoğrafın türünden gelir (`PhotoKind`): ürün 4:5, kapak 3:2,
+ * logo ve atölye kare, ortadan kırpılır; teslim fotoğrafı kırpılmaz. Telefonun döndürme bilgisini
+ * tarayıcı uygular; panel fotoğrafı yüklemeden önce JPEG'e çevirir.
  */
 final class PhotoImages {
-
-	static final int WIDTH = 1200;
-
-	static final int HEIGHT = 1500;
-
-	static final int DELIVERY_LONG_SIDE = 1600;
 
 	static final int MAX_BYTES = 8 * 1024 * 1024;
 
@@ -50,39 +46,33 @@ final class PhotoImages {
 		}
 	}
 
-	static byte[] toProductJpeg(byte[] input) throws InvalidPhoto {
+	static byte[] toJpeg(byte[] input, PhotoKind kind) throws InvalidPhoto {
 		if (input.length == 0 || input.length > MAX_BYTES) {
 			throw new InvalidPhoto("Boyut uygun değil: " + input.length);
 		}
 		BufferedImage source = read(input);
 		int w = source.getWidth();
 		int h = source.getHeight();
-		// 4:5'e ortadan kırp.
+		if (kind.ratioW() == 0) {
+			double ratio = Math.min(1.0, (double) kind.maxSide() / Math.max(w, h));
+			return writeJpeg(scale(source, Math.max(1, (int) Math.round(w * ratio)),
+					Math.max(1, (int) Math.round(h * ratio))));
+		}
+		// Orana ortadan kırp.
+		int rw = kind.ratioW();
+		int rh = kind.ratioH();
 		int cropW = w;
 		int cropH = h;
-		if (w * 5 > h * 4) {
-			cropW = h * 4 / 5;
+		if ((long) w * rh > (long) h * rw) {
+			cropW = h * rw / rh;
 		}
 		else {
-			cropH = w * 5 / 4;
+			cropH = w * rh / rw;
 		}
 		int x = (w - cropW) / 2;
 		int y = (h - cropH) / 2;
-		int outW = Math.min(WIDTH, cropW);
-		return writeJpeg(scale(source.getSubimage(x, y, cropW, cropH), outW, outW * 5 / 4));
-	}
-
-	static byte[] toDeliveryJpeg(byte[] input) throws InvalidPhoto {
-		if (input.length == 0 || input.length > MAX_BYTES) {
-			throw new InvalidPhoto("Boyut uygun değil: " + input.length);
-		}
-		BufferedImage source = read(input);
-		int w = source.getWidth();
-		int h = source.getHeight();
-		double ratio = Math.min(1.0, (double) DELIVERY_LONG_SIDE / Math.max(w, h));
-		int outW = Math.max(1, (int) Math.round(w * ratio));
-		int outH = Math.max(1, (int) Math.round(h * ratio));
-		return writeJpeg(scale(source, outW, outH));
+		int outW = Math.min(kind.maxSide(), cropW);
+		return writeJpeg(scale(source.getSubimage(x, y, cropW, cropH), outW, outW * rh / rw));
 	}
 
 	private static BufferedImage scale(BufferedImage source, int outW, int outH) {

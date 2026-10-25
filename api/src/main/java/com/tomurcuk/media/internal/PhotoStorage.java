@@ -3,6 +3,7 @@ package com.tomurcuk.media.internal;
 import java.util.Locale;
 import java.util.Optional;
 
+import com.tomurcuk.media.PhotoKind;
 import com.tomurcuk.shared.Ids;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,10 +22,10 @@ public class PhotoStorage {
 	}
 
 	/** Görüntü uygun değilse boş döner. */
-	public Optional<String> store(byte[] content, boolean delivery) {
+	public Optional<String> store(byte[] content, PhotoKind kind) {
 		byte[] jpeg;
 		try {
-			jpeg = delivery ? PhotoImages.toDeliveryJpeg(content) : PhotoImages.toProductJpeg(content);
+			jpeg = PhotoImages.toJpeg(content, kind);
 		}
 		catch (PhotoImages.InvalidPhoto ex) {
 			log.info("Fotoğraf reddedildi: {}", ex.getMessage());

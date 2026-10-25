@@ -67,6 +67,35 @@ export const PaymentMethod = {
 export type PaymentMethod = ValueOf<typeof PaymentMethod>;
 
 /** shop. Veri modeline ek: shortName, previousSlugs, timeZone, description*, openingHours, featuredProductId. */
+export const ShopStatus = {
+  Open: "open",
+  /** Siparişe geçici kapalı; vitrin açık. */
+  Paused: "paused",
+  /** Askıda; vitrinde yalnızca adı, panel açık. */
+  Suspended: "suspended",
+  /** Kalıcı kapalı; vitrin 404, panel girişi yok. */
+  Closed: "closed",
+} as const;
+export type ShopStatus = ValueOf<typeof ShopStatus>;
+
+/** Durumun ayrıntısı; gerekçe yalnızca panelde ve destekte görünür. */
+export interface ShopStatusDetail {
+  status: ShopStatus;
+  reason: string;
+  pausedUntil: string | null;
+  changedAt: string | null;
+  changedBy: string | null;
+}
+
+export interface ShopStatusInput {
+  status: ShopStatus;
+  reason: string;
+  /** ISO an; yalnızca geçici kapatmada, en çok 30 gün sonrası. */
+  pausedUntil: string | null;
+  /** Kalıcı kapatmada açık siparişler görüldü. */
+  confirmOpenOrders: boolean;
+}
+
 export interface Shop {
   id: string;
   name: string;
@@ -78,8 +107,12 @@ export interface Shop {
   phone: string;
   address: string;
   logoUrl: string | null;
-  /** Abonelik bitince veya askıya alınınca false; vitrin sipariş almaz, veri silinmez. */
+  /** Sipariş alıyor mu: `status` açıksa true. */
   active: boolean;
+  /** Destek ekibinin belirlediği durum; kalıcı kapalı dükkânın vitrini bulunmaz. */
+  status: ShopStatus;
+  /** Geçici kapatmanın bitişi; geçince dükkân kendiliğinden açılır. */
+  pausedUntil: string | null;
   plan: ShopPlan;
   /** Aynı gün teslim için son sipariş saati. */
   sameDayCutoff: ClockTime;
@@ -89,7 +122,16 @@ export interface Shop {
   /** Mobilde gösterilen kısa tanıtım metni. */
   descriptionShort: string;
   openingHours: string;
+  /** Dükkânın favorisi; vitrinde çiçekçinin notuyla öne çıkar. */
   featuredProductId: string | null;
+  /** Favorinin yanındaki not; kart notu etiketinde. */
+  favoriteNote: string;
+  /** 3:2 kapak fotoğrafı; yoksa vitrin kapaksız açılır. */
+  coverPhotoUrl: string | null;
+  story: string;
+  foundedYear: number | null;
+  /** En çok üç kare atölye fotoğrafı. */
+  storyPhotos: string[];
   /** Sözleşmelerde satıcı: unvan ya da ad soyad. Boşsa dükkân ayarlarından doldurulmamıştır. */
   legalName: string;
   taxOffice: string;
@@ -214,13 +256,29 @@ export interface ShopProfileInput {
   descriptionShort: string;
   description: string;
   openingHours: string;
-  featuredProductId: string;
   legalName: string;
   taxOffice: string;
   taxNumber: string;
   email: string;
   notifyPhone: string;
   notifySms: boolean;
+}
+
+/** Dükkânın sayfası; fotoğraflar panelden yüklenen adreslerdir. */
+export interface ShopPageInput {
+  logoUrl: string | null;
+  coverPhotoUrl: string | null;
+  story: string;
+  foundedYear: number | null;
+  storyPhotos: string[];
+  featuredProductId: string | null;
+  favoriteNote: string;
+}
+
+/** Son 90 günde en az 3 siparişte teslim edilen ürünlerin en çok gideni; yoksa `productId` boş. */
+export interface Bestseller {
+  productId: string | null;
+  orders: number;
 }
 
 /** İlçe → mahalleler (İstanbul). */
@@ -460,9 +518,17 @@ export const CheckoutError = {
   // Panel: ürün formu.
   PriceInvalid: "price_invalid",
   PhotoInvalid: "photo_invalid",
+  // Dükkân durumu.
+  ShopUnavailable: "shop_unavailable",
+  ShopClosed: "shop_closed",
+  OpenOrders: "open_orders",
   /** Teslim fotoğrafı sipariş yola çıkmadan eklenmez. */
   DeliveryPhotoStatus: "delivery_photo_status",
   TooMany: "too_many",
+  // Yorumlar.
+  NotDelivered: "not_delivered",
+  ReviewClosed: "review_closed",
+  AlreadyReviewed: "already_reviewed",
   // Panel: ayarlar.
   SlotOverlap: "slot_overlap",
   ZoneDuplicate: "zone_duplicate",
@@ -560,6 +626,8 @@ export interface PanelSession {
   shop: Shop;
   user: ShopUser;
   impersonation: Impersonation | null;
+  /** Dükkân siparişe kapalı ya da askıdaysa destek ekibinin gerekçesi. */
+  statusReason: string;
 }
 
 /** special_day; yıl tutulmaz, her yıl tekrar eder. */
@@ -746,6 +814,11 @@ export interface ShopOverview extends ShopSummary {
   notes: SupportNote[];
   users: ShopUser[];
   tickets: TicketSummary[];
+  status: ShopStatusDetail;
+  /** Teslim edilmeyi bekleyen siparişler: yeni, hazırlanıyor, yolda. */
+  openOrders: number;
+  /** En yeni 20 yorum, gizlenenler dahil. */
+  reviews: Review[];
 }
 
 /** audit_log; yalnızca eklenir. */
@@ -839,3 +912,77 @@ export interface OrderRef {
   slug: string;
   token: string;
 }
+
+// ---------------------------------------------------------------- yorumlar
+
+/**
+ * Bir siparişin yorumu (api review modülü). Ad ("Elif Y." ya da "Bir alıcı") ve semt yazıldığı
+ * anda kopyalanır. Gizlenen yorum yalnızca panelde ve destekte görünür.
+ */
+export interface Review {
+  id: string;
+  shopId: string;
+  orderNumber: string;
+  /** 1–5. */
+  rating: number;
+  /** Boş olabilir; en çok 500 karakter. */
+  text: string;
+  authorName: string;
+  district: string;
+  createdAt: string;
+  products: { productId: string; productName: string }[];
+  hiddenAt: string | null;
+  hiddenReason: string | null;
+}
+
+/** Görünür yorumların ortalaması (bir ondalık) ve sayısı. */
+export interface Rating {
+  average: number;
+  count: number;
+}
+
+/** Vitrin: dükkânın ve yorumu olan her ürünün puanı. */
+export interface ShopRatings {
+  shop: Rating;
+  products: Record<string, Rating>;
+}
+
+export interface ProductReviews {
+  rating: Rating;
+  /** En yeni 30 görünür yorum. */
+  reviews: Review[];
+}
+
+/** Alıcı ana sayfasındaki "Alıcılar ne diyor". */
+export interface RecentReview {
+  id: string;
+  rating: number;
+  text: string;
+  authorName: string;
+  district: string;
+  createdAt: string;
+  productName: string;
+  shopSlug: string;
+  shopName: string;
+}
+
+/**
+ * Takip sayfasındaki yorum bölümü. Yazılamıyorsa `reason`: teslim edilmedi, teslimden 30 gün
+ * geçti ya da yorum yazıldı (`review`).
+ */
+export interface ReviewState {
+  canWrite: boolean;
+  reason: "not_delivered" | "review_closed" | "already_reviewed" | null;
+  /** Yorumun görüneceği ad, ör. "Ayşe D."; "adım görünmesin" seçilirse "Bir alıcı". */
+  authorName: string;
+  productName: string;
+  review: Review | null;
+}
+
+export interface ReviewInput {
+  rating: number | null;
+  text: string;
+  hideName: boolean;
+}
+
+export type ReviewField = "rating" | "text" | "order";

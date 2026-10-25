@@ -41,6 +41,7 @@ export type SupportApi = Pick<
   | "getPilotApplications"
   | "openShop"
   | "createPasswordLink"
+  | "changeShopStatus"
   | "getPasswordHolder"
   | "setPassword"
   | "requestPasswordReset"
@@ -92,6 +93,7 @@ export const httpSupportApi: SupportApi = {
   submitPilotApplication: (input) => send("POST", "/api/public/pilot-applications", input),
   getPilotApplications: () => get<PilotApplication[]>("/api/support/pilot-applications"),
   openShop: (input) => send("POST", "/api/support/shops", input),
+  changeShopStatus: (shopId, input) => sendOrNull("POST", path`/api/support/shops/${shopId}/status`, input),
   createPasswordLink: async (shopId) => {
     const result = await sendOrNull<PasswordLink, never>("POST", path`/api/support/shops/${shopId}/password-link`, {});
     return result?.ok ? result.value : null;

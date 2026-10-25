@@ -3,6 +3,7 @@ import { Suspense, type ReactNode } from "react";
 import { ImpersonationBand } from "./_components/ImpersonationBand";
 import { NewOrderWatcher } from "./_components/NewOrderWatcher";
 import { PanelSidebar, PanelTabBar } from "./_components/PanelNav";
+import { StatusBand } from "./_components/StatusBand";
 import styles from "./_components/panel.module.css";
 import { panelCounts, panelSession } from "./_lib";
 
@@ -20,11 +21,12 @@ export default function PanelLayout({ children }: LayoutProps<"/panel">) {
 }
 
 async function PanelFrame({ children }: { children: ReactNode }) {
-  const { shop, impersonation } = await panelSession();
+  const { shop, impersonation, statusReason } = await panelSession();
   const counts = await panelCounts(shop.id, shop.timeZone);
   return (
     <>
       {impersonation && <ImpersonationBand impersonation={impersonation} shopName={shop.name} timeZone={shop.timeZone} />}
+      <StatusBand shop={shop} reason={statusReason} />
       <div className={styles.shell}>
         <PanelSidebar
           shopName={shop.name}

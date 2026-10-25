@@ -7,6 +7,11 @@ import java.util.List;
 import java.util.Optional;
 
 import com.tomurcuk.identity.ShopPrincipal;
+import com.tomurcuk.shared.FieldError;
+import com.tomurcuk.shared.ValidationException;
+import com.tomurcuk.shop.ShopDirectory;
+import com.tomurcuk.shop.ShopInfo;
+import com.tomurcuk.shop.ShopStatus;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -32,12 +37,15 @@ public class PanelAuthentication {
 
 	private final Clock clock;
 
+	private final ShopDirectory shops;
+
 	PanelAuthentication(ShopUserStore users, PasswordEncoder passwords, SecurityContextRepository contexts,
-			Clock clock) {
+			Clock clock, ShopDirectory shops) {
 		this.users = users;
 		this.passwords = passwords;
 		this.contexts = contexts;
 		this.clock = clock;
+		this.shops = shops;
 	}
 
 	public Optional<ShopPrincipal> login(String email, String password, HttpServletRequest request,
@@ -48,6 +56,10 @@ public class PanelAuthentication {
 			return Optional.empty();
 		}
 		ShopUserStore.ShopUser u = user.get();
+		// Kalıcı kapatılan dükkân panele giremez; doğru şifreden sonra söylenir.
+		if (shops.find(u.shopId()).map(ShopInfo::status).orElse(ShopStatus.CLOSED) == ShopStatus.CLOSED) {
+			throw ValidationException.of("form", FieldError.of("shop_closed"));
+		}
 		ShopPrincipal principal = new ShopPrincipal(u.id(), u.shopId(), u.name(), u.email(), u.role());
 		UsernamePasswordAuthenticationToken token = UsernamePasswordAuthenticationToken.authenticated(principal, null,
 				authorities(principal));
