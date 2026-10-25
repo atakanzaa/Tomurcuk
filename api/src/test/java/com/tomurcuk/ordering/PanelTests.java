@@ -101,9 +101,10 @@ class PanelTests {
 		Cookie session = login("leyla@lalebahcesi.com");
 		mvc.perform(get("/api/panel/orders/o_4822").cookie(session)).andExpect(status().isNotFound());
 		mvc.perform(get("/api/panel/customers/cu_ayse").cookie(session)).andExpect(status().isNotFound());
+		// Lale Bahçesi'nin kendi örnek siparişi var; listede başka dükkânın siparişi olmamalı.
 		mvc.perform(get("/api/panel/orders").cookie(session))
 			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.length()").value(0));
+			.andExpect(jsonPath("$[?(@.shopId != 'shop_lale')]").isEmpty());
 		changeStatus(session, "o_4822", "preparing").andExpect(status().isUnprocessableContent());
 		mvc.perform(get("/api/panel/orders/o_4822").cookie(owner)).andExpect(jsonPath("$.status").value(before));
 	}

@@ -35,6 +35,7 @@ import com.tomurcuk.ordering.PaymentMethod;
 import com.tomurcuk.ordering.PaymentStatus;
 import com.tomurcuk.payment.PaymentAccounts;
 import com.tomurcuk.payment.Payments;
+import com.tomurcuk.review.Reviews;
 import com.tomurcuk.shared.FieldError;
 import com.tomurcuk.shared.Ids;
 import com.tomurcuk.shared.Masks;
@@ -95,12 +96,14 @@ public class SupportDesk {
 
 	private final AuditLog audit;
 
+	private final Reviews reviews;
+
 	private final Clock clock;
 
 	SupportDesk(TicketStore tickets, ShopDirectory shops, OrderDirectory orders, Customers customers,
 			ShopUsers shopUsers, PlatformUsers supportUsers, Payments payments,
 			PaymentAccounts paymentAccounts, NotificationLog notifications, Impersonations impersonations,
-			AuditLog audit, Clock clock) {
+			AuditLog audit, Reviews reviews, Clock clock) {
 		this.tickets = tickets;
 		this.shops = shops;
 		this.orders = orders;
@@ -112,6 +115,7 @@ public class SupportDesk {
 		this.notifications = notifications;
 		this.impersonations = impersonations;
 		this.audit = audit;
+		this.reviews = reviews;
 		this.clock = clock;
 	}
 
@@ -231,7 +235,8 @@ public class SupportDesk {
 						.filter(t -> !t.status().equals("resolved"))
 						.map(this::summary)
 						.toList(),
-					shops.statusDetail(shopId).orElseThrow(), orders.countOpen(shopId));
+					shops.statusDetail(shopId).orElseThrow(), orders.countOpen(shopId),
+					reviews.forShop(shopId, 20));
 		});
 	}
 

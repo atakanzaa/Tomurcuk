@@ -42,6 +42,7 @@ export function checkoutErrorMessage(
       return "Bir boy seçin.";
     case CheckoutError.OptionInvalid:
       if (field === "orderNumber") return "Bu numarayla bir siparişiniz yok. Numarayı kontrol edin ya da boş bırakın.";
+      if (field === "rating") return "Bir ile beş yıldız arasında bir puan seçin.";
       return field === "items"
         ? "En az bir ürün seçin; adet 1 ile 20 arasında olmalı."
         : "Seçtiğiniz ekleme artık yok. Sayfayı yenileyip yeniden seçin.";
@@ -104,6 +105,12 @@ export function checkoutErrorMessage(
       return "Bu e-postayla açılmış bir hesap var. Başka bir e-posta yazın.";
     case CheckoutError.PasswordShort:
       return `Şifre en az ${meta.min} karakter olmalı.`;
+    case CheckoutError.NotDelivered:
+      return "Yorumu sipariş teslim edildikten sonra yazabilirsiniz.";
+    case CheckoutError.ReviewClosed:
+      return "Yorumlar teslimattan sonraki 30 gün içinde yazılır; bu siparişin süresi geçti.";
+    case CheckoutError.AlreadyReviewed:
+      return "Bu sipariş için yorumunuz alındı. Her siparişe bir yorum yazılır.";
     case CheckoutError.LinkInvalid:
       return "Bu bağlantının süresi geçmiş ya da kullanılmış. Tomurcuk ekibinden yeni bağlantı isteyin.";
   }

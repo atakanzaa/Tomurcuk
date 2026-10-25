@@ -525,6 +525,10 @@ export const CheckoutError = {
   /** Teslim fotoğrafı sipariş yola çıkmadan eklenmez. */
   DeliveryPhotoStatus: "delivery_photo_status",
   TooMany: "too_many",
+  // Yorumlar.
+  NotDelivered: "not_delivered",
+  ReviewClosed: "review_closed",
+  AlreadyReviewed: "already_reviewed",
   // Panel: ayarlar.
   SlotOverlap: "slot_overlap",
   ZoneDuplicate: "zone_duplicate",
@@ -813,6 +817,8 @@ export interface ShopOverview extends ShopSummary {
   status: ShopStatusDetail;
   /** Teslim edilmeyi bekleyen siparişler: yeni, hazırlanıyor, yolda. */
   openOrders: number;
+  /** En yeni 20 yorum, gizlenenler dahil. */
+  reviews: Review[];
 }
 
 /** audit_log; yalnızca eklenir. */
@@ -906,3 +912,77 @@ export interface OrderRef {
   slug: string;
   token: string;
 }
+
+// ---------------------------------------------------------------- yorumlar
+
+/**
+ * Bir siparişin yorumu (api review modülü). Ad ("Elif Y." ya da "Bir alıcı") ve semt yazıldığı
+ * anda kopyalanır. Gizlenen yorum yalnızca panelde ve destekte görünür.
+ */
+export interface Review {
+  id: string;
+  shopId: string;
+  orderNumber: string;
+  /** 1–5. */
+  rating: number;
+  /** Boş olabilir; en çok 500 karakter. */
+  text: string;
+  authorName: string;
+  district: string;
+  createdAt: string;
+  products: { productId: string; productName: string }[];
+  hiddenAt: string | null;
+  hiddenReason: string | null;
+}
+
+/** Görünür yorumların ortalaması (bir ondalık) ve sayısı. */
+export interface Rating {
+  average: number;
+  count: number;
+}
+
+/** Vitrin: dükkânın ve yorumu olan her ürünün puanı. */
+export interface ShopRatings {
+  shop: Rating;
+  products: Record<string, Rating>;
+}
+
+export interface ProductReviews {
+  rating: Rating;
+  /** En yeni 30 görünür yorum. */
+  reviews: Review[];
+}
+
+/** Alıcı ana sayfasındaki "Alıcılar ne diyor". */
+export interface RecentReview {
+  id: string;
+  rating: number;
+  text: string;
+  authorName: string;
+  district: string;
+  createdAt: string;
+  productName: string;
+  shopSlug: string;
+  shopName: string;
+}
+
+/**
+ * Takip sayfasındaki yorum bölümü. Yazılamıyorsa `reason`: teslim edilmedi, teslimden 30 gün
+ * geçti ya da yorum yazıldı (`review`).
+ */
+export interface ReviewState {
+  canWrite: boolean;
+  reason: "not_delivered" | "review_closed" | "already_reviewed" | null;
+  /** Yorumun görüneceği ad, ör. "Ayşe D."; "adım görünmesin" seçilirse "Bir alıcı". */
+  authorName: string;
+  productName: string;
+  review: Review | null;
+}
+
+export interface ReviewInput {
+  rating: number | null;
+  text: string;
+  hideName: boolean;
+}
+
+export type ReviewField = "rating" | "text" | "order";

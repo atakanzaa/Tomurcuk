@@ -127,6 +127,33 @@ Vitrin dükkânın kendi sayfasıdır; içeriğini dükkân sahibi panelde "Dük
 - En çok gönderilen (`GET /api/public/shops/{id}/bestseller`): son 90 günde teslim edilen siparişlerde en çok geçen ürün, sipariş sayısıyla. En az 3 sipariş yoksa `productId` boş döner ve vitrinde bölüm görünmez. Web saatlik önbellekler, `products:` etiketiyle yenilenir.
 - Vitrin sırası: kapak ve logo, ad, ilçe ve kuruluş yılı, tanıtım, teslimat bandı; "Dükkânın favorisi" (notu kart notu etiketinde), "En çok gönderilen" (favoriyle aynıysa sayı favorinin altına yazılır), "Hikâyemiz", "Bütün çiçekler". Alan boşsa bölümü görünmez.
 
+## Yorumlar
+
+Ürün yorumları `review` modülündedir (`V20`: `review`, `review_product`).
+
+- **Kim yazar:** yalnızca teslim edilen siparişin göndereni, takip sayfasından. Takip kodu yetkidir ve yalnızca kendi dükkânında geçer. Teslimden sonraki 30 gün içinde, her siparişe bir yorum yazılır. Puan 1–5, metin isteğe bağlı ve en çok 500 karakter.
+- **Uçlar:**
+  - `GET` ve `POST /api/public/shops/{shopId}/tracking/{token}/review`
+  - `GET /api/public/shops/{shopId}/ratings`: dükkânın ve her ürünün puanı
+  - `GET /api/public/shops/{shopId}/products/{productId}/reviews`: en yeni 30 yorum
+  - `GET /api/public/discover/reviews`: farklı dükkânlardan en yeni 6 yorum. Önce her dükkânın en yenisi gelir. Askıdaki ve kapalı dükkânların yorumları çıkmaz.
+  - `GET /api/panel/reviews`
+  - `POST /api/support/reviews/{id}/hide`
+- **Hatalar (422):**
+  - `order`: `not_delivered`, `review_closed` ya da `already_reviewed`
+  - `rating`: `option_invalid`
+  - `text`: `too_long`
+- **Görünen ad:** yazıldığı anda kopyalanır. "Elif Yılmaz" "Elif Y." olur; ad yoksa ya da "Adım görünmesin" seçildiyse "Bir alıcı" yazar. Semt, teslim bölgesinin ilçesidir.
+- **Ürünler:** yorum siparişteki her ürüne bağlanır. Ürün adı, sipariş anındaki addır.
+- **Gizleme:**
+  - Destek ekibinin bütün rolleri yorumu gerekçeyle gizler; yorum silinmez.
+  - Gizleme denetim kaydına "Yorum gizlendi" olarak yazılır.
+  - Gizlenen yorum vitrinden, ürün sayfasından, ana sayfadan ve puanlardan düşer.
+  - Panelde ve destekte gerekçesiyle kalır.
+- **Dükkân:** yorumları panelde görür; silemez, gizleyemez.
+- **Web önbelleği:** puanlar ve listeler önbellekten okunur. Yorum yazılınca ya da gizlenince `reviews:{shopId}` ve `reviews` etiketleri yenilenir.
+- **Örnek veri:** `orders.json` içindeki `reviews` dizisinden, siparişlerle birlikte yeniden yüklenir. Takip kodu `d4Wn8HcZp1QaE6uJ` (T-4817) yorumsuz bırakılır; formu denemek için kullanılır.
+
 ## Sipariş ve ödeme akışı
 
 1. Taslak: ürün ve seçenekler doğrulanır, fiyat o anki değerdir. Taslak 2 saat yaşar; tarayıcı yalnızca id'sini httpOnly cookie'de tutar.
@@ -188,6 +215,12 @@ Kapsam bilerek dar tutulur; geliştirme hızı önce gelir.
 - Aşama 6 (`SupportTests`): şifre ve TOTP birlikte; dükkân oturumuyla panele destek girişi yok; telefon maskeli, gerekçesiz açılmaz, açılış kayda geçer; dükkân adına oturum çalışan yetkisinde (iptal 403), işlem kayda geçer, 30 dakikada biter; denetim kaydı güncellenemez ve silinemez.
 - Dükkân durumu (`ShopStatusTests`): temsilci geçici kapatır, süre bitince sipariş yeniden alınır, askıya alamaz, gerekçesiz kapatamaz; askıdaki dükkânı temsilci açamaz, lider açar, kayıt ve e-posta düşer; açık siparişli dükkân onaysız kapatılmaz, kapalı dükkânın vitrini (eski adresiyle de) bulunmaz, panel girişi reddedilir, açık oturum 401 alır.
 - Ayarlar (`PanelSettingsTests`): çalışan ayar değiştiremez (403), bölge İstanbul listesinden (kayıtlı eski ad değişmedikçe kalır), kapasite düşünce dolu yer korunur, kaldırılan aralık takvimden çıkar ve kaydı durur, çakışan aralık reddedilir, kapalı güne sipariş verilemez; dükkânın sayfası başka sitedeki ya da başka dükkânın fotoğrafını almaz, kuruluş yılı ve atölye fotoğrafı sayısı sınırlıdır, en çok gönderilen 3 siparişin altında boş döner.
+- Yorumlar (`ReviewTests`):
+  - Teslim edilmemiş siparişe yorum yazılmaz ve bir siparişe ikinci yorum yazılmaz.
+  - Teslimden 30 gün sonra form kapanır.
+  - Başka dükkânın takip kodu 404 alır.
+  - Gizlenen yorum ürün listesinden, puandan ve ana sayfadan düşer, panelde gerekçesiyle kalır ve kayda geçer.
+  - Ana sayfa yorumlarında dükkân adı bulunur ve ilk sıralar farklı dükkânlardandır.
 - Dükkân açma (`OnboardingTests`): lider dükkân açar, sahip bağlantıyla şifre belirleyip girer; bağlantı ikinci kez ve süresi geçince çalışmaz, yeni bağlantı eskisini geçersiz kılar; temsilci açamaz (403); alınmış ya da ayrılmış slug ve başka hesaptaki e-posta reddedilir, hata olunca dükkân açılmaz; şifre bağlantısı sahibine e-postayla gider; şifremi unuttum kayıtsız adreste de 204 döner ve e-posta göndermez, 2 dakika içinde ikinci bağlantı gitmez, sıfırlama bağlantısı 1 saat sonra çalışmaz.
 - Ürün yönetimi (`PanelCatalogTests`): boyların tam fiyatı ürün fiyatı ve ek fiyata çevrilir, satıştan kalkan ürün vitrinde yok, fotoğraf 4:5 kırpılır ve yalnızca yüklenen adres kabul edilir, çalışan ürün değiştiremez (403), başka dükkânın ürünü bulunamaz.
 - Alıcı ana sayfası (`DiscoveryTests`): o gün teslim edebilen dükkânlar önce, ilk müsait aralığa göre; aynı gün son saati geçen dükkân sonda ve ilk müsait günüyle.

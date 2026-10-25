@@ -180,3 +180,31 @@ export async function getShopPicks() {
 
 export const discoverShops = read("discoverShops");
 export const findOrder = write("findOrder");
+
+// Yorumlar. Okunanlar herkes için aynıdır, önbelleğe alınır; yorum yazılınca ya da gizlenince
+// `reviews:` ve `reviews` etiketleriyle yenilenir.
+export async function getShopRatings(shopId: string) {
+  "use cache";
+  cacheLife("minutes");
+  cacheTag(`reviews:${shopId}`);
+  return impl.getShopRatings(shopId);
+}
+
+export async function getProductReviews(shopId: string, productId: string) {
+  "use cache";
+  cacheLife("minutes");
+  cacheTag(`reviews:${shopId}`);
+  return impl.getProductReviews(shopId, productId);
+}
+
+export async function getRecentReviews() {
+  "use cache";
+  cacheLife("minutes");
+  cacheTag("reviews");
+  return impl.getRecentReviews();
+}
+
+export const getReviewState = read("getReviewState");
+export const writeReview = write("writeReview");
+export const getPanelReviews = read("getPanelReviews");
+export const hideReview = write("hideReview");

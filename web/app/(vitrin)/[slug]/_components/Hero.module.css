@@ -58,6 +58,23 @@
   line-height: 20px;
 }
 
+.rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  font-size: 15px;
+  line-height: 22px;
+}
+
+.rating strong {
+  font-weight: 600;
+}
+
+.ratingCount {
+  color: var(--ink-muted);
+}
+
 .lede {
   max-width: 60ch;
   margin: 0;

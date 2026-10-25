@@ -134,7 +134,7 @@ public class OrderStore {
 		return findWhere("o.shop_id = :shopId AND o.id = :value", shopId, orderId);
 	}
 
-	Optional<Order> findByTrackingToken(String shopId, String token) {
+	public Optional<Order> findByTrackingToken(String shopId, String token) {
 		return findWhere("o.shop_id = :shopId AND o.tracking_token = :value", shopId, token);
 	}
 

@@ -1,6 +1,6 @@
 import { notFound, permanentRedirect } from "next/navigation";
 import { Suspense } from "react";
-import { findShop, getBestseller, getCategories, getDeliveryZones, getProducts } from "@/lib/api";
+import { findShop, getBestseller, getCategories, getDeliveryZones, getProducts, getShopRatings } from "@/lib/api";
 import { ShopLookupKind, ShopStatus, type Category, type Product, type Shop } from "@/lib/api/types";
 import { NO_SELECTION, parseCatalogSelection } from "@/lib/catalog";
 import { cx } from "@/lib/cx";
@@ -41,11 +41,12 @@ export async function Storefront({ params, searchParams }: StorefrontProps) {
 
   const { shop } = lookup;
   if (shop.status === ShopStatus.Suspended) return <SuspendedStorefront shop={shop} />;
-  const [categories, products, zones, bestseller] = await Promise.all([
+  const [categories, products, zones, bestseller, ratings] = await Promise.all([
     getCategories(shop.id),
     getProducts(shop.id),
     getDeliveryZones(shop.id),
     getBestseller(shop.id),
+    getShopRatings(shop.id),
   ]);
   const favorite = products.find((product) => product.id === shop.featuredProductId) ?? null;
   // Favoriyle aynıysa ayrı satır olmaz; sayı favorinin altına yazılır.
@@ -64,7 +65,7 @@ export async function Storefront({ params, searchParams }: StorefrontProps) {
         }
       />
       <main>
-        <ShopHero shop={shop} />
+        <ShopHero shop={shop} rating={ratings.shop} />
         {(favorite || (best && !bestIsFavorite) || hasStory) && (
           <div className={cx(container.container, sections.sections)}>
             {favorite && (
@@ -72,7 +73,14 @@ export async function Storefront({ params, searchParams }: StorefrontProps) {
             )}
             {((best && !bestIsFavorite) || hasStory) && (
               <div className={sections.side}>
-                {best && !bestIsFavorite && <BestsellerRow shop={shop} product={best} orders={bestseller.orders} />}
+                {best && !bestIsFavorite && (
+                  <BestsellerRow
+                    shop={shop}
+                    product={best}
+                    orders={bestseller.orders}
+                    rating={ratings.products[best.id]}
+                  />
+                )}
                 {hasStory && <ShopStory shop={shop} />}
               </div>
             )}

@@ -145,7 +145,9 @@ VALUES
     ('cu_burak', 'shop_nergis', 'Burak Çelik', '0532 640 77 15', NULL, NULL, TRUE),
     ('cu_zeynep', 'shop_nergis', 'Zeynep Aksoy', '0536 402 11 58', NULL, NULL, TRUE),
     ('cu_okan', 'shop_nergis', 'Okan Yıldız', '0533 980 12 64', NULL, NULL, TRUE),
-    ('cu_nilay', 'shop_nergis', 'Nilay Koç', '0532 111 22 33', NULL, NULL, FALSE)
+    ('cu_nilay', 'shop_nergis', 'Nilay Koç', '0532 111 22 33', NULL, NULL, FALSE),
+    ('cu_lb_mert', 'shop_lale', 'Mert Kılıç', '0532 604 18 22', NULL, NULL, FALSE),
+    ('cu_bg_deniz', 'shop_begonvil', 'Deniz Tunç', '0541 377 20 85', NULL, NULL, FALSE)
 ON CONFLICT (id) DO UPDATE SET
     name = EXCLUDED.name,
     phone = EXCLUDED.phone,

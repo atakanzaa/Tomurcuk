@@ -13,6 +13,7 @@ import { phoneHref, whatsappHref, withDativeSuffix } from "@/lib/format";
 import { shopPath, trackingOrderPath } from "@/lib/routes";
 import { buildTrackingView } from "@/lib/tracking";
 import { renderPhoto } from "@/components/ProductPhoto";
+import { ReviewSection } from "./ReviewSection";
 import styles from "./tracking.module.css";
 
 // Takip linki kişiye özeldir; arama motorlarına kapalı.
@@ -102,6 +103,8 @@ async function Tracking({ params }: { params: Promise<{ slug: string; token: str
         {order.cardNote && (
           <GiftTag className={styles.tag} message={order.cardNote} from={order.signature} anonymous={order.anonymous} />
         )}
+
+        <ReviewSection shop={shop} token={order.token} />
 
         <section className={styles.contact}>
           <span>Bir sorun mu var? {withDativeSuffix(shop.shortName)} doğrudan ulaşın.</span>

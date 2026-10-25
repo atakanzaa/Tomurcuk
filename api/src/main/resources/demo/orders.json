@@ -660,7 +660,7 @@
       "total": 63000,
       "items": [
         {
-          "productId": "",
+          "productId": "p_papatya",
           "productName": "Papatya kutusu",
           "unitPrice": 63000,
           "quantity": 1,
@@ -714,7 +714,7 @@
       "total": 144000,
       "items": [
         {
-          "productId": "",
+          "productId": "p_sakayik",
           "productName": "Pembe şakayık",
           "unitPrice": 144000,
           "quantity": 1,
@@ -930,7 +930,7 @@
       "total": 107000,
       "items": [
         {
-          "productId": "",
+          "productId": "p_beyaz_gul",
           "productName": "Beyaz güller (12 dal)",
           "unitPrice": 107000,
           "quantity": 1,
@@ -984,7 +984,7 @@
       "total": 169000,
       "items": [
         {
-          "productId": "",
+          "productId": "p_orkide",
           "productName": "Mor orkide",
           "unitPrice": 169000,
           "quantity": 1,
@@ -1038,7 +1038,7 @@
       "total": 74000,
       "items": [
         {
-          "productId": "",
+          "productId": "p_kir",
           "productName": "Kır buketi",
           "unitPrice": 74000,
           "quantity": 1,
@@ -1092,7 +1092,7 @@
       "total": 85000,
       "items": [
         {
-          "productId": "",
+          "productId": "p_mevsim",
           "productName": "Mevsim buketi",
           "unitPrice": 85000,
           "quantity": 1,
@@ -1200,7 +1200,7 @@
       "total": 135000,
       "items": [
         {
-          "productId": "",
+          "productId": "p_sakayik",
           "productName": "Pembe şakayık",
           "unitPrice": 135000,
           "quantity": 1,
@@ -1254,7 +1254,7 @@
       "total": 240000,
       "items": [
         {
-          "productId": "",
+          "productId": "p_celenk",
           "productName": "Ayaklı çelenk",
           "unitPrice": 240000,
           "quantity": 1,
@@ -1263,6 +1263,180 @@
           "orderId": "o_3141"
         }
       ]
+    },
+    {
+      "trackingToken": "mock-o_lb_1",
+      "senderPhone": "0532 604 18 22",
+      "courierName": null,
+      "events": [
+        {
+          "status": "new",
+          "at": "2026-10-19T07:30:00.000Z"
+        },
+        {
+          "status": "delivered",
+          "at": "2026-10-19T12:40:00.000Z"
+        }
+      ],
+      "shopId": "shop_lale",
+      "source": "link",
+      "paymentStatus": "paid",
+      "paymentMethod": "card",
+      "deliveryDate": "2026-10-19",
+      "exactTime": false,
+      "recipientPhone": "",
+      "address": "",
+      "courierNote": null,
+      "cardNote": null,
+      "senderName": null,
+      "anonymous": false,
+      "subtotal": 72000,
+      "deliveryFee": 0,
+      "deliveryPhotoUrl": null,
+      "createdAt": "2026-10-19T07:30:00.000Z",
+      "id": "o_lb_1",
+      "number": "T-0091",
+      "customerId": "cu_lb_mert",
+      "status": "delivered",
+      "recipientName": "",
+      "zoneName": "Beşiktaş",
+      "deliveryZoneId": "z_lb_besiktas",
+      "timeSlotId": "s_lb_ogle",
+      "slotStart": "13:00",
+      "slotEnd": "16:00",
+      "deliveryTime": "14:20",
+      "total": 72000,
+      "items": [
+        {
+          "productId": "p_lb_lale",
+          "productName": "Beyaz lale",
+          "unitPrice": 72000,
+          "quantity": 1,
+          "options": [],
+          "id": "o_lb_1_i1",
+          "orderId": "o_lb_1"
+        }
+      ]
+    },
+    {
+      "trackingToken": "mock-o_bg_1",
+      "senderPhone": "0541 377 20 85",
+      "courierName": null,
+      "events": [
+        {
+          "status": "new",
+          "at": "2026-10-14T07:30:00.000Z"
+        },
+        {
+          "status": "delivered",
+          "at": "2026-10-14T12:40:00.000Z"
+        }
+      ],
+      "shopId": "shop_begonvil",
+      "source": "link",
+      "paymentStatus": "paid",
+      "paymentMethod": "card",
+      "deliveryDate": "2026-10-14",
+      "exactTime": false,
+      "recipientPhone": "",
+      "address": "",
+      "courierNote": null,
+      "cardNote": null,
+      "senderName": null,
+      "anonymous": false,
+      "subtotal": 110000,
+      "deliveryFee": 0,
+      "deliveryPhotoUrl": null,
+      "createdAt": "2026-10-14T07:30:00.000Z",
+      "id": "o_bg_1",
+      "number": "T-0091",
+      "customerId": "cu_bg_deniz",
+      "status": "delivered",
+      "recipientName": "",
+      "zoneName": "Ataşehir",
+      "deliveryZoneId": "z_bg_atasehir",
+      "timeSlotId": "s_bg_aksam",
+      "slotStart": "16:00",
+      "slotEnd": "19:00",
+      "deliveryTime": "17:10",
+      "total": 110000,
+      "items": [
+        {
+          "productId": "p_bg_monstera",
+          "productName": "Monstera",
+          "unitPrice": 110000,
+          "quantity": 1,
+          "options": [],
+          "id": "o_bg_1_i1",
+          "orderId": "o_bg_1"
+        }
+      ]
+    }
+  ],
+  "reviews": [
+    {
+      "orderId": "o_4820",
+      "rating": 5,
+      "text": "Ofise gönderdim, herkes nereden aldığımı sordu.",
+      "authorName": "Ayşe D.",
+      "district": "Kadıköy",
+      "createdAt": "2026-10-21T16:20:00.000Z"
+    },
+    {
+      "orderId": "o_lb_1",
+      "rating": 4,
+      "text": "Laleler tazeydi, bir hafta dayandı. Kart notu biraz küçük kalmış.",
+      "authorName": "Mert K.",
+      "district": "Beşiktaş",
+      "createdAt": "2026-10-20T09:10:00.000Z"
+    },
+    {
+      "orderId": "o_4790",
+      "rating": 5,
+      "text": "Şakayıklar iki günde tamamen açtı, salonun havası değişti.",
+      "authorName": "Ali A.",
+      "district": "Kadıköy",
+      "createdAt": "2026-10-18T10:05:00.000Z"
+    },
+    {
+      "orderId": "o_bg_1",
+      "rating": 5,
+      "text": "Bakım kartı da eklemişler, çok düşünceli.",
+      "authorName": "Deniz T.",
+      "district": "Ataşehir",
+      "createdAt": "2026-10-15T08:30:00.000Z"
+    },
+    {
+      "orderId": "o_4760",
+      "rating": 5,
+      "text": "Annemin doğum günü için gönderdim, fotoğraftakinden daha dolgun geldi.",
+      "authorName": "Bir alıcı",
+      "district": "Kadıköy",
+      "createdAt": "2026-10-11T18:00:00.000Z"
+    },
+    {
+      "orderId": "o_4705",
+      "rating": 4,
+      "text": "Çiçekler taze ve güzeldi. Ambalaj biraz daha sade olabilirdi.",
+      "authorName": "Deniz A.",
+      "district": "Kadıköy",
+      "createdAt": "2026-10-03T09:40:00.000Z"
+    },
+    {
+      "orderId": "o_4610",
+      "rating": 5,
+      "text": "Saat aralığının başında teslim ettiler, kurye önce bana haber verdi.",
+      "authorName": "Ali A.",
+      "district": "Kadıköy",
+      "createdAt": "2026-09-12T19:15:00.000Z"
+    },
+    {
+      "orderId": "o_4501",
+      "rating": 5,
+      "text": "Hastaneye teslim ettiler; kapıdaki görevliyle konuşup odaya kadar çıkardılar.",
+      "authorName": "Ayşe D.",
+      "district": "Kadıköy",
+      "createdAt": "2026-08-24T08:00:00.000Z"
     }
   ]
 }

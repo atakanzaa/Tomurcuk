@@ -53,6 +53,7 @@ Altı modül var; ilk üçü ürünün çekirdeği, geri kalanı onları tamaml�
 - Instagram bio ve WhatsApp'a koyulacak tek link; ürün bazlı paylaşım linki.
 - Mobil öncelikli tasarım; siparişin %90'ı telefondan gelir.
 - Her dükkânın kendi sayfası: kapak fotoğrafı ve logo, kuruluş yılı ve hikâyesi, en çok üç atölye fotoğrafı, "Dükkânın favorisi" (çiçekçinin notuyla) ve son üç ayın "En çok gönderilen" ürünü.
+- Ürün yorumları: siparişi teslim alan gönderen, takip sayfasından 30 gün içinde puan ve yorum yazar. Yorum ürün sayfasında ve alıcı ana sayfasında, hangi dükkândan teslim edildiğiyle görünür. Destek ekibi uygunsuz yorumu gerekçeyle gizler.
 
 ### 2. Ödeme
 
@@ -116,6 +117,7 @@ Son müşteri sorunu önce çiçekçiye gider. Destek ekibi çiçekçiye destek 
 | Dükkân adına giriş | Evet | Evet | Evet; süreli ve kayıtlı | — | — |
 | Siparişleri geçici kapatma | Evet | Evet | Evet | — | — |
 | Dükkân askıya alma, kalıcı kapatma | Evet | Evet | Hayır | — | — |
+| Yorumu gerekçeyle gizleme | Evet | Evet | Evet | Görüntüler | Görüntüler |
 | Ödeme hesabı (IBAN, alt üye işyeri) | Hayır | Hayır | Hayır | Evet | Hayır |
 | Abonelik ve plan değişikliği | Evet | Evet | Görüntüler | Görüntüler | Hayır |
 | Kullanıcı ve rol yönetimi | Evet | Temsilci ekler | Hayır | Kendi çalışanları | Hayır |
@@ -166,11 +168,11 @@ Son müşteri sorunu önce çiçekçiye gider. Destek ekibi çiçekçiye destek 
 | Ekran | Ne yapar |
 | --- | --- |
 | Dükkân vitrini | Kapak, logo, dükkân adı, hikâye, dükkânın favorisi, en çok gönderilen, ürün listesi, teslim bölgeleri bilgisi |
-| Ürün detayı | Fotoğraflar, boy ve ek seçenekleri, fiyat |
+| Ürün detayı | Fotoğraflar, boy ve ek seçenekleri, fiyat, puan ve yorumlar |
 | Sipariş formu | Teslim bölgesi, tarih, saat aralığı, alıcı bilgisi, kart notu, isimsiz gönderim |
 | Ödeme | Kart ödemesi (sağlayıcı sayfası) veya havale/kapıda seçeneği |
 | Sipariş onayı | Özet, sipariş no, takip linki |
-| Sipariş takip | Durum (Hazırlanıyor, Yolda, Teslim edildi), teslim fotoğrafı, dükkânı ara / WhatsApp butonu |
+| Sipariş takip | Durum (Hazırlanıyor, Yolda, Teslim edildi), teslim fotoğrafı, teslimden sonra yorum formu, dükkânı ara / WhatsApp butonu |
 | Siparişlerim | Telefon + kodla giriş; geçmiş siparişler, "tekrar gönder", özel gün ekleme |
 | Yardım | Dükkâna ulaşma; sorun bildirme formu (dükkâna düşer) |
 

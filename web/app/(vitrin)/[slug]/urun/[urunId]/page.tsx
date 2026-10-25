@@ -1,14 +1,17 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { Suspense } from "react";
-import { findShop, getDeliveryZones, getProduct } from "@/lib/api";
+import { findShop, getDeliveryZones, getProduct, getProductReviews } from "@/lib/api";
 import { ShopLookupKind, ShopStatus, type Product } from "@/lib/api/types";
 import { joinWithAnd, withDativeSuffix, withTimeSuffix } from "@/lib/format";
+import { formatRating, reviewCountLabel } from "@/lib/reviews";
 import { SHELL_PRODUCT_ID, SHELL_SLUG, shopPath } from "@/lib/routes";
 import { FlowHeader } from "@/components/flow/FlowHeader";
 import { renderProductPhoto } from "@/components/ProductPhoto";
+import { StarMark } from "@/components/ui/Stars";
 import { DeliveryBand } from "../../_components/DeliveryBand";
 import { ProductOrderForm } from "./ProductOrderForm";
+import { ProductReviewList } from "./ProductReviewList";
 import { ShareButton } from "./ShareButton";
 import styles from "./product.module.css";
 
@@ -47,7 +50,7 @@ async function ProductDetail({ params }: Pick<Props, "params">) {
   const { shop, product } = data;
   // Askıdaki dükkânın ürünleri gösterilmez; vitrin yalnızca durumu söyler.
   if (shop.status === ShopStatus.Suspended) redirect(shopPath(shop.slug));
-  const zones = await getDeliveryZones(shop.id);
+  const [zones, reviews] = await Promise.all([getDeliveryZones(shop.id), getProductReviews(shop.id, product.id)]);
   const districts = [...new Set(zones.map((z) => z.district))];
   const note = `${withDativeSuffix(joinWithAnd(districts))} teslim. ${withTimeSuffix(shop.sameDayCutoff, "dative")} kadar verilen siparişler aynı gün yola çıkar.`;
 
@@ -59,6 +62,13 @@ async function ProductDetail({ params }: Pick<Props, "params">) {
         <div className={styles.details}>
           <div className={styles.intro}>
             <h1 className={styles.name}>{product.name}</h1>
+            {reviews.rating.count > 0 && (
+              <a href="#yorumlar" className={styles.rating}>
+                <StarMark />
+                <strong>{formatRating(reviews.rating.average)}</strong>
+                <span className={styles.ratingCount}>{reviewCountLabel(reviews.rating)}</span>
+              </a>
+            )}
             <p className={styles.description}>{product.description}</p>
           </div>
           {shop.active ? (
@@ -66,6 +76,7 @@ async function ProductDetail({ params }: Pick<Props, "params">) {
           ) : (
             <DeliveryBand shop={shop} sameDayOpen={false} />
           )}
+          <ProductReviewList shop={shop} reviews={reviews} />
         </div>
       </main>
     </>

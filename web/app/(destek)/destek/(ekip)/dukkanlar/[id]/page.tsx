@@ -17,6 +17,7 @@ import { formatReopening, shopStatusLabel } from "@/lib/shop-status";
 import { durationText, minutesSince } from "@/lib/support";
 import support from "../../_components/support.module.css";
 import { PasswordLinkButton } from "../../_components/PasswordLinkButton";
+import { ReviewModeration } from "./ReviewModeration";
 import { ShopDialogs } from "./ShopDialogs";
 import { ShopStatusControls } from "./ShopStatusControls";
 import styles from "./overview.module.css";
@@ -191,6 +192,11 @@ async function Overview({ params }: Pick<PageProps<"/destek/dukkanlar/[id]">, "p
               Bu ay {shop.smsUsed} SMS gönderildi, paket sınırı {shop.smsLimit}.
               {shop.smsUsed > shop.smsLimit && " Sınır aşıldı; ek paket gerekebilir."}
             </span>
+          </section>
+
+          <section>
+            <h2 className={support.h2}>Yorumlar</h2>
+            <ReviewModeration shopId={shop.shop.id} reviews={shop.reviews} />
           </section>
         </div>
 

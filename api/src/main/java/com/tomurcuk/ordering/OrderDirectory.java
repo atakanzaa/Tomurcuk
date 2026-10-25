@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Siparişlerin dükkân sınırı olmadan okunması. Yalnızca destek modülü kullanır; dükkân
+ * Siparişlerin dükkân sınırı olmadan okunması. Destek ve yorum modülleri kullanır; dükkân
  * uçları dükkânla sınırlı sorguları (PanelOrders) kullanır.
  */
 @Service
@@ -36,6 +36,11 @@ public class OrderDirectory {
 
 	public Optional<Order> find(String orderId) {
 		return orders.findById(orderId);
+	}
+
+	/** Takip kodu yalnızca kendi dükkânında geçerlidir. */
+	public Optional<Order> findByTrackingToken(String shopId, String token) {
+		return orders.findByTrackingToken(shopId, token);
 	}
 
 	public Optional<Order> findByNumber(String shopId, String number) {

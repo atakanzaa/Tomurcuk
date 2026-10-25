@@ -1,8 +1,10 @@
 import { Suspense } from "react";
 import { renderPhoto } from "@/components/ProductPhoto";
-import type { Shop } from "@/lib/api/types";
+import { StarMark } from "@/components/ui/Stars";
+import type { Rating, Shop } from "@/lib/api/types";
 import { cx } from "@/lib/cx";
 import { withAblativeSuffix } from "@/lib/format";
+import { formatRating, reviewCountLabel } from "@/lib/reviews";
 import { DeliveryBand, LiveDeliveryBand } from "./DeliveryBand";
 import container from "./container.module.css";
 import hero from "./Hero.module.css";
@@ -19,7 +21,7 @@ function shopMeta(shop: Shop): string {
  * Vitrinin girişi: kapak fotoğrafı, logo, ad ve teslimat bandı. Mobilde kapak kenardan kenara
  * üstte, logo kapağın altına taşar; masaüstünde kapak sağda durur.
  */
-export function ShopHero({ shop }: { shop: Shop }) {
+export function ShopHero({ shop, rating }: { shop: Shop; rating: Rating }) {
   const meta = shopMeta(shop);
   return (
     <section className={cx(container.container, hero.hero, shop.coverPhotoUrl && hero.withCover)}>
@@ -30,6 +32,13 @@ export function ShopHero({ shop }: { shop: Shop }) {
         {shop.logoUrl && <div className={hero.logo}>{renderPhoto(shop.logoUrl, "84px")}</div>}
         <h1 className={hero.title}>{shop.name}</h1>
         {meta && <p className={hero.meta}>{meta}</p>}
+        {rating.count > 0 && (
+          <p className={hero.rating}>
+            <StarMark />
+            <strong>{formatRating(rating.average)}</strong>
+            <span className={hero.ratingCount}>{reviewCountLabel(rating)}</span>
+          </p>
+        )}
         <p className={hero.lede}>{shop.descriptionShort}</p>
         <p className={hero.ledeLong}>{shop.description}</p>
         {shop.active ? (

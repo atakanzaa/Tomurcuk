@@ -6,7 +6,7 @@ package com.tomurcuk.ordering;
  */
 public final class Terms {
 
-	public static final String VERSION = "2026-10-24";
+	public static final String VERSION = "2026-10-25";
 
 	private Terms() {
 	}

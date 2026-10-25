@@ -7,3 +7,4 @@ export { OrderList, OrderRow } from "./OrderRow";
 export { ProductItem } from "./ProductItem";
 export { StatusTag, type StatusTone } from "./StatusTag";
 export { SlotGroup, TimeSlot, slotAvailabilityText, type SlotOption, type TimeSlotOption } from "./TimeSlot";
+export { StarMark, Stars } from "./Stars";

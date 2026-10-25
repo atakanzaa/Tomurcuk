@@ -2,6 +2,13 @@ import type {
   Area,
   AuditEntry,
   OrderRef,
+  ProductReviews,
+  RecentReview,
+  Review,
+  ReviewField,
+  ReviewInput,
+  ReviewState,
+  ShopRatings,
   ShopMatch,
   ShopStatusDetail,
   ShopPageInput,
@@ -217,4 +224,18 @@ export interface TomurcukApi {
   getShopPicks(): Promise<ShopPick[]>;
   /** Sipariş numarası ve gönderen telefonu bütün dükkânlarda eşleşirse takip adresi. */
   findOrder(input: { number: string; phone: string }): Promise<OrderRef | null>;
+
+  // Yorumlar. Yalnızca teslim edilen siparişin göndereni takip linkinden, teslimden sonraki 30
+  // gün içinde yazar; her siparişe bir yorum.
+  /** Başka dükkânın takip kodu null. */
+  getReviewState(shopId: string, token: string): Promise<ReviewState | null>;
+  writeReview(shopId: string, token: string, input: ReviewInput): Promise<Result<Review, ReviewField> | null>;
+  getShopRatings(shopId: string): Promise<ShopRatings>;
+  getProductReviews(shopId: string, productId: string): Promise<ProductReviews>;
+  /** Farklı dükkânlardan en yeni 6 yorum. */
+  getRecentReviews(): Promise<RecentReview[]>;
+  /** Panel: dükkânın yorumları, gizlenenler dahil. */
+  getPanelReviews(): Promise<Review[]>;
+  /** Destek ekibinin bütün rolleri; gerekçe zorunlu, denetim kaydına yazılır. Zaten gizliyse null. */
+  hideReview(reviewId: string, reason: string): Promise<Result<Review, "reason"> | null>;
 }

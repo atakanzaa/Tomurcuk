@@ -8,8 +8,10 @@ import com.tomurcuk.identity.Impersonation;
 import com.tomurcuk.identity.Impersonations;
 import com.tomurcuk.identity.PlatformPrincipal;
 import com.tomurcuk.marketing.PilotApplications;
+import com.tomurcuk.review.Review;
 import com.tomurcuk.shop.ShopDirectory;
 import com.tomurcuk.support.internal.Onboarding;
+import com.tomurcuk.support.internal.ReviewModeration;
 import com.tomurcuk.support.internal.ShopControl;
 import com.tomurcuk.support.internal.SupportDesk;
 import com.tomurcuk.support.internal.Views;
@@ -41,13 +43,16 @@ class SupportController {
 
 	private final ShopControl shopControl;
 
+	private final ReviewModeration moderation;
+
 	SupportController(SupportDesk desk, Impersonations impersonations, Onboarding onboarding,
-			PilotApplications applications, ShopControl shopControl) {
+			PilotApplications applications, ShopControl shopControl, ReviewModeration moderation) {
 		this.desk = desk;
 		this.impersonations = impersonations;
 		this.onboarding = onboarding;
 		this.applications = applications;
 		this.shopControl = shopControl;
+		this.moderation = moderation;
 	}
 
 	/** Geçici kapatma, askıya alma, kalıcı kapatma ve yeniden açma; gerekçe zorunlu. */
@@ -56,6 +61,13 @@ class SupportController {
 			@PathVariable String shopId, @RequestBody ShopControl.StatusInput body) {
 		return shopControl.change(user, shopId, body)
 			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+	}
+
+	/** Yorumu gerekçeyle gizler; zaten gizliyse 404. */
+	@PostMapping("/reviews/{reviewId}/hide")
+	Review hideReview(@AuthenticationPrincipal PlatformPrincipal user, @PathVariable String reviewId,
+			@RequestBody ReviewModeration.HideInput body) {
+		return moderation.hide(user, reviewId, body).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 	}
 
 	@GetMapping("/pilot-applications")

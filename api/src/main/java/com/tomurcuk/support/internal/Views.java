@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.tomurcuk.identity.ShopUsers;
+import com.tomurcuk.review.Review;
 import com.tomurcuk.shop.ShopDirectory;
 import com.tomurcuk.ordering.OrderStatus;
 import com.tomurcuk.ordering.PaymentMethod;
@@ -66,7 +67,7 @@ public final class Views {
 	public record ShopOverview(@JsonUnwrapped ShopSummary summary, String paymentAccount, LastLogin lastLogin,
 			List<SupportOrderView> recentOrders, List<NotificationView> notifications, int smsUsed, int smsLimit,
 			List<Note> notes, List<ShopUsers.View> users, List<TicketSummary> tickets,
-			ShopDirectory.StatusDetail status, int openOrders) {
+			ShopDirectory.StatusDetail status, int openOrders, List<Review> reviews) {
 	}
 
 	public record SearchResult(List<ShopOrderView> orders, List<ShopSummary> shops, List<TicketSummary> tickets) {
