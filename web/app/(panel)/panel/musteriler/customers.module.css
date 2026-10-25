@@ -175,3 +175,62 @@
   line-height: 22px;
   font-weight: 600;
 }
+
+/* Özel günler: satırda düzenle, yerinde form. */
+.daySide {
+  flex: none;
+  display: grid;
+  justify-items: end;
+}
+
+.dayEdit {
+  position: relative;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--stem);
+  font: inherit;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.dayEdit::after {
+  content: "";
+  position: absolute;
+  inset: -12px -8px;
+}
+
+.dayEditRow {
+  padding: var(--space-4) 0;
+  border-top: 1px solid var(--line);
+}
+
+.dayForm {
+  display: grid;
+  gap: var(--space-3);
+  max-width: 480px;
+}
+
+.dayFields {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.dateFields {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+  align-items: start;
+  gap: var(--space-3);
+}
+
+.dayActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.dayDelete {
+  color: var(--danger-ink);
+}

@@ -12,23 +12,29 @@ import { FlowHeader } from "@/components/flow/FlowHeader";
 import panel from "../../_components/panel.module.css";
 import { panelSession } from "../../_lib";
 import styles from "../customers.module.css";
+import { SpecialDays } from "./SpecialDays";
 
 export const metadata: Metadata = { title: "Müşteri kartı" };
 
-export default function CustomerPage({ params }: PageProps<"/panel/musteriler/[id]">) {
+export default function CustomerPage({ params, searchParams }: PageProps<"/panel/musteriler/[id]">) {
   return (
     <Suspense>
-      <Customer params={params} />
+      <Customer params={params} searchParams={searchParams} />
     </Suspense>
   );
 }
 
-async function Customer({ params }: Pick<PageProps<"/panel/musteriler/[id]">, "params">) {
-  const [{ id }, { shop }] = await Promise.all([params, panelSession()]);
+async function Customer({ params, searchParams }: Pick<PageProps<"/panel/musteriler/[id]">, "params" | "searchParams">) {
+  const [{ id }, query, { shop }] = await Promise.all([params, searchParams, panelSession()]);
   const detail = await getCustomer(shop.id, id);
   if (!detail) notFound();
   const { customer, orders, specialDays } = detail;
   const first = orders.at(-1);
+  // Sipariş detayındaki "Özel gün olarak kaydet": form siparişin alıcısı ve teslim günüyle dolar.
+  const fromOrder = orders.find((o) => o.id === query["ozel-gun"]);
+  const draft = fromOrder
+    ? { day: Number(fromOrder.deliveryDate.slice(8, 10)), month: Number(fromOrder.deliveryDate.slice(5, 7)), recipientName: fromOrder.recipientName }
+    : null;
 
   return (
     <>
@@ -72,21 +78,7 @@ async function Customer({ params }: Pick<PageProps<"/panel/musteriler/[id]">, "p
         </dl>
 
         <h2 className={styles.sectionTitle}>Özel günler</h2>
-        {specialDays.length === 0 ? (
-          <p className={styles.muted}>Kayıtlı özel gün yok. Sipariş sırasında ya da müşteri sorduğunda ekleyebilirsiniz.</p>
-        ) : (
-          <ul className={styles.list}>
-            {specialDays.map((d) => (
-              <li key={d.id} className={styles.row}>
-                <span className={styles.reminderText}>
-                  <span className={styles.what}>{d.title}</span>
-                  {d.recipientName && <span className={styles.muted}>{d.recipientName}</span>}
-                </span>
-                <span className={styles.side}>{formatDayMonth(`2000-${String(d.month).padStart(2, "0")}-${String(d.day).padStart(2, "0")}`)}</span>
-              </li>
-            ))}
-          </ul>
-        )}
+        <SpecialDays key={fromOrder?.id ?? "kart"} customerId={customer.id} days={specialDays} draft={draft} />
 
         <h2 className={styles.sectionTitle}>Siparişleri</h2>
         <OrderList>

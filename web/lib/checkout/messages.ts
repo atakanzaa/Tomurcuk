@@ -6,6 +6,7 @@ import { formatPrice, withTimeSuffix } from "@/lib/format";
 /** Alana özgü "boş bırakıldı" mesajları. */
 const requiredMessages: Record<string, string> = {
   recipientName: "Alıcının adını yazın.",
+  title: "Hangi gün olduğunu yazın, ör. Annesinin doğum günü.",
   recipientPhone: "Alıcının telefonunu yazın. Kurye teslimattan önce bu numarayı arar.",
   neighborhood: "Mahalleyi yazın.",
   address: "Açık adresi yazın: sokak, bina ve daire numarası.",

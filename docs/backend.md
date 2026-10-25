@@ -46,9 +46,9 @@ Her modül `com.tomurcuk.<modül>` paketidir. Kökteki sınıflar modülün dı�
 | `delivery` | bölge, haftalık saat aralığı şablonu, kapalı gün, günlük kapasite, 10 dakikalık rezervasyon |
 | `ordering` | taslak, sipariş, sipariş kalemi kopyası, durum geçişleri, olay geçmişi, takip token'ı, teslim fotoğrafı |
 | `payment` | iyzico adapter'ı, callback ve webhook, 15 dakikalık durum sorgusu, 30 dakikada terk edilen ödemenin iptali |
-| `customer` | müşteri kartı, özel günler, hatırlatma listesi, pazarlama izni |
+| `customer` | müşteri kartı, özel günler (panelden eklenir, düzenlenir, silinir; müşteri başına en çok 20), hatırlatma listesi, pazarlama izni |
 | `notification` | bildirim kaydı (sipariş + tür tekil), `SmsSender` (Netgsm), `EmailSender` (Resend), yeniden deneme; çiçekçiye yeni sipariş e-postası ve isteğe bağlı SMS, şifre bağlantısı e-postası |
-| `identity` | dükkân ve platform kullanıcıları, rol, izin, oturum, TOTP, şifre belirleme bağlantısı (7 gün, tek kullanım, token'ın yalnızca SHA-256 özeti saklanır) |
+| `identity` | dükkân ve platform kullanıcıları, rol, izin, oturum, TOTP, şifre belirleme bağlantısı (destekten 7 gün, şifremi unuttum ile 1 saat; tek kullanım, token'ın yalnızca SHA-256 özeti saklanır) |
 | `support` | talepler, mesajlar, hazır cevaplar, dahili notlar, dükkân adına oturum, maskeli veri, başvurudan dükkân açma (`SHOP_ONBOARD`: sahip ve lider) |
 | `audit` | yalnızca eklenen denetim kaydı |
 | `marketing` | pilot başvuruları |
@@ -74,9 +74,9 @@ Modüller arası yan etkiler Modulith olaylarıyla taşınır, olay yayınları 
 | --- | --- | --- |
 | Vitrin ve sipariş akışı | `/api/public/shop-lookup/{slug}`, `/api/public/shops/{shopId}/...` (takip linkinden sözleşmeler: `/tracking/{token}/contract`) | yok |
 | Alıcı ana sayfası | `/api/public/discover/areas`, `/api/public/discover/shops?district&neighborhood&date`, `/api/public/discover/picks`, `/api/public/order-lookup` | yok |
-| Satıcı paneli | `/api/panel/...` (ürünler: `GET/POST /api/panel/products`, `GET/PUT/DELETE /api/panel/products/{id}`, `POST /api/panel/photos`; teslim fotoğrafı `POST /api/panel/orders/{id}/delivery-photo`, yolda ya da teslim edilmiş siparişe; sesli uyarı `GET /api/panel/orders/new`) | dükkân kullanıcısı ya da dükkân adına oturum; ürün yazma `CATALOG_EDIT` |
+| Satıcı paneli | `/api/panel/...` (ürünler: `GET/POST /api/panel/products`, `GET/PUT/DELETE /api/panel/products/{id}`, `POST /api/panel/photos`; teslim fotoğrafı `POST /api/panel/orders/{id}/delivery-photo`, yolda ya da teslim edilmiş siparişe; sesli uyarı `GET /api/panel/orders/new`; özel gün `POST /api/panel/customers/{id}/special-days`, `PUT/DELETE .../special-days/{dayId}`) | dükkân kullanıcısı ya da dükkân adına oturum; ürün yazma `CATALOG_EDIT` |
 | Destek paneli | `/api/support/...` (dükkân açma: `GET /pilot-applications`, `POST /shops`, `POST /shops/{shopId}/password-link`) | platform kullanıcısı; dükkân açma `SHOP_ONBOARD` |
-| Şifre belirleme | `GET /api/public/password-setup/{token}`, `POST /api/public/password-setup` (web `/sifre/{token}`) | yok; bağlantı token'ı |
+| Şifre belirleme | `GET /api/public/password-setup/{token}`, `POST /api/public/password-setup` (web `/sifre/{token}`); şifremi unuttum `POST /api/public/password-reset` (web `/sifremi-unuttum`), her durumda 204, aynı kullanıcıya 2 dakikada bir bağlantı | yok; bağlantı token'ı |
 | Panel ayarları | `GET /api/panel/settings`, `PUT .../profile`, `.../same-day-cutoff`, `.../slots`, `.../zones`, `POST/DELETE .../closed-days` | dükkân kullanıcısı; yazma `CATALOG_EDIT` |
 | İstanbul ilçe ve mahalleleri | `/api/public/places/istanbul` (`resources/places/istanbul.json`, kaynağı `NOTICE.txt`) | yok |
 | Diskteki fotoğraf | `/api/public/photos/{ad}` (web `/foto/{ad}` yolunda aktarır) | yok |
@@ -127,7 +127,7 @@ Sağlayıcılar:
 | `OrderStatusChanged` → Yolda | alıcı | SMS |
 | → Teslim edildi | gönderen (takip linkiyle; teslim fotoğrafı orada) | SMS |
 | → Teslim edilemedi | gönderen ve alıcı | SMS |
-| `PasswordLinkIssued`: destek dükkânı açınca ya da yeni bağlantı oluşturunca | dükkân sahibi | e-posta |
+| `PasswordLinkIssued`: destek dükkânı açınca ya da yeni bağlantı oluşturunca (kurulum), kullanıcı şifremi unuttum deyince (sıfırlama) | dükkân sahibi ya da isteyen kullanıcı | e-posta |
 | `ImpersonationStarted` | dükkân sahipleri | e-posta |
 
 - Panelden elle girilen sipariş ve "Hazırlanıyor" geçişi bildirim göndermez.
@@ -156,12 +156,12 @@ Kapsam bilerek dar tutulur; geliştirme hızı önce gelir.
 
 - `ModularityTests`: modül sınırları (`ApplicationModules.verify()`).
 - Aşama 3 (`CheckoutTests`, `DeliveryScheduleTests`): ödeme callback'inin iki kez gelmesi, aynı idempotency anahtarı, aynı aralığa 20 eşzamanlı rezervasyon (kapasite 6), süresi dolan rezervasyon, "bugün" ve son sipariş saatinde saat dilimi, başka dükkânın takip kodu.
-- Aşama 4 (`PanelTests`): oturumsuz istek 401, yanlış şifrede hangi alanın yanlış olduğu söylenmez, durum geçişleri (atlanan ve geri giden reddedilir), çalışan iptal edemez (403), başka dükkânın siparişi ve müşterisi bulunamaz; teslim fotoğrafı yalnızca yoldaki ya da teslim edilen kendi siparişine (başkasınınkine 404, yenisine 422); yeni sipariş özeti dükkâna özel.
+- Aşama 4 (`PanelTests`): oturumsuz istek 401, yanlış şifrede hangi alanın yanlış olduğu söylenmez, durum geçişleri (atlanan ve geri giden reddedilir), çalışan iptal edemez (403), başka dükkânın siparişi ve müşterisi bulunamaz; teslim fotoğrafı yalnızca yoldaki ya da teslim edilen kendi siparişine (başkasınınkine 404, yenisine 422); yeni sipariş özeti dükkâna özel; özel gün eklenir, hatırlatmada görünür, düzenlenir, silinir, o ayda olmayan gün reddedilir (`day_invalid`), başka dükkânın müşterisine eklenemez.
 
 - Adapter'lar (`NetgsmSmsSenderTests`, `ResendEmailSenderTests`, `IyzicoPaymentProviderTests`, `R2PhotoStoreTests`): istek biçimi, imza ve yanıt kodları, sağlayıcıya bağlanmadan; staging'de SMS'in yalnızca ekip numaralarına gitmesi.
 - Aşama 6 (`SupportTests`): şifre ve TOTP birlikte; dükkân oturumuyla panele destek girişi yok; telefon maskeli, gerekçesiz açılmaz, açılış kayda geçer; dükkân adına oturum çalışan yetkisinde (iptal 403), işlem kayda geçer, 30 dakikada biter; denetim kaydı güncellenemez ve silinemez.
 - Ayarlar (`PanelSettingsTests`): çalışan ayar değiştiremez (403), bölge İstanbul listesinden (kayıtlı eski ad değişmedikçe kalır), kapasite düşünce dolu yer korunur, kaldırılan aralık takvimden çıkar ve kaydı durur, çakışan aralık reddedilir, kapalı güne sipariş verilemez.
-- Dükkân açma (`OnboardingTests`): lider dükkân açar, sahip bağlantıyla şifre belirleyip girer; bağlantı ikinci kez ve süresi geçince çalışmaz, yeni bağlantı eskisini geçersiz kılar; temsilci açamaz (403); alınmış ya da ayrılmış slug ve başka hesaptaki e-posta reddedilir, hata olunca dükkân açılmaz; şifre bağlantısı sahibine e-postayla gider.
+- Dükkân açma (`OnboardingTests`): lider dükkân açar, sahip bağlantıyla şifre belirleyip girer; bağlantı ikinci kez ve süresi geçince çalışmaz, yeni bağlantı eskisini geçersiz kılar; temsilci açamaz (403); alınmış ya da ayrılmış slug ve başka hesaptaki e-posta reddedilir, hata olunca dükkân açılmaz; şifre bağlantısı sahibine e-postayla gider; şifremi unuttum kayıtsız adreste de 204 döner ve e-posta göndermez, 2 dakika içinde ikinci bağlantı gitmez, sıfırlama bağlantısı 1 saat sonra çalışmaz.
 - Ürün yönetimi (`PanelCatalogTests`): boyların tam fiyatı ürün fiyatı ve ek fiyata çevrilir, satıştan kalkan ürün vitrinde yok, fotoğraf 4:5 kırpılır ve yalnızca yüklenen adres kabul edilir, çalışan ürün değiştiremez (403), başka dükkânın ürünü bulunamaz.
 - Alıcı ana sayfası (`DiscoveryTests`): o gün teslim edebilen dükkânlar önce, ilk müsait aralığa göre; aynı gün son saati geçen dükkân sonda ve ilk müsait günüyle.
 - Aşama 5 (`NotificationTests`): aynı olay iki kez işlense de tek SMS, isimsiz gönderimde gönderen metinde yok; ayarda açıksa çiçekçiye tek yeni sipariş SMS'i.

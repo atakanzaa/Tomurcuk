@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState } from "react";
 import { SubmitButton } from "@/components/flow/SubmitButton";
 import flow from "@/components/flow/flow.module.css";
@@ -38,6 +39,9 @@ function LoginFields({ state, action }: { state: FormState; action: (formData: F
         error={state.errors.password}
       />
       <SubmitButton>Giriş yap</SubmitButton>
+      <Link href="/sifremi-unuttum" className={styles.altLink}>
+        Şifrenizi mi unuttunuz?
+      </Link>
     </form>
   );
 }

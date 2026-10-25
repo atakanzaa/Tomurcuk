@@ -19,6 +19,7 @@ import com.tomurcuk.catalog.Catalog;
 import com.tomurcuk.catalog.ProductInfo;
 import com.tomurcuk.customer.CustomerRecord;
 import com.tomurcuk.customer.Customers;
+import com.tomurcuk.customer.Customers.SpecialDayInput;
 import com.tomurcuk.customer.SpecialDay;
 import com.tomurcuk.delivery.DeliverySchedule;
 import com.tomurcuk.delivery.SlotInfo;
@@ -172,6 +173,20 @@ public class PanelOrders {
 		return customers.find(user.shopId(), customerId)
 			.map(c -> new CustomerDetail(summary(user.shopId(), c), orders.findByCustomer(user.shopId(), c.id()),
 					customers.specialDays(c.id())));
+	}
+
+	/** Dükkânın müşterisine özel gün; müşteri başka dükkânınsa boş. */
+	public Optional<SpecialDay> addSpecialDay(ShopPrincipal user, String customerId, SpecialDayInput input) {
+		return customers.addSpecialDay(user.shopId(), customerId, input);
+	}
+
+	public Optional<SpecialDay> updateSpecialDay(ShopPrincipal user, String customerId, String dayId,
+			SpecialDayInput input) {
+		return customers.updateSpecialDay(user.shopId(), customerId, dayId, input);
+	}
+
+	public boolean deleteSpecialDay(ShopPrincipal user, String customerId, String dayId) {
+		return customers.deleteSpecialDay(user.shopId(), customerId, dayId);
 	}
 
 	/** Elle sipariş ekranında: telefon yazılınca müşteri ve son siparişi. */

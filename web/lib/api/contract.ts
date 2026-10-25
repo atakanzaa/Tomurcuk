@@ -11,6 +11,8 @@ import type {
   Impersonation,
   ManualOrderInput,
   NewOrders,
+  SpecialDay,
+  SpecialDayInput,
   OrderStatus,
   PanelSession,
   PilotApplicationInput,
@@ -116,6 +118,14 @@ export interface TomurcukApi {
   uploadDeliveryPhoto(shopId: string, orderId: string, file: Blob): Promise<Result<Order, "photo"> | null>;
   getCustomers(shopId: string, filter?: { query?: string }): Promise<CustomerSummary[]>;
   getCustomer(shopId: string, customerId: string): Promise<CustomerDetail | null>;
+  /** `dayId` null ise yeni özel gün. Müşteri ya da özel gün bu dükkânın değilse null. */
+  saveSpecialDay(
+    shopId: string,
+    customerId: string,
+    dayId: string | null,
+    input: SpecialDayInput,
+  ): Promise<Result<SpecialDay, keyof SpecialDayInput | "day" | "form"> | null>;
+  deleteSpecialDay(shopId: string, customerId: string, dayId: string): Promise<boolean>;
   findCustomerByPhone(shopId: string, phone: string): Promise<(CustomerSummary & { lastOrder: Order | null }) | null>;
   /** Bugünden itibaren `days` gün içindeki özel günler. */
   getReminders(shopId: string, days: number): Promise<Reminder[]>;
@@ -180,6 +190,8 @@ export interface TomurcukApi {
   // Şifre belirleme bağlantısı (/sifre/<token>); oturumsuz.
   getPasswordHolder(token: string): Promise<PasswordHolder | null>;
   setPassword(token: string, password: string): Promise<Result<true, "token" | "password">>;
+  /** Şifremi unuttum: adres kayıtlı olsun olmasın aynı yanıt; bağlantı yalnızca e-postayla gider. */
+  requestPasswordReset(email: string): Promise<void>;
 
   // Tanıtım sitesi
   submitPilotApplication(input: PilotApplicationInput): Promise<Result<true, keyof PilotApplicationInput>>;

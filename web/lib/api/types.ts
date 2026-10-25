@@ -572,6 +572,14 @@ export interface SpecialDay {
   recipientName: string | null;
 }
 
+/** Ay 1–12; gün o ayda olmalı (29 Şubat geçerli). */
+export interface SpecialDayInput {
+  title: string;
+  day: number;
+  month: number;
+  recipientName: string;
+}
+
 export interface CustomerSummary extends Customer {
   orderCount: number;
   totalSpent: Kurus;

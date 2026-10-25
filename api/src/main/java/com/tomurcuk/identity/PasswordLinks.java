@@ -7,6 +7,7 @@ import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.HexFormat;
+import java.util.Locale;
 import java.util.Optional;
 
 import com.tomurcuk.shared.FieldError;
@@ -20,14 +21,20 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Dükkân kullanıcısının şifresini belirlediği tek kullanımlık bağlantı (/sifre/<token>). Bağlantı
- * 7 gün geçerlidir; yenisi oluşunca kullanılmamış eskiler geçersiz olur. Veritabanında token'ın
+ * Dükkân kullanıcısının şifresini belirlediği tek kullanımlık bağlantı (/sifre/<token>). Destek
+ * ekibinin oluşturduğu kurulum bağlantısı 7 gün, giriş ekranından istenen sıfırlama bağlantısı 1
+ * saat geçerlidir; yenisi oluşunca kullanılmamış eskiler geçersiz olur. Veritabanında token'ın
  * kendisi değil SHA-256 özeti durur.
  */
 @Service
 public class PasswordLinks {
 
 	static final Duration VALIDITY = Duration.ofDays(7);
+
+	static final Duration RESET_VALIDITY = Duration.ofHours(1);
+
+	/** Aynı kullanıcıya bu süre içinde ikinci sıfırlama bağlantısı gönderilmez. */
+	static final Duration RESET_INTERVAL = Duration.ofMinutes(2);
 
 	static final int MIN_PASSWORD = 10;
 
@@ -51,21 +58,53 @@ public class PasswordLinks {
 	}
 
 	/**
-	 * Yeni bağlantının token'ı; yalnızca bir kez döner, sonra okunamaz. Kullanıcıya e-postayla da
-	 * gider (`PasswordLinkIssued`).
+	 * Yeni kurulum bağlantısının token'ı; yalnızca bir kez döner, sonra okunamaz. Kullanıcıya
+	 * e-postayla da gider (`PasswordLinkIssued`).
 	 */
 	@Transactional
 	public String issue(String userId) {
+		return issue(userId, VALIDITY, PasswordLinkIssued.SETUP);
+	}
+
+	/**
+	 * Giriş ekranındaki "Şifrenizi mi unuttunuz?": e-posta etkin bir dükkân kullanıcısınınsa
+	 * sıfırlama bağlantısı e-postayla gider. Son 2 dakikada bağlantı gönderildiyse yenisi
+	 * gönderilmez. Sonuç dışarıya söylenmez; hangi adresin kayıtlı olduğu anlaşılmasın.
+	 */
+	@Transactional
+	public void requestReset(String email) {
+		String clean = email == null ? "" : email.strip().toLowerCase(Locale.ROOT);
+		if (clean.isEmpty()) {
+			return;
+		}
+		Instant now = clock.instant();
+		jdbc.sql("""
+				SELECT u.id FROM shop_user u
+				WHERE u.email = :email AND u.active AND NOT EXISTS (
+				    SELECT 1 FROM password_token t WHERE t.user_id = u.id AND t.created_at > :since)
+				""")
+			.param("email", clean)
+			.param("since", Instants.sql(now.minus(RESET_INTERVAL)))
+			.query(String.class)
+			.optional()
+			.ifPresent(userId -> issue(userId, RESET_VALIDITY, PasswordLinkIssued.RESET));
+	}
+
+	private String issue(String userId, Duration validity, String purpose) {
 		Instant now = clock.instant();
 		jdbc.sql("UPDATE password_token SET used_at = :now WHERE user_id = :userId AND used_at IS NULL")
 			.param("now", Instants.sql(now))
 			.param("userId", userId)
 			.update();
 		String token = Ids.token(32);
-		jdbc.sql("INSERT INTO password_token (token_hash, user_id, expires_at) VALUES (:hash, :userId, :expires)")
+		jdbc.sql("""
+				INSERT INTO password_token (token_hash, user_id, expires_at, created_at)
+				VALUES (:hash, :userId, :expires, :now)
+				""")
 			.param("hash", hash(token))
 			.param("userId", userId)
-			.param("expires", Instants.sql(now.plus(VALIDITY)))
+			.param("expires", Instants.sql(now.plus(validity)))
+			.param("now", Instants.sql(now))
 			.update();
 		jdbc.sql("""
 				SELECT u.shop_id, u.name, u.email, s.name AS shop_name
@@ -73,7 +112,7 @@ public class PasswordLinks {
 				""")
 			.param("userId", userId)
 			.query((rs, n) -> new PasswordLinkIssued(Ids.newId(), rs.getString("shop_id"), rs.getString("name"),
-					rs.getString("email"), rs.getString("shop_name"), token))
+					rs.getString("email"), rs.getString("shop_name"), token, purpose))
 			.optional()
 			.ifPresent(events::publishEvent);
 		return token;
