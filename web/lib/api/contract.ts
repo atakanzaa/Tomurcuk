@@ -208,8 +208,8 @@ export interface TomurcukApi {
     shopId: string,
     input: ShopStatusInput,
   ): Promise<Result<ShopStatusDetail, "status" | "reason" | "pausedUntil" | "form"> | null>;
-  /** Giriş yapan destek kullanıcısına deneme e-postası; sağlayıcının yanıtı hemen döner. */
-  sendTestEmail(): Promise<EmailCheckResult>;
+  /** Deneme e-postası; `to` boşsa giriş yapan destek kullanıcısına. Sağlayıcının yanıtı hemen döner. */
+  sendTestEmail(to: string | null): Promise<Result<EmailCheckResult, "to">>;
 
   // Şifre belirleme bağlantısı (/sifre/<token>); oturumsuz.
   getPasswordHolder(token: string): Promise<PasswordHolder | null>;

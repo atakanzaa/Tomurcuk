@@ -96,11 +96,7 @@ export const httpSupportApi: SupportApi = {
   getPilotApplications: () => get<PilotApplication[]>("/api/support/pilot-applications"),
   openShop: (input) => send("POST", "/api/support/shops", input),
   changeShopStatus: (shopId, input) => sendOrNull("POST", path`/api/support/shops/${shopId}/status`, input),
-  sendTestEmail: async () => {
-    const result = await send<EmailCheckResult, never>("POST", "/api/support/email-test", {});
-    if (!result.ok) throw new ApiError(422, "/api/support/email-test");
-    return result.value;
-  },
+  sendTestEmail: (to) => send<EmailCheckResult, "to">("POST", "/api/support/email-test", { to }),
   createPasswordLink: async (shopId) => {
     const result = await sendOrNull<PasswordLink, never>("POST", path`/api/support/shops/${shopId}/password-link`, {});
     return result?.ok ? result.value : null;

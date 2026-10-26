@@ -203,7 +203,7 @@ Sağlayıcılar:
   - Logo: `email/logo.png`, Resend'e satır içi ek olarak gider (`content_id: logo`, HTML'de `cid:logo`).
   - Saklama: HTML `notification_log.html`'de durur (`V21`); yeniden denemede aynısı gider.
   - Önizleme: `EmailTemplatesTests` bütün e-postaları `api/target/email-previews/`'a yazar.
-- **Deneme e-postası:** `POST /api/support/email-test`, destek panelinde sağ üstteki düğme. Giriş yapan destek kullanıcısının adresine gider ve sağlayıcının yanıtını hemen döner; kayda yazılmaz. Sağlayıcı `log` ise "gönderilmedi" döner.
+- **Deneme e-postası:** `POST /api/support/email-test` (`{to}` isteğe bağlı; boşsa giriş yapan destek kullanıcısının adresi, hatalı adres `email_invalid`). Destek panelinde sağ üstteki düğme. Sağlayıcının yanıtını hemen döner; kayda yazılmaz. Sağlayıcı `log` ise "gönderilmedi" döner.
 - **Destek paneli:** dükkân özetindeki "Son bildirimler"de iletilemeyen satırın yanında sağlayıcının yanıtı görünür.
 - Şifre bağlantısı e-postasında token düz durur (olay kaydında ve `notification_log`'da); bağlantı 7 gün geçerli ve tek kullanımlık olduğu için kabul edildi.
 - Yerelde ve önizlemede `log`: SMS ve e-posta gönderilmez, log'a yazılır.

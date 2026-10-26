@@ -1,67 +1,94 @@
 "use client";
 
-import { useRef, useState, useTransition } from "react";
+import { useRef, useState, useTransition, type FormEvent } from "react";
 import { Button } from "@/components/ui/Button";
+import { Field } from "@/components/ui/Field";
 import type { EmailCheckResult } from "@/lib/api/types";
 import { sendTestEmailAction } from "@/lib/support-actions";
 import dialog from "./dialog.module.css";
 import styles from "./support.module.css";
 
 /**
- * Kendi adresinize deneme e-postası: Resend ayarlarının (alan adı, anahtar, staging izinli
- * adresleri) çalıştığını görmek için. Sağlayıcının yanıtı pencerede görünür.
+ * Deneme e-postası: Resend ayarlarının (alan adı, anahtar, staging izinli adresleri) çalıştığını
+ * görmek için. Adres yazılmazsa destek hesabının adresine gider. Sağlayıcının yanıtı pencerede
+ * görünür.
  */
 export function EmailTestButton() {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [result, setResult] = useState<EmailCheckResult | null>(null);
-  const [failed, setFailed] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [pending, start] = useTransition();
 
-  const send = () =>
+  const open = () => {
+    setResult(null);
+    setError(null);
+    dialogRef.current?.showModal();
+  };
+
+  const send = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const to = String(new FormData(event.currentTarget).get("to") ?? "");
     start(async () => {
-      setFailed(false);
       try {
-        setResult(await sendTestEmailAction());
+        const sent = await sendTestEmailAction(to);
+        if ("error" in sent) {
+          setResult(null);
+          setError(sent.error);
+        } else {
+          setError(null);
+          setResult(sent.result);
+        }
       } catch {
         setResult(null);
-        setFailed(true);
+        setError("API yanıt vermedi. Biraz sonra yeniden deneyin.");
       }
-      dialogRef.current?.showModal();
     });
+  };
 
   return (
     <>
-      <Button variant="quiet" size="s" onClick={send} disabled={pending} aria-busy={pending || undefined}>
+      <Button variant="quiet" size="s" onClick={open}>
         Deneme e-postası
       </Button>
       <dialog ref={dialogRef} className={dialog.dialog} aria-labelledby="eposta-baslik">
-        <div className={dialog.dialogForm}>
+        <form className={dialog.dialogForm} onSubmit={send} noValidate>
           <h2 id="eposta-baslik" className={dialog.dialogTitle}>
-            {failed ? "E-posta gönderilemedi" : result?.delivered ? "Deneme e-postası gönderildi" : "E-posta gönderilmedi"}
+            Deneme e-postası
           </h2>
-          {failed && <p className={dialog.dialogText}>API yanıt vermedi. Biraz sonra yeniden deneyin.</p>}
+          <p className={dialog.dialogText}>
+            E-posta ayarlarının çalıştığını görmek için bir adrese deneme e-postası gönderin. Staging&apos;de adres
+            TOMURCUK_EMAIL_ALLOWED_RECIPIENTS listesinde olmalı.
+          </p>
+          <Field
+            label="Adres"
+            name="to"
+            type="email"
+            optional
+            autoComplete="email"
+            placeholder="siz@ornek.com"
+            hint="Boş bırakırsanız destek hesabınızın adresine gider."
+            error={error ?? undefined}
+          />
           {result && (
-            <>
-              <p className={dialog.dialogText}>
+            <div role="status" className={dialog.dialogText}>
+              <p className={result.delivered ? undefined : styles.small}>
+                <strong>{result.delivered ? "Gönderildi." : "Gönderilmedi."}</strong>{" "}
                 {result.delivered
-                  ? `${result.to} adresine gönderildi. Gelen kutunuzu ve istenmeyen klasörünü kontrol edin.`
-                  : `${result.to} adresine gönderilmedi.`}
+                  ? `${result.to} adresine gitti. Gelen kutusuna ve istenmeyen klasörüne bakın.`
+                  : `${result.to} adresine gitmedi.`}
               </p>
               {result.response && <p className={styles.small}>Sağlayıcının yanıtı: {result.response}</p>}
-              {!result.delivered && (
-                <p className={styles.small}>
-                  Sunucudaki .env&apos;de TOMURCUK_EMAIL_PROVIDER=resend ve anahtar olmalı; staging&apos;de adresiniz
-                  TOMURCUK_EMAIL_ALLOWED_RECIPIENTS listesinde olmalı; tomurcuk.shop Resend&apos;de doğrulanmış olmalı.
-                </p>
-              )}
-            </>
+            </div>
           )}
           <div className={dialog.dialogActions}>
             <Button variant="secondary" onClick={() => dialogRef.current?.close()}>
               Kapat
             </Button>
+            <Button type="submit" disabled={pending} aria-busy={pending || undefined}>
+              Gönder
+            </Button>
           </div>
-        </div>
+        </form>
       </dialog>
     </>
   );

@@ -68,12 +68,17 @@ class SupportController {
 	}
 
 	/**
-	 * Giriş yapan destek kullanıcısının kendi adresine deneme e-postası; sağlayıcının yanıtı hemen
-	 * döner. E-posta ayarları değişince çalıştığını görmek için.
+	 * Deneme e-postası; adres verilmezse giriş yapan destek kullanıcısının adresine. Sağlayıcının
+	 * yanıtı hemen döner. E-posta ayarları değişince çalıştığını görmek için.
 	 */
 	@PostMapping("/email-test")
-	EmailCheck.Result emailTest(@AuthenticationPrincipal PlatformPrincipal user) {
-		return emailCheck.send(user.email(), user.name());
+	EmailCheck.Result emailTest(@AuthenticationPrincipal PlatformPrincipal user,
+			@RequestBody(required = false) EmailTestInput body) {
+		String to = body == null || body.to() == null || body.to().isBlank() ? user.email() : body.to();
+		return emailCheck.send(to, user.name());
+	}
+
+	record EmailTestInput(String to) {
 	}
 
 	/** Yorumu gerekçeyle gizler; zaten gizliyse 404. */

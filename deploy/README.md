@@ -145,7 +145,7 @@ TOMURCUK_EMAIL_REPLYTO=destek@tomurcuk.shop
 ```
 
 4. `.env` konteyner kurulurken okunur. Değiştirdikten sonra ortamı yeniden çıkın: `scripts/deploy.sh staging $(cat TAG)`.
-5. Destek panelinde sağ üstteki **Deneme e-postası**'na basın. E-posta kendi adresinize gider; Resend'in yanıtı pencerede görünür.
+5. Destek panelinde sağ üstteki **Deneme e-postası**'na basın ve izinli listedeki adresinizi yazıp gönderin. Örnek destek hesaplarının adresleri (`@tomurcuk.app`) gerçek değildir; adres alanını boş bırakmayın. Resend'in yanıtı pencerede görünür.
 
 Gönderen `Tomurcuk <siparis@tomurcuk.shop>`; değiştirmek için `TOMURCUK_EMAIL_FROM`.
 

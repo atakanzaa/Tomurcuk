@@ -1,9 +1,12 @@
 package com.tomurcuk.notification;
 
 import java.time.Clock;
+import java.util.regex.Pattern;
 
 import com.tomurcuk.notification.internal.Email;
 import com.tomurcuk.notification.internal.EmailTemplates;
+import com.tomurcuk.shared.FieldError;
+import com.tomurcuk.shared.ValidationException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +17,8 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class EmailCheck {
+
+	private static final Pattern EMAIL = Pattern.compile("[^@\\s]+@[^@\\s]+\\.[^@\\s]+");
 
 	private final EmailSender sender;
 
@@ -31,8 +36,15 @@ public class EmailCheck {
 		this.provider = provider;
 	}
 
-	/** Sağlayıcı `log` ise e-posta yalnızca log'a yazılır; bu gönderilmedi sayılır. */
+	/**
+	 * Sağlayıcı `log` ise e-posta yalnızca log'a yazılır; bu gönderilmedi sayılır. Adres biçimi
+	 * hatalıysa `to` (`email_invalid`).
+	 */
 	public Result send(String to, String name) {
+		if (to == null || !EMAIL.matcher(to.strip()).matches()) {
+			throw ValidationException.of("to", FieldError.of("email_invalid"));
+		}
+		to = to.strip();
 		Email email = templates.test(name, clock.instant());
 		SmsSender.Result result = sender.send(to, email.subject(), email.text(), email.html());
 		if (!"resend".equals(provider)) {
