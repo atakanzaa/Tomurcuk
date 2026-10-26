@@ -108,7 +108,8 @@ export async function changeStatusAction(
   return { version: prev.version + 1, errors: {}, values: { done: "1" } };
 }
 
-/** Giriş yapan destek kullanıcısının adresine deneme e-postası; sonuç hemen döner. */
-export async function sendTestEmailAction(): Promise<EmailCheckResult> {
-  return sendTestEmail();
+/** Deneme e-postası; adres boşsa destek hesabının adresine. Sonuç ya da adres hatası hemen döner. */
+export async function sendTestEmailAction(to: string): Promise<{ result: EmailCheckResult } | { error: string }> {
+  const sent = await sendTestEmail(to.trim() || null);
+  return sent.ok ? { result: sent.value } : { error: toMessages(sent.errors).to ?? "Adres geçersiz." };
 }

@@ -114,6 +114,26 @@ class SupportTests {
 	}
 
 	/** Denetim kaydı yalnızca eklenir. */
+	/** Deneme e-postası: adres verilmezse kullanıcının kendi adresi; hatalı adres 422. Testte sağlayıcı log. */
+	@Test
+	void testEmailGoesToChosenAddress() throws Exception {
+		Cookie session = login("derya@tomurcuk.app");
+		mvc.perform(post("/api/support/email-test").cookie(session))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.to").value("derya@tomurcuk.app"))
+			.andExpect(jsonPath("$.delivered").value(false));
+		mvc.perform(post("/api/support/email-test").cookie(session)
+			.contentType(MediaType.APPLICATION_JSON)
+			.content("{\"to\":\" ayla@nergiscicek.com \"}"))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.to").value("ayla@nergiscicek.com"));
+		mvc.perform(post("/api/support/email-test").cookie(session)
+			.contentType(MediaType.APPLICATION_JSON)
+			.content("{\"to\":\"ayla\"}"))
+			.andExpect(status().isUnprocessableContent())
+			.andExpect(jsonPath("$.errors.to.code").value("email_invalid"));
+	}
+
 	@Test
 	void auditLogIsAppendOnly() {
 		assertThatThrownBy(() -> jdbc.sql("UPDATE audit_log SET reason = 'değişti'").update())
