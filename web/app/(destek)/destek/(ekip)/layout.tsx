@@ -6,6 +6,7 @@ import { getPilotApplications, getShopSummaries, getSupportUser, getTickets } fr
 import { TicketStatus } from "@/lib/api/types";
 import { supportLogout } from "@/lib/auth/actions";
 import { supportRoleLabel } from "@/lib/permissions";
+import { EmailTestButton } from "./_components/EmailTestButton";
 import { SupportNav } from "./_components/SupportNav";
 import styles from "./_components/support.module.css";
 
@@ -53,6 +54,7 @@ async function SupportFrame({ children }: { children: ReactNode }) {
           <span className={styles.avatar} aria-hidden="true">
             {initials}
           </span>
+          <EmailTestButton />
           <form action={supportLogout}>
             <Button type="submit" variant="quiet" size="s">
               Çıkış yap

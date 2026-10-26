@@ -1,4 +1,5 @@
 import type {
+  EmailCheckResult,
   Area,
   AuditEntry,
   OrderRef,
@@ -207,6 +208,8 @@ export interface TomurcukApi {
     shopId: string,
     input: ShopStatusInput,
   ): Promise<Result<ShopStatusDetail, "status" | "reason" | "pausedUntil" | "form"> | null>;
+  /** Giriş yapan destek kullanıcısına deneme e-postası; sağlayıcının yanıtı hemen döner. */
+  sendTestEmail(): Promise<EmailCheckResult>;
 
   // Şifre belirleme bağlantısı (/sifre/<token>); oturumsuz.
   getPasswordHolder(token: string): Promise<PasswordHolder | null>;

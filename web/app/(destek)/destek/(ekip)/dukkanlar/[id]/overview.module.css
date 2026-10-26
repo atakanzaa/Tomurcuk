@@ -124,6 +124,17 @@
   font-weight: 600;
 }
 
+/* Sağlayıcının yanıtı ya da gönderilmeme sebebi: hata kodu, izinli liste. */
+.failedReason {
+  display: block;
+  max-width: 320px;
+  color: var(--ink-muted);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 18px;
+  overflow-wrap: anywhere;
+}
+
 .h2Sub {
   color: var(--ink-muted);
   font-size: 13px;

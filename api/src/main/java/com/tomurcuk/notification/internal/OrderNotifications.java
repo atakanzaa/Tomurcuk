@@ -27,6 +27,8 @@ class OrderNotifications {
 
 	private final NotificationLog notifications;
 
+	private final EmailTemplates templates;
+
 	private final ShopDirectory shops;
 
 	private final ShopUsers users;
@@ -38,8 +40,9 @@ class OrderNotifications {
 	private final String webUrl;
 
 	OrderNotifications(NotificationLog notifications, ShopDirectory shops, ShopUsers users, ShopSettings settings,
-			Clock clock, @Value("${tomurcuk.web-url}") String webUrl) {
+			EmailTemplates templates, Clock clock, @Value("${tomurcuk.web-url}") String webUrl) {
 		this.notifications = notifications;
+		this.templates = templates;
 		this.shops = shops;
 		this.users = users;
 		this.settings = settings;
@@ -60,10 +63,10 @@ class OrderNotifications {
 		notifications.send(sms(order, "order_confirmed", order.senderPhone(),
 				Messages.confirmed(shop, order, today, trackingUrl), "0"));
 		String panelUrl = url("panel", "siparisler", order.orderId());
-		for (String email : users.ownerEmails(order.shopId())) {
+		Email email = templates.newOrder(order, shop.name(), today);
+		for (String to : users.ownerEmails(order.shopId())) {
 			notifications.send(new Notification(order.shopId(), order.orderId(), order.number(), "new_order_email",
-					"email", email, Messages.newOrderSubject(order, today),
-					Messages.newOrderBody(order, today, panelUrl), order.orderId() + ":new_order_email:" + email));
+					"email", to, email.subject(), email.text(), email.html(), order.orderId() + ":new_order_email:" + to));
 		}
 		settings.newOrderSmsPhone(order.shopId())
 			.ifPresent(phone -> notifications.send(
@@ -93,7 +96,7 @@ class OrderNotifications {
 	}
 
 	private static Notification sms(OrderNotice order, String kind, String phone, String text, String sequence) {
-		return new Notification(order.shopId(), order.orderId(), order.number(), kind, "sms", phone, null, text,
+		return Notification.sms(order.shopId(), order.orderId(), order.number(), kind, phone, text,
 				order.orderId() + ":" + kind + ":" + sequence + ":" + phone);
 	}
 

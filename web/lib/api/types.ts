@@ -775,6 +775,13 @@ export interface TicketDetail extends TicketSummary {
 }
 
 /** notification_log */
+/** Destek panelinden deneme e-postasının sonucu; `response` sağlayıcının yanıtı ya da gönderilmeme sebebi. */
+export interface EmailCheckResult {
+  to: string;
+  delivered: boolean;
+  response: string | null;
+}
+
 export interface NotificationLog {
   id: string;
   shopId: string;

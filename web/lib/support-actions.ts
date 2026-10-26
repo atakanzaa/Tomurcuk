@@ -2,8 +2,16 @@
 
 import { refresh, updateTag } from "next/cache";
 import { redirect } from "next/navigation";
-import { addShopNote, changeShopStatus, escalateTicket, replyToTicket, revealPhone, startImpersonation } from "@/lib/api";
-import { ShopStatus } from "@/lib/api/types";
+import {
+  addShopNote,
+  changeShopStatus,
+  escalateTicket,
+  replyToTicket,
+  revealPhone,
+  sendTestEmail,
+  startImpersonation,
+} from "@/lib/api";
+import { ShopStatus, type EmailCheckResult } from "@/lib/api/types";
 import { formValues, type FormState } from "@/lib/checkout/form-state";
 import { toMessages } from "@/lib/checkout/messages";
 import { writeImpersonation } from "@/lib/auth/cookie";
@@ -98,4 +106,9 @@ export async function changeStatusAction(
   updateTag("discover");
   refresh();
   return { version: prev.version + 1, errors: {}, values: { done: "1" } };
+}
+
+/** Giriş yapan destek kullanıcısının adresine deneme e-postası; sonuç hemen döner. */
+export async function sendTestEmailAction(): Promise<EmailCheckResult> {
+  return sendTestEmail();
 }

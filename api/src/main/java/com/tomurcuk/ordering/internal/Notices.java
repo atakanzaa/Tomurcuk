@@ -28,6 +28,6 @@ final class Notices {
 		return new OrderNotice(order.id(), order.shopId(), order.number(), order.deliveryDate(), order.slotStart(),
 				order.slotEnd(), order.deliveryTime(), order.recipientName(), order.recipientPhone(),
 				order.senderPhone(), order.anonymous() ? null : order.senderName(), order.anonymous(),
-				order.trackingToken(), order.zoneName(), items, order.total());
+				order.trackingToken(), order.zoneName(), items, order.total(), order.cardNote(), order.paymentMethod());
 	}
 }

@@ -116,20 +116,53 @@ R2'ye geçmeden önce diske yüklenmiş fotoğraflar `/foto/` adresinden okunmay
 
 ### E-posta (Resend)
 
-Çiçekçiye yeni sipariş e-postası, şifre belirleme bağlantısı ve destek girişi bildirimi Resend ile gider. Kurulana kadar e-postalar log'a yazılır.
+Resend ile giden e-postalar:
+- dükkân açıldı ve şifre belirleme bağlantısı
+- şifre yenileme
+- çiçekçiye yeni sipariş
+- dükkân durumu değişti
+- destek ekibi panelinize girdi
+
+E-postalar HTML olarak gider; Tomurcuk logosu e-postaya gömülüdür. Düz metin sürümü de yanında gider. Resend kurulana kadar e-postalar log'a yazılır.
 
 1. resend.com'da hesap açın. Domains > Add domain: `tomurcuk.shop`, bölge `eu-west-1` (İrlanda).
-2. Resend'in gösterdiği DNS kayıtlarını Hostinger > DNS'e girin: DKIM için `resend._domainkey` TXT kaydı, `send` alt adı için MX ve SPF (`v=spf1 include:amazonses.com ~all`) kayıtları. İsteğe bağlı ama önerilir: `_dmarc` TXT, `v=DMARC1; p=none;`. Kayıtlar yayılınca Resend'de "Verified" görünür.
-3. API Keys > Create API key: izin "Sending access", yalnızca `tomurcuk.shop`. Anahtar bir kez gösterilir; sohbete ya da repoya yazmayın, doğrudan sunucudaki `.env`'e girin:
+2. Resend'in gösterdiği DNS kayıtlarını Hostinger > DNS'e girin:
+   - DKIM için `resend._domainkey` TXT kaydı.
+   - `send` alt adı için MX ve SPF (`v=spf1 include:amazonses.com ~all`) kayıtları.
+   - İsteğe bağlı ama önerilir: `_dmarc` TXT, `v=DMARC1; p=none;`.
+
+   Kayıtlar yayılınca Resend'de "Verified" görünür. Doğrulanmamış alan adıyla gönderim 403 döner.
+3. API Keys > Create API key: izin "Sending access", yalnızca `tomurcuk.shop`. Anahtar bir kez gösterilir. Sohbete ya da repoya yazmayın; doğrudan sunucudaki `.env`'e girin:
 
 ```
 TOMURCUK_EMAIL_PROVIDER=resend
 TOMURCUK_EMAIL_RESEND_APIKEY=<re_ ile başlayan anahtar>
-# Yalnızca staging: e-posta bu adreslere gider, örnek dükkânların adreslerine gitmez. Boşsa hiç kimseye.
-TOMURCUK_EMAIL_ALLOWED_RECIPIENTS=ekip@ornek.com
+# Yalnızca staging: e-posta yalnızca bu adreslere gider (virgülle ayrılmış). Boşsa hiç kimseye.
+# Destekten açtığınız deneme dükkânının sahip e-postası da burada olmalı.
+TOMURCUK_EMAIL_ALLOWED_RECIPIENTS=siz@ornek.com,ekip@ornek.com
+# Yanıtların gideceği gerçek posta kutusu. Gönderen adres (siparis@) posta almaz.
+TOMURCUK_EMAIL_REPLYTO=destek@tomurcuk.shop
 ```
 
-Gönderen `Tomurcuk <siparis@tomurcuk.shop>`; değiştirmek için `TOMURCUK_EMAIL_FROM`. Gönderim sonucu destek panelindeki bildirim listesinde Resend'in yanıtıyla görünür; doğrulanmamış alan adı gibi kalıcı hatalar yeniden denenmez.
+4. `.env` konteyner kurulurken okunur. Değiştirdikten sonra ortamı yeniden çıkın: `scripts/deploy.sh staging $(cat TAG)`.
+5. Destek panelinde sağ üstteki **Deneme e-postası**'na basın. E-posta kendi adresinize gider; Resend'in yanıtı pencerede görünür.
+
+Gönderen `Tomurcuk <siparis@tomurcuk.shop>`; değiştirmek için `TOMURCUK_EMAIL_FROM`.
+
+`TOMURCUK_EMAIL_REPLYTO` için gerçek bir posta kutusu gerekir. Bunu Hostinger e-postası ya da bir yönlendirme servisiyle kurabilirsiniz, ör. Cloudflare Email Routing veya ImprovMX. Tanımsız bırakılırsa e-postalar "yanıtlayın" yerine "panelden destek talebi açın" der.
+
+**E-posta gelmiyorsa:**
+
+Önce destek panelinde dükkânın özetini açın. "Son bildirimler" satırında sonuç ve sebep yazar.
+
+| Sebep | Ne yapılır |
+| --- | --- |
+| "Gönderilmedi: staging'de yalnızca TOMURCUK_EMAIL_ALLOWED_RECIPIENTS…" | Adresi listeye ekleyin, yeniden çıkın. |
+| "Resend 403: … domain is not verified" | DNS kayıtlarını kontrol edin, Resend'de "Verified" olmasını bekleyin. |
+| "Resend 401" ya da "API key is invalid" | Anahtarı yeniden oluşturup `.env`'e girin. |
+| Satır yok ya da her şey "İletildi" ama e-posta yok | `TOMURCUK_EMAIL_PROVIDER=resend` eksik olabilir; açılış log'unda `E-posta: gönderilmez, log'a yazılır` görünür. İstenmeyen klasörüne de bakın. |
+
+Açılıştaki ayarı görmek için sunucuda: `docker logs staging-api-1 2>&1 | grep "E-posta:"`. Kalıcı hatalar (alan adı, anahtar, izinli olmayan adres) yeniden denenmez. Geçici hatalar (429, 5xx) 1, 5 ve 30 dakika, sonra 2 saat sonra yeniden denenir.
 
 ### Sunucu 2: prod
 

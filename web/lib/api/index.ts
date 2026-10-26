@@ -153,6 +153,7 @@ export const getPilotApplications = read("getPilotApplications");
 export const openShop = write("openShop");
 export const createPasswordLink = write("createPasswordLink");
 export const changeShopStatus = write("changeShopStatus");
+export const sendTestEmail = write("sendTestEmail");
 
 // Şifre belirleme bağlantısı
 export const getPasswordHolder = read("getPasswordHolder");

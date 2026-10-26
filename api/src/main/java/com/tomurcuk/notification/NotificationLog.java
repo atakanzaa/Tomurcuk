@@ -51,9 +51,9 @@ public class NotificationLog {
 	public void send(Notification notification) {
 		Optional<String> id = jdbc.sql("""
 				INSERT INTO notification_log (id, shop_id, order_id, order_number, kind, channel, recipient, subject,
-				                              text, status, created_at, dedupe_key)
-				VALUES (:id, :shopId, :orderId, :orderNumber, :kind, :channel, :recipient, :subject, :text, 'pending',
-				        :now, :dedupeKey)
+				                              text, html, status, created_at, dedupe_key)
+				VALUES (:id, :shopId, :orderId, :orderNumber, :kind, :channel, :recipient, :subject, :text, :html,
+				        'pending', :now, :dedupeKey)
 				ON CONFLICT (dedupe_key) DO NOTHING
 				RETURNING id
 				""")
@@ -66,6 +66,7 @@ public class NotificationLog {
 			.param("recipient", notification.recipient())
 			.param("subject", notification.subject())
 			.param("text", notification.text())
+			.param("html", notification.html())
 			.param("now", Instants.sql(clock.instant()))
 			.param("dedupeKey", notification.dedupeKey())
 			.query(String.class)
@@ -88,14 +89,14 @@ public class NotificationLog {
 	}
 
 	private void attempt(String id) {
-		Row row = jdbc.sql("SELECT channel, recipient, subject, text, attempts FROM notification_log WHERE id = :id")
+		Row row = jdbc.sql("SELECT channel, recipient, subject, text, html, attempts FROM notification_log WHERE id = :id")
 			.param("id", id)
 			.query(Row.class)
 			.single();
 		SmsSender.Result result;
 		try {
 			result = row.channel().equals("sms") ? sms.send(row.recipient(), row.text())
-					: email.send(row.recipient(), row.subject(), row.text());
+					: email.send(row.recipient(), row.subject(), row.text(), row.html());
 		}
 		catch (RuntimeException ex) {
 			log.warn("Bildirim gönderilemedi: {}", id, ex);
@@ -162,11 +163,19 @@ public class NotificationLog {
 			String text, boolean delivered, String providerResponse, Instant at) {
 	}
 
-	/** `kind`: order_confirmed, order_on_way, order_delivered, order_failed, new_order_email. */
+	/**
+	 * `kind`: order_confirmed, order_on_way, order_delivered, order_failed, new_order_email ve
+	 * hesap e-postaları. `html` yalnızca e-postada; SMS'te null.
+	 */
 	public record Notification(String shopId, String orderId, String orderNumber, String kind, String channel,
-			String recipient, String subject, String text, String dedupeKey) {
+			String recipient, String subject, String text, String html, String dedupeKey) {
+
+		public static Notification sms(String shopId, String orderId, String orderNumber, String kind, String phone,
+				String text, String dedupeKey) {
+			return new Notification(shopId, orderId, orderNumber, kind, "sms", phone, null, text, null, dedupeKey);
+		}
 	}
 
-	record Row(String channel, String recipient, String subject, String text, int attempts) {
+	record Row(String channel, String recipient, String subject, String text, String html, int attempts) {
 	}
 }
