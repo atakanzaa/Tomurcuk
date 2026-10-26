@@ -11,6 +11,7 @@ import com.tomurcuk.TestcontainersConfiguration;
 import com.tomurcuk.ordering.OrderConfirmed;
 import com.tomurcuk.ordering.OrderNotice;
 import com.tomurcuk.ordering.OrderStatus;
+import com.tomurcuk.ordering.PaymentMethod;
 import com.tomurcuk.ordering.OrderStatusChanged;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +44,7 @@ class NotificationTests {
 	void reprocessedEventSendsOneSmsAndKeepsAnonymousSenderHidden() {
 		OrderNotice order = new OrderNotice("o_4817", "shop_nergis", "T-4817", LocalDate.parse("2026-10-22"),
 				"10:00", "13:00", "12:00", "Selin Arslan", "0505 412 60 47", "0505 310 22 47", null, true,
-				"d4Wn8HcZp1QaE6uJ", "Fenerbahçe, Kadıköy", "Kır buketi", 74000);
+				"d4Wn8HcZp1QaE6uJ", "Fenerbahçe, Kadıköy", "Kır buketi", 74000, null, PaymentMethod.CARD);
 		OrderStatusChanged event = new OrderStatusChanged("o_4817", "shop_nergis", OrderStatus.PREPARING,
 				OrderStatus.ON_WAY, 3, order);
 
@@ -62,7 +63,7 @@ class NotificationTests {
 	void floristGetsOneNewOrderSmsWhenEnabled() {
 		OrderNotice order = new OrderNotice("o_4824", "shop_nergis", "T-4824", LocalDate.parse("2026-11-14"),
 				"13:00", "16:00", null, "Can Öz", "0532 100 20 30", "0532 100 20 31", "Ece Öz", false,
-				"n2Qk7RtYv4WsX9aB", "Moda, Kadıköy", "Mevsim buketi", 95000);
+				"n2Qk7RtYv4WsX9aB", "Moda, Kadıköy", "Mevsim buketi", 95000, "İyi ki doğdun", PaymentMethod.CARD);
 		jdbc.sql("UPDATE shop SET notify_sms = true, notify_phone = '0532 999 88 77' WHERE id = 'shop_nergis'").update();
 		try {
 			tx.executeWithoutResult(status -> events.publishEvent(new OrderConfirmed(order)));

@@ -3,11 +3,15 @@ package com.tomurcuk.notification.internal;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.content;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.header;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.jsonPath;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
+import java.util.Set;
+
+import com.tomurcuk.notification.EmailSender;
 import com.tomurcuk.notification.SmsSender;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,7 +33,7 @@ class ResendEmailSenderTests {
 		RestClient.Builder builder = RestClient.builder();
 		server = MockRestServiceServer.bindTo(builder).build();
 		sender = new ResendEmailSender(ResendConfig.client(builder, "https://api.resend.com", "re_test"),
-				"Tomurcuk <siparis@tomurcuk.shop>");
+				"Tomurcuk <siparis@tomurcuk.shop>", "");
 	}
 
 	@Test
@@ -43,7 +47,8 @@ class ResendEmailSenderTests {
 					"""))
 			.andRespond(withSuccess("{\"id\":\"49a3999c-0ce1-4ea6-ab68-afcd6dc2e794\"}", MediaType.APPLICATION_JSON));
 
-		SmsSender.Result result = sender.send("ayla@nergiscicek.com", "Yeni sipariş T-4821", "Ürün: Mevsim buketi");
+		SmsSender.Result result = sender.send("ayla@nergiscicek.com", "Yeni sipariş T-4821", "Ürün: Mevsim buketi",
+				null);
 
 		assertThat(result.delivered()).isTrue();
 		assertThat(result.response()).isEqualTo("id 49a3999c-0ce1-4ea6-ab68-afcd6dc2e794");
@@ -60,13 +65,49 @@ class ResendEmailSenderTests {
 			.andRespond(withStatus(HttpStatus.TOO_MANY_REQUESTS).contentType(MediaType.APPLICATION_JSON)
 				.body("{\"statusCode\":429,\"name\":\"rate_limit_exceeded\",\"message\":\"Too many requests\"}"));
 
-		SmsSender.Result domain = sender.send("ayla@nergiscicek.com", "konu", "metin");
-		SmsSender.Result rate = sender.send("ayla@nergiscicek.com", "konu", "metin");
+		SmsSender.Result domain = sender.send("ayla@nergiscicek.com", "konu", "metin", null);
+		SmsSender.Result rate = sender.send("ayla@nergiscicek.com", "konu", "metin", null);
 
 		assertThat(domain.delivered()).isFalse();
 		assertThat(domain.retryable()).isFalse();
 		assertThat(domain.response()).isEqualTo("Resend 403: The tomurcuk.shop domain is not verified.");
 		assertThat(rate.delivered()).isFalse();
 		assertThat(rate.retryable()).isTrue();
+	}
+
+	/** HTML logoyu istiyorsa satır içi ek (content_id) gider; yanıt adresi reply_to olur. */
+	@Test
+	void htmlWithInlineLogoAndReplyTo() {
+		RestClient.Builder builder = RestClient.builder();
+		MockRestServiceServer server = MockRestServiceServer.bindTo(builder).build();
+		ResendEmailSender withReply = new ResendEmailSender(
+				ResendConfig.client(builder, "https://api.resend.com", "re_test"), "Tomurcuk <siparis@tomurcuk.shop>",
+				"destek@tomurcuk.shop");
+		server.expect(requestTo("https://api.resend.com/emails"))
+			.andExpect(jsonPath("$.html").value("<img src=\"cid:logo\">"))
+			.andExpect(jsonPath("$.text").value("metin"))
+			.andExpect(jsonPath("$.reply_to").value("destek@tomurcuk.shop"))
+			.andExpect(jsonPath("$.attachments[0].filename").value("logo.png"))
+			.andExpect(jsonPath("$.attachments[0].content_id").value("logo"))
+			.andExpect(jsonPath("$.attachments[0].content_type").value("image/png"))
+			.andExpect(jsonPath("$.attachments[0].content").isNotEmpty())
+			.andRespond(withSuccess("{\"id\":\"1\"}", MediaType.APPLICATION_JSON));
+
+		assertThat(withReply.send("ayla@nergiscicek.com", "konu", "metin", "<img src=\"cid:logo\">").delivered())
+			.isTrue();
+		server.verify();
+	}
+
+	/** Staging: izinli olmayan adrese gönderilmez; "iletilemedi" sayılır ve yeniden denenmez. */
+	@Test
+	void stagingSkipsOtherAddressesAsFailed() {
+		EmailSender staging = ResendConfig.allowListed((to, subject, text, html) -> new SmsSender.Result(true, "id 1"),
+				Set.of("ekip@tomurcuk.shop"));
+
+		assertThat(staging.send("Ekip@Tomurcuk.shop", "konu", "metin", null).delivered()).isTrue();
+		SmsSender.Result other = staging.send("ayla@nergiscicek.com", "konu", "metin", null);
+		assertThat(other.delivered()).isFalse();
+		assertThat(other.retryable()).isFalse();
+		assertThat(other.response()).contains("TOMURCUK_EMAIL_ALLOWED_RECIPIENTS");
 	}
 }

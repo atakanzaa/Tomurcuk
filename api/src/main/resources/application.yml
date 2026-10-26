@@ -59,6 +59,9 @@ tomurcuk:
     # ve TOMURCUK_EMAIL_RESEND_APIKEY yazılınca; gönderen alan adı Resend'de doğrulanmış olmalı.
     provider: log
     from: Tomurcuk <siparis@tomurcuk.shop>
+    # Yanıtların gideceği gerçek posta kutusu (TOMURCUK_EMAIL_REPLYTO), ör. destek@tomurcuk.shop.
+    # Gönderen adres posta almaz; boşsa e-postalar "panelden destek talebi açın" der.
+    reply-to: ""
   photos:
     # disk: yerel, testler ve R2 kurulana kadar sunucular (dizin bir volume'dür). r2: Cloudflare R2;
     # adres, bucket, önek ve herkese açık adres ortamın .env'inden, anahtarlar secret olarak

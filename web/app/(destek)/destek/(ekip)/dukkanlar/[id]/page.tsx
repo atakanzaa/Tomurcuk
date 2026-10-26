@@ -182,7 +182,12 @@ async function Overview({ params }: Pick<PageProps<"/destek/dukkanlar/[id]">, "p
                       <td>{n.channel === "sms" ? "SMS" : "E-posta"}</td>
                       <td>{n.text}</td>
                       <td className={support.nowrap}>{n.recipient}</td>
-                      <td className={cx(!n.delivered && styles.failed)}>{n.delivered ? "İletildi" : `İletilemedi`}</td>
+                      <td className={cx(!n.delivered && styles.failed)}>
+                        {n.delivered ? "İletildi" : "İletilemedi"}
+                        {!n.delivered && n.providerResponse && (
+                          <span className={styles.failedReason}>{n.providerResponse}</span>
+                        )}
+                      </td>
                     </tr>
                   ))}
                 </tbody>

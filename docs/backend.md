@@ -182,6 +182,7 @@ Sağlayıcılar:
 | → Teslim edilemedi | gönderen ve alıcı | SMS |
 | `PasswordLinkIssued`: destek dükkânı açınca ya da yeni bağlantı oluşturunca (kurulum), kullanıcı şifremi unuttum deyince (sıfırlama) | dükkân sahibi ya da isteyen kullanıcı | e-posta |
 | `ImpersonationStarted` | dükkân sahipleri | e-posta |
+| `ShopStatusChanged` | dükkân sahipleri | e-posta |
 
 - Panelden elle girilen sipariş ve "Hazırlanıyor" geçişi bildirim göndermez.
 - Dinleyiciler `@ApplicationModuleListener`: işlem tamamlandıktan sonra ayrı iş parçacığında çalışır, olay kaydı veritabanında durur. Sipariş akışı SMS sağlayıcısını beklemez; uygulama yeniden başlarsa yarım kalan olay yeniden işlenir.
@@ -189,8 +190,21 @@ Sağlayıcılar:
 - Gönderilemeyen bildirim 1, 5, 30 dakika ve 2 saat arayla yeniden denenir; beşinci denemeden sonra bırakılır ve sağlayıcının yanıtıyla kayıtta kalır.
 - Metinlerde alıcıya ve gönderene dükkân konuşur, dükkân adı başta yazılır; isimsiz gönderimde gönderen hiç geçmez. Bütün mesajlar işlem mesajıdır; pazarlama mesajı (09:00–21:00 kuralı, İYS izni) MVP'de otomatik gönderilmez.
 - SMS sağlayıcısı Netgsm (`tomurcuk.sms.provider=netgsm`): `POST https://api.netgsm.com.tr/sms/rest/v2/send`, Basic auth, `encoding: TR`, `iysfilter: "0"` (bilgilendirme mesajı). Yanıttaki `code` "00" başarılıdır, `jobid` kayda yazılır. Kalıcı hatalar (20 metin, 30 kimlik, 40/41 başlık, 50/51 İYS, 70 parametre) yeniden denenmez; 85 ve 100 denenir. Kullanıcı kodu, şifre ve onaylı mesaj başlığı ortamın secret'larındadır: `TOMURCUK_SMS_NETGSM_USERCODE`, `TOMURCUK_SMS_NETGSM_PASSWORD`, `TOMURCUK_SMS_NETGSM_HEADER`. İstek biçimi Netgsm hesabıyla ilk gönderimde doğrulanmalı.
-- Staging'de Netgsm yalnızca `tomurcuk.sms.allowed-recipients` (`TOMURCUK_SMS_ALLOWED_RECIPIENTS`) numaralarına gönderir; diğerleri kayda "Gönderilmedi: ekip numarası değil" notuyla düşer. Değişken tanımsızsa staging açılmaz.
-- E-posta sağlayıcısı Resend (`tomurcuk.email.provider=resend`): `POST https://api.resend.com/emails`, Bearer anahtar (`TOMURCUK_EMAIL_RESEND_APIKEY`), düz metin, gönderen `Tomurcuk <siparis@tomurcuk.shop>`. 429 ve 5xx yeniden denenir, diğer 4xx (doğrulanmamış alan adı, hatalı adres) denenmez. Staging'de `TOMURCUK_EMAIL_ALLOWED_RECIPIENTS` dışındaki adreslere gitmez. Kurulum `deploy/README.md`.
+- Staging'de Netgsm yalnızca `tomurcuk.sms.allowed-recipients` (`TOMURCUK_SMS_ALLOWED_RECIPIENTS`) numaralarına gönderir; diğerleri kayda "iletilemedi" ve sebebiyle düşer, yeniden denenmez. Değişken tanımsızsa staging açılmaz.
+- **E-posta sağlayıcısı:** Resend (`tomurcuk.email.provider=resend`).
+  - İstek: `POST https://api.resend.com/emails`, Bearer anahtar (`TOMURCUK_EMAIL_RESEND_APIKEY`).
+  - Gönderen `Tomurcuk <siparis@tomurcuk.shop>`. Yanıt adresi `reply_to`, `TOMURCUK_EMAIL_REPLYTO`'dan gelir.
+  - Hatalar: 429 ve 5xx yeniden denenir. Diğer 4xx denenmez, ör. doğrulanmamış alan adı ya da hatalı adres.
+  - Staging'de `TOMURCUK_EMAIL_ALLOWED_RECIPIENTS` dışındaki adreslere gitmez. Bu e-postalar kayda "iletilemedi" ve sebebiyle düşer.
+  - Kurulum ve sorun giderme `deploy/README.md`'de.
+- **E-posta şablonları:**
+  - Kaynak: `notification/internal/EmailTemplates` içerikleri, `EmailLayout` iskeleti üretir.
+  - Biçim: HTML ve düz metin aynı içerikten çıkar. HTML tablo tabanlıdır, stiller satır içidir, renkler `tokens.json`'un açık tema değerleridir.
+  - Logo: `email/logo.png`, Resend'e satır içi ek olarak gider (`content_id: logo`, HTML'de `cid:logo`).
+  - Saklama: HTML `notification_log.html`'de durur (`V21`); yeniden denemede aynısı gider.
+  - Önizleme: `EmailTemplatesTests` bütün e-postaları `api/target/email-previews/`'a yazar.
+- **Deneme e-postası:** `POST /api/support/email-test`, destek panelinde sağ üstteki düğme. Giriş yapan destek kullanıcısının adresine gider ve sağlayıcının yanıtını hemen döner; kayda yazılmaz. Sağlayıcı `log` ise "gönderilmedi" döner.
+- **Destek paneli:** dükkân özetindeki "Son bildirimler"de iletilemeyen satırın yanında sağlayıcının yanıtı görünür.
 - Şifre bağlantısı e-postasında token düz durur (olay kaydında ve `notification_log`'da); bağlantı 7 gün geçerli ve tek kullanımlık olduğu için kabul edildi.
 - Yerelde ve önizlemede `log`: SMS ve e-posta gönderilmez, log'a yazılır.
 - Panel açıkken 30 saniyede bir `GET /api/panel/orders/new` sorulur (kartla ödemesi onaylanmamış siparişler sayılmaz). En son gelen sipariş değişince süzülen bildirim çıkar; çiçekçi açtıysa Web Audio ile kısa zil çalar (tercih tarayıcıda).

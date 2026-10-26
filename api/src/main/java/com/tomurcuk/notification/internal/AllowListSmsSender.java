@@ -8,7 +8,7 @@ import com.tomurcuk.notification.SmsSender;
 
 /**
  * Staging: gerçek sağlayıcı yalnızca ekip numaralarına gönderir (`tomurcuk.sms.allowed-recipients`).
- * Diğer numaralara gönderilmez; bildirim kaydında bu notla görünür, akış kesilmez.
+ * Diğer numaralara gönderilmez; bildirim kaydında "iletilemedi" ve bu notla görünür, akış kesilmez.
  */
 class AllowListSmsSender implements SmsSender {
 
@@ -26,6 +26,6 @@ class AllowListSmsSender implements SmsSender {
 		if (allowed.contains(NetgsmSmsSender.digits(phone))) {
 			return delegate.send(phone, text);
 		}
-		return new Result(true, "Gönderilmedi: ekip numarası değil", false);
+		return new Result(false, "Gönderilmedi: staging'de yalnızca TOMURCUK_SMS_ALLOWED_RECIPIENTS listesindeki numaralara gider", false);
 	}
 }

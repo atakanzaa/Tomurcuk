@@ -5,7 +5,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
 import com.tomurcuk.ordering.OrderNotice;
-import com.tomurcuk.shared.Money;
 import com.tomurcuk.shop.ShopInfo;
 
 /**
@@ -60,21 +59,6 @@ final class Messages {
 	static String newOrderSms(OrderNotice order, LocalDate today, String panelUrl) {
 		return "Tomurcuk: %s yeni sipariş, %s %s, %s. Panel: %s".formatted(order.number(),
 				day(order.deliveryDate(), today), range(order), order.zoneName(), panelUrl);
-	}
-
-	/** Dükkân sahibine yeni sipariş e-postası; çiçekçiye Tomurcuk konuşur. */
-	static String newOrderBody(OrderNotice order, LocalDate today, String panelUrl) {
-		return """
-				Yeni sipariş %s
-
-				Ürün: %s
-				Teslim: %s %s, %s
-				Alıcı: %s
-				Tutar: %s
-
-				Siparişi görmek için: %s
-				""".formatted(order.number(), order.itemsSummary(), day(order.deliveryDate(), today), range(order),
-				order.zoneName(), order.recipientName(), Money.format(order.total()), panelUrl);
 	}
 
 	/** "bugün", "yarın" ya da "14 Şubat". */

@@ -84,8 +84,10 @@ class NetgsmSmsSenderTests {
 		SmsSender.Result other = staging.send("0555 000 11 22", "metin");
 
 		assertThat(team.response()).isEqualTo("jobid 1");
-		assertThat(other.delivered()).isTrue();
-		assertThat(other.response()).isEqualTo("Gönderilmedi: ekip numarası değil");
+		// Gönderilmeyen SMS "iletilemedi" sayılır ve yeniden denenmez; sebep destek panelinde görünür.
+		assertThat(other.delivered()).isFalse();
+		assertThat(other.retryable()).isFalse();
+		assertThat(other.response()).startsWith("Gönderilmedi: staging'de yalnızca");
 		server.verify();
 	}
 }

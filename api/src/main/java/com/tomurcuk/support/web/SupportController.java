@@ -8,6 +8,7 @@ import com.tomurcuk.identity.Impersonation;
 import com.tomurcuk.identity.Impersonations;
 import com.tomurcuk.identity.PlatformPrincipal;
 import com.tomurcuk.marketing.PilotApplications;
+import com.tomurcuk.notification.EmailCheck;
 import com.tomurcuk.review.Review;
 import com.tomurcuk.shop.ShopDirectory;
 import com.tomurcuk.support.internal.Onboarding;
@@ -45,14 +46,17 @@ class SupportController {
 
 	private final ReviewModeration moderation;
 
+	private final EmailCheck emailCheck;
+
 	SupportController(SupportDesk desk, Impersonations impersonations, Onboarding onboarding,
-			PilotApplications applications, ShopControl shopControl, ReviewModeration moderation) {
+			PilotApplications applications, ShopControl shopControl, ReviewModeration moderation, EmailCheck emailCheck) {
 		this.desk = desk;
 		this.impersonations = impersonations;
 		this.onboarding = onboarding;
 		this.applications = applications;
 		this.shopControl = shopControl;
 		this.moderation = moderation;
+		this.emailCheck = emailCheck;
 	}
 
 	/** Geçici kapatma, askıya alma, kalıcı kapatma ve yeniden açma; gerekçe zorunlu. */
@@ -61,6 +65,15 @@ class SupportController {
 			@PathVariable String shopId, @RequestBody ShopControl.StatusInput body) {
 		return shopControl.change(user, shopId, body)
 			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+	}
+
+	/**
+	 * Giriş yapan destek kullanıcısının kendi adresine deneme e-postası; sağlayıcının yanıtı hemen
+	 * döner. E-posta ayarları değişince çalıştığını görmek için.
+	 */
+	@PostMapping("/email-test")
+	EmailCheck.Result emailTest(@AuthenticationPrincipal PlatformPrincipal user) {
+		return emailCheck.send(user.email(), user.name());
 	}
 
 	/** Yorumu gerekçeyle gizler; zaten gizliyse 404. */

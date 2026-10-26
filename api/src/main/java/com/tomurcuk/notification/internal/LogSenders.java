@@ -26,7 +26,8 @@ class LogSenders {
 	@Bean
 	@ConditionalOnProperty(name = "tomurcuk.email.provider", havingValue = "log", matchIfMissing = true)
 	EmailSender logEmailSender() {
-		return (to, subject, text) -> {
+		log.info("E-posta: gönderilmez, log'a yazılır (tomurcuk.email.provider=log)");
+		return (to, subject, text, html) -> {
 			log.info("E-posta {} ← {}\n{}", to, subject, text);
 			return new SmsSender.Result(true, null);
 		};
