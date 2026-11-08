@@ -9,6 +9,7 @@ import { formatPrice, zonedNow } from "@/lib/format";
 import { orderItemsSummary, orderStatusTag, orderTimeColumn } from "@/lib/order";
 import panel from "../_components/panel.module.css";
 import { panelSession } from "../_lib";
+import { channelArrival } from "@/lib/channel";
 
 export const metadata: Metadata = { title: "Siparişler" };
 
@@ -114,6 +115,7 @@ async function Orders({ searchParams }: Pick<PageProps<"/panel/siparisler">, "se
                           slot={slot}
                           recipient={order.recipientName || order.number}
                           place={order.zoneName}
+                          arrival={order.channel && channelArrival[order.channel]}
                           items={orderItemsSummary(order)}
                           status={orderStatusTag(order)}
                           amount={formatPrice(order.total)}

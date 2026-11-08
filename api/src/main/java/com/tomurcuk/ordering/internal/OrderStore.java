@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.tomurcuk.ordering.Bestseller;
+import com.tomurcuk.ordering.Channel;
 import com.tomurcuk.ordering.Order;
 import com.tomurcuk.shared.Instants;
 import com.tomurcuk.ordering.OrderSource;
@@ -60,13 +61,13 @@ public class OrderStore {
 				                    delivery_zone_id, zone_name, recipient_name, recipient_phone, address, courier_note,
 				                    card_note, sender_name, anonymous, sender_phone, subtotal, delivery_fee, total,
 				                    delivery_photo_url, courier_name, tracking_token, idempotency_key, created_at,
-				                    terms_version)
+				                    terms_version, channel)
 				VALUES (:id, :shopId, :number, :customerId, :source, :status, :paymentStatus, :paymentMethod,
 				        :deliveryDate, :timeSlotId, :slotStart, :slotEnd, :deliveryTime, :exactTime,
 				        :deliveryZoneId, :zoneName, :recipientName, :recipientPhone, :address, :courierNote,
 				        :cardNote, :senderName, :anonymous, :senderPhone, :subtotal, :deliveryFee, :total,
 				        :deliveryPhotoUrl, :courierName, :trackingToken, :idempotencyKey, :createdAt,
-				        :termsVersion)
+				        :termsVersion, :channel)
 				""")
 			.param("id", order.id())
 			.param("shopId", order.shopId())
@@ -101,6 +102,7 @@ public class OrderStore {
 			.param("idempotencyKey", idempotencyKey)
 			.param("createdAt", Instants.sql(order.createdAt()))
 			.param("termsVersion", termsVersion)
+			.param("channel", order.channel() == null ? null : order.channel().code())
 			.update();
 		int position = 1;
 		for (Order.Item item : order.items()) {
@@ -418,7 +420,8 @@ public class OrderStore {
 				rs.getString("sender_name"), rs.getBoolean("anonymous"), items, rs.getLong("subtotal"),
 				rs.getLong("delivery_fee"), rs.getLong("total"), rs.getString("delivery_photo_url"),
 				rs.getTimestamp("created_at").toInstant(), rs.getString("tracking_token"),
-				rs.getString("sender_phone"), rs.getString("courier_name"), events);
+				rs.getString("sender_phone"), rs.getString("courier_name"), events,
+				Channel.parse(rs.getString("channel")).orElse(null));
 	}
 
 	private static String time(Time time) {

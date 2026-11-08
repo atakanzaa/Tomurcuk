@@ -155,6 +155,27 @@ Her dükkânın sayfası kendi rengi ve düzeniyle açılır (`V22`). Panelde "D
   - Mutlak adres `TOMURCUK_WEB_URL`'den gelir; compose bunu `https://${HOST}` olarak verir.
   - Sekme ikonu dükkânın logosu. Logo yoksa `/<slug>/ikon` adresinden adın baş harfi, temanın buton renginde.
 
+## Ziyaretçiler ve paylaşım bağlantıları
+
+Çiçekçi, vitrinine hangi kanaldan gelindiğini ve kaçının sipariş verdiğini panelde "Ziyaretçiler" sayfasında görür (`V23`). Kişi, IP ya da cihaz bilgisi tutulmaz; ziyaretler günlük sayılardır.
+
+- **Kanal tarayıcıda bulunur** (`web/lib/channel.ts`):
+  - Önce paylaşım bağlantısındaki `?k=` (`instagram`, `whatsapp`, `google`, `qr`; `utm_source` da okunur).
+  - Yoksa yönlendiren site: Instagram, Facebook, WhatsApp, Google. Tomurcuk'un başka bir sayfası "Tomurcuk ana sayfası", başka bir site "Başka siteler" sayılır.
+  - Yoksa uygulama içi tarayıcının kimliği (Instagram, Facebook). Hiçbiri yoksa "Doğrudan".
+  - İlk geliş tarayıcı oturumunda (`sessionStorage`) durur. Ziyaret oturum başına bir kez sayılır, yalnızca vitrin ve ürün sayfalarında. Sipariş adımları, takip ve sözleşmeler sayılmaz.
+  - `?k=` adresten silinir; bağlantıyı kopyalayan başkası aynı kanaldan gelmiş sayılmaz.
+- **Uçlar:**
+  - `POST /api/public/shops/{shopId}/visits {channel}`: Next sunucusu iletir. Bilinmeyen kanal ve dükkân sessizce yok sayılır. Gün dükkânın saat dilimine göredir.
+  - `GET /api/panel/visits?days=7|30`: kanal başına ziyaret, sipariş ve ciro. Başka dönem `option_invalid` döner.
+- **Sipariş:**
+  - Ürün formu kanalı taslakla gönderir (`order_draft.channel`), sipariş oluşunca `orders.channel`'a geçer.
+  - Panelden girilen ve eski siparişlerde kanal boştur.
+  - Sipariş sayısına iptal edilenler ve kartla ödemesi tamamlanmayanlar girmez.
+  - Sipariş satırında ve detayında "Instagram'dan geldi" yazar.
+- **Paylaşım bağlantıları:** Instagram, WhatsApp ve Google Haritalar için `?k=` bağlantısı. Tabela ve kartvizit için QR kod `GET /panel/ziyaretciler/qr` adresinden PNG olarak iner (web, `qrcode` paketi).
+
+## Yorumlar
 
 Ürün yorumları `review` modülündedir (`V20`: `review`, `review_product`).
 
@@ -265,6 +286,7 @@ Kapsam bilerek dar tutulur; geliştirme hızı önce gelir.
 - Görünüm:
   - `ShopThemeTests`: her ton ve doygunlukta açık ve koyu tema kontrastı.
   - `PanelSettingsTests`: pembe kapak yüklenince renk dosya adına ve temaya geçer; görünüm seçenekleri doğrulanır, Instagram adresi kullanıcı adına indirgenir.
+- Ziyaretçiler (`CheckoutTests`): kanal taslaktan siparişe geçer ve sayılır; ödemesi tamamlanmayan kart siparişi sayılmaz; bilinmeyen kanal, dükkân ve dönem kabul edilmez.
 - Dükkân açma (`OnboardingTests`): lider dükkân açar, sahip bağlantıyla şifre belirleyip girer; bağlantı ikinci kez ve süresi geçince çalışmaz, yeni bağlantı eskisini geçersiz kılar; temsilci açamaz (403); alınmış ya da ayrılmış slug ve başka hesaptaki e-posta reddedilir, hata olunca dükkân açılmaz; şifre bağlantısı sahibine e-postayla gider; şifremi unuttum kayıtsız adreste de 204 döner ve e-posta göndermez, 2 dakika içinde ikinci bağlantı gitmez, sıfırlama bağlantısı 1 saat sonra çalışmaz.
 - Ürün yönetimi (`PanelCatalogTests`): boyların tam fiyatı ürün fiyatı ve ek fiyata çevrilir, satıştan kalkan ürün vitrinde yok, fotoğraf 4:5 kırpılır ve yalnızca yüklenen adres kabul edilir, çalışan ürün değiştiremez (403), başka dükkânın ürünü bulunamaz.
 - Alıcı ana sayfası (`DiscoveryTests`): o gün teslim edebilen dükkânlar önce, ilk müsait aralığa göre; aynı gün son saati geçen dükkân sonda ve ilk müsait günüyle.

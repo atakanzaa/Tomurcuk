@@ -18,6 +18,7 @@ import com.tomurcuk.customer.Customers;
 import com.tomurcuk.delivery.DeliverySchedule;
 import com.tomurcuk.delivery.SlotInfo;
 import com.tomurcuk.delivery.ZoneInfo;
+import com.tomurcuk.ordering.Channel;
 import com.tomurcuk.ordering.Order;
 import com.tomurcuk.ordering.OrderConfirmed;
 import com.tomurcuk.ordering.OrderSource;
@@ -106,7 +107,8 @@ public class Checkout {
 		this.events = events;
 	}
 
-	public Draft createDraft(String shopId, String productId, List<String> optionIds) {
+	/** `channel`: vitrinin bildirdiği kanal kodu; bilinmeyen kod yok sayılır. */
+	public Draft createDraft(String shopId, String productId, List<String> optionIds, String channel) {
 		if (!shops.find(shopId).map(ShopInfo::acceptsOrders).orElse(false)) {
 			throw ValidationException.of("product", FieldError.of("shop_unavailable"));
 		}
@@ -114,7 +116,7 @@ public class Checkout {
 			.orElseThrow(() -> ValidationException.of("product", FieldError.of("product_unavailable")));
 		Draft.Item item = buildItem(product, optionIds == null ? List.of() : optionIds);
 		Draft draft = new Draft(Ids.token(20), shopId, item, null, null, 0, 0, 0, null,
-				clock.instant().plus(DRAFT_TTL))
+				clock.instant().plus(DRAFT_TTL), Channel.parse(channel).orElse(null))
 			.withTotals();
 		drafts.insert(draft);
 		return draft;
@@ -315,14 +317,13 @@ public class Checkout {
 							.map(o -> new Order.ItemOption(o.name(), o.kind(), o.extraPrice()))
 							.toList())),
 				draft.subtotal(), draft.deliveryFee(), draft.total(), null, now, Ids.token(16), card.senderPhone(),
-				null, List.of(new Order.Event(OrderStatus.NEW, now)));
+				null, List.of(new Order.Event(OrderStatus.NEW, now)), draft.channel());
 		orders.insert(order, blankToNull(idempotencyKey), Terms.VERSION);
 		// Havalede sipariş hemen kesinleşir; kartla ödemede ödeme onaylanınca (PaymentListener).
 		if (method == PaymentMethod.TRANSFER) {
 			events.publishEvent(new OrderConfirmed(Notices.of(order)));
 		}
-		drafts.update(new Draft(draft.id(), draft.shopId(), draft.item(), delivery, card, draft.subtotal(),
-				draft.deliveryFee(), draft.total(), orderId, draft.expiresAt()));
+		drafts.update(draft.withOrder(orderId));
 		return order;
 	}
 

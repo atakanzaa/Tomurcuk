@@ -41,6 +41,26 @@ export const OrderSource = {
 } as const;
 export type OrderSource = ValueOf<typeof OrderSource>;
 
+/**
+ * Alıcının vitrine geldiği kanal (lib/channel.ts). Kişi bilgisi değildir; panelde yalnızca
+ * sayılar ve siparişte "Instagram'dan geldi" görünür.
+ */
+export const Channel = {
+  Instagram: "instagram",
+  WhatsApp: "whatsapp",
+  Google: "google",
+  Facebook: "facebook",
+  /** Dükkândaki tabela, kartvizit. */
+  Qr: "qr",
+  /** Tomurcuk ana sayfasından. */
+  Tomurcuk: "tomurcuk",
+  /** Başka bir siteden. */
+  Other: "other",
+  /** Kaynağı görünmeyen: bağlantı yazılarak, yer imiyle, kaynağı göstermeyen uygulamadan. */
+  Direct: "direct",
+} as const;
+export type Channel = ValueOf<typeof Channel>;
+
 export const OrderStatus = {
   New: "new",
   Preparing: "preparing",
@@ -312,6 +332,18 @@ export interface ShopPageInput {
 }
 
 /** Son 90 günde en az 3 siparişte teslim edilen ürünlerin en çok gideni; yoksa `productId` boş. */
+/**
+ * Panelde "Ziyaretçiler": bugün dahil son `days` gün. Sipariş sayısına iptal edilenler ve
+ * kartla ödemesi tamamlanmayanlar girmez. Kanallar ziyarete göre çoktan aza.
+ */
+export interface VisitStats {
+  days: number;
+  visits: number;
+  orders: number;
+  revenue: Kurus;
+  channels: { channel: Channel; visits: number; orders: number; revenue: Kurus }[];
+}
+
 export interface Bestseller {
   productId: string | null;
   orders: number;
@@ -433,6 +465,8 @@ export interface Order {
   courierName: string | null;
   /** order_event: durum geçmişi, eskiden yeniye. */
   events: { status: OrderStatus; at: string }[];
+  /** Alıcının vitrine geldiği kanal; panelden girilen ve eski siparişlerde boş. */
+  channel: Channel | null;
 }
 
 export const ShopLookupKind = {

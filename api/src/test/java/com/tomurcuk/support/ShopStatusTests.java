@@ -92,13 +92,13 @@ class ShopStatusTests {
 		assertThat(control.change(AGENT, SHOP, new StatusInput("paused", "Dükkân tadilatta", until, null)))
 			.hasValueSatisfying(detail -> assertThat(detail.status()).isEqualTo(ShopStatus.PAUSED));
 
-		assertThatThrownBy(() -> checkout.createDraft(SHOP, "p_mevsim", List.of("p_mevsim_o2")))
+		assertThatThrownBy(() -> checkout.createDraft(SHOP, "p_mevsim", List.of("p_mevsim_o2"), null))
 			.isInstanceOfSatisfying(ValidationException.class,
 					ex -> assertThat(ex.getErrors().get("product").code()).isEqualTo("shop_unavailable"));
 		assertThat(caferaga()).noneMatch(match -> match.slug().equals("nergis"));
 
 		clock.set(clock.instant().plus(Duration.ofHours(3)));
-		assertThat(checkout.createDraft(SHOP, "p_mevsim", List.of("p_mevsim_o2")).id()).isNotBlank();
+		assertThat(checkout.createDraft(SHOP, "p_mevsim", List.of("p_mevsim_o2"), null).id()).isNotBlank();
 
 		assertThatThrownBy(() -> control.change(AGENT, SHOP, new StatusInput("suspended", "Şikâyet", null, null)))
 			.isInstanceOf(AccessDeniedException.class);

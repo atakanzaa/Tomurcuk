@@ -18,6 +18,8 @@ interface OrderRowProps {
   slot?: string | null;
   recipient: string;
   place: string;
+  /** Alıcının vitrine geldiği kanal: "Instagram'dan geldi"; yerin yanına yazılır. */
+  arrival?: string | null;
   items: string;
   status: { tone: StatusTone; label: string };
   amount: string;
@@ -28,7 +30,19 @@ interface OrderRowProps {
 }
 
 /** Satıcı panelinde bir siparişin tek satırlık özeti. */
-export function OrderRow({ href, time, slot, recipient, place, items, status, amount, late, selected }: OrderRowProps) {
+export function OrderRow({
+  href,
+  time,
+  slot,
+  recipient,
+  place,
+  arrival,
+  items,
+  status,
+  amount,
+  late,
+  selected,
+}: OrderRowProps) {
   return (
     <li className={cx("tm-order", late && "tm-order--late", selected && "tm-order--selected", styles.row)}>
       <div>
@@ -39,7 +53,7 @@ export function OrderRow({ href, time, slot, recipient, place, items, status, am
         <Link href={href} className={cx("tm-order__who", styles.link)} aria-current={selected ? "true" : undefined}>
           {recipient}
         </Link>
-        <div className="tm-order__where">{place}</div>
+        <div className="tm-order__where">{arrival ? `${place} · ${arrival}` : place}</div>
         <div className="tm-order__items">{items}</div>
       </div>
       <div className="tm-order__side">

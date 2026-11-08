@@ -1,6 +1,6 @@
 import "server-only";
 import type { TomurcukApi } from "../contract";
-import type { CustomerDetail, CustomerSummary, NewOrders, Order, PanelProduct, PanelSession, PanelSettings, Places, Reminder } from "../types";
+import type { CustomerDetail, CustomerSummary, NewOrders, Order, PanelProduct, PanelSession, PanelSettings, Places, Reminder, VisitStats } from "../types";
 import { get, getOrNull, path, remove, send, sendOrNull } from "./client";
 
 export type PanelApi = Pick<
@@ -28,6 +28,7 @@ export type PanelApi = Pick<
   | "saveShopProfile"
   | "saveShopPage"
   | "saveShopAppearance"
+  | "getVisitStats"
   | "uploadShopPhoto"
   | "saveSameDayCutoff"
   | "saveTimeSlots"
@@ -85,6 +86,7 @@ export const httpPanelApi: PanelApi = {
   getPanelSettings: () => get<PanelSettings>("/api/panel/settings"),
   saveShopProfile: (_shopId, input) => send("PUT", "/api/panel/settings/profile", input),
   saveShopPage: (_shopId, input) => send("PUT", "/api/panel/settings/page", input),
+  getVisitStats: (days) => get<VisitStats>(`/api/panel/visits${query({ days })}`),
   saveShopAppearance: (input) => send("PUT", "/api/panel/settings/appearance", input),
   uploadShopPhoto: (_shopId, kind, file) => {
     const body = new FormData();

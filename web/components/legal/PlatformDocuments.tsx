@@ -42,7 +42,9 @@ export function PlatformPrivacy() {
         <p>
           Yalnızca sitenin çalışması için zorunlu çerezler kullanılır: sipariş adımlarını hatırlayan çerez
           (tomurcuk_taslak), panel ve destek oturumu çerezleri. Açık ya da koyu tema tercihi yalnızca tarayıcınızda
-          saklanır. Reklam ya da ziyaretçi takibi için çerez kullanılmaz.
+          saklanır. Dükkân sayfalarında vitrine hangi kanaldan gelindiği (Instagram, WhatsApp gibi) tarayıcı
+          oturumunda tutulur; dükkân yalnızca günlük toplam ziyaret sayılarını ve siparişin geldiği kanalı görür, kişi
+          ya da cihaz bilgisi kaydedilmez. Reklam ya da ziyaretçi takibi için çerez kullanılmaz.
         </p>
       </Section>
       <Section title="Aktarım ve saklama">

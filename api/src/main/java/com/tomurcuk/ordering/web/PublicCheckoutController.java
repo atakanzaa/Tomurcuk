@@ -40,7 +40,7 @@ class PublicCheckoutController {
 	@PostMapping("/drafts")
 	@ResponseStatus(HttpStatus.CREATED)
 	Draft createDraft(@PathVariable String shopId, @RequestBody CreateDraft body) {
-		return checkout.createDraft(shopId, body.productId(), body.optionIds());
+		return checkout.createDraft(shopId, body.productId(), body.optionIds(), body.channel());
 	}
 
 	@GetMapping("/drafts/{draftId}")
@@ -92,7 +92,7 @@ class PublicCheckoutController {
 		return new ResponseStatusException(HttpStatus.NOT_FOUND);
 	}
 
-	record CreateDraft(String productId, List<String> optionIds) {
+	record CreateDraft(String productId, List<String> optionIds, String channel) {
 	}
 
 	record Lookup(String number, String phone) {

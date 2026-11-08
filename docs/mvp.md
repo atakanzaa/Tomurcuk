@@ -58,6 +58,7 @@ Altı modül var; ilk üçü ürünün çekirdeği, geri kalanı onları tamaml�
   - Üç düzen var: kapak önde, hikâye önde, çiçekler önde.
   - "Bize ulaşın" bölümü: telefon, WhatsApp, Instagram, adres ve harita, çalışma saatleri, teslim semtleri.
   - Bağlantı paylaşılınca dükkânın kapağı ve açıklaması görünür; sekme ikonu dükkânın logosudur.
+- Ziyaretçiler: çiçekçi, vitrine hangi kanaldan (Instagram, WhatsApp, Google, QR kod, Tomurcuk ana sayfası) gelindiğini ve kaçının sipariş verdiğini panelde görür. Her kanal için ayrı paylaşım bağlantısı ve tabela için QR kod var. Siparişte "Instagram'dan geldi" yazar. Kişi bilgisi tutulmaz, yalnızca sayılar.
 - Ürün yorumları: siparişi teslim alan gönderen, takip sayfasından 30 gün içinde puan ve yorum yazar. Yorum ürün sayfasında ve alıcı ana sayfasında, hangi dükkândan teslim edildiğiyle görünür. Destek ekibi uygunsuz yorumu gerekçeyle gizler.
 
 ### 2. Ödeme

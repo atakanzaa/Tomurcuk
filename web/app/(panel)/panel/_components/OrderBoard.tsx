@@ -14,6 +14,7 @@ import { OrderDetail } from "./OrderDetail";
 import { SoundToggle } from "./NewOrderWatcher";
 import styles from "./board.module.css";
 import panel from "./panel.module.css";
+import { channelArrival } from "@/lib/channel";
 
 interface OrderBoardProps {
   session: PanelSession;
@@ -162,6 +163,7 @@ export async function OrderBoard({ session, view, selected }: OrderBoardProps) {
                           slot={slot}
                           recipient={order.recipientName}
                           place={order.zoneName}
+                          arrival={order.channel && channelArrival[order.channel]}
                           items={orderItemsSummary(order)}
                           status={orderStatusTag(order)}
                           amount={formatPrice(order.total)}

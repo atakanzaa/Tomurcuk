@@ -1,7 +1,8 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { OptionKind, type Product } from "@/lib/api/types";
+import { arrivalChannel } from "@/lib/channel";
 import { startOrder } from "@/lib/checkout/actions";
 import { initialFormState } from "@/lib/checkout/form-state";
 import { formatPrice } from "@/lib/format";
@@ -21,15 +22,16 @@ interface ProductOrderFormProps {
 
 export function ProductOrderForm({ slug, product, note }: ProductOrderFormProps) {
   const [state, action] = useActionState(startOrder.bind(null, slug), initialFormState);
-  return <OrderOptions key={state.version} product={product} note={note} state={state} action={action} />;
+  return <OrderOptions key={state.version} slug={slug} product={product} note={note} state={state} action={action} />;
 }
 
 function OrderOptions({
+  slug,
   product,
   note,
   state,
   action,
-}: Omit<ProductOrderFormProps, "slug"> & {
+}: ProductOrderFormProps & {
   state: typeof initialFormState;
   action: (formData: FormData) => void;
 }) {
@@ -43,11 +45,17 @@ function OrderOptions({
     product.price +
     (size?.extraPrice ?? 0) +
     addons.filter((o) => addonIds.includes(o.id)).reduce((sum, o) => sum + o.extraPrice, 0);
+  // Vitrine geliş kanalı taslakla siparişe geçer; sunucu tarayıcının oturum deposunu göremez.
+  const channelInput = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    if (channelInput.current) channelInput.current.value = arrivalChannel(slug);
+  }, [slug]);
   const formError = state.errors.product ?? state.errors.options ?? state.errors.form;
 
   return (
     <form action={action} noValidate>
       <input type="hidden" name="productId" value={product.id} />
+      <input ref={channelInput} type="hidden" name="channel" defaultValue="" />
       <div className={cx(flow.body, styles.formBody)}>
         {formError && (
           <p className={flow.formError} role="alert">

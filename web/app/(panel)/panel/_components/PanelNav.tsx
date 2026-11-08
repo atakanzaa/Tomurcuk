@@ -47,6 +47,9 @@ export function PanelSidebar({ shopName, shopShortName, shopSlug, todayCount, re
         <Link className={styles.navLink} href="/panel/yorumlar" aria-current={current("/panel/yorumlar")}>
           <span>Yorumlar</span>
         </Link>
+        <Link className={styles.navLink} href="/panel/ziyaretciler" aria-current={current("/panel/ziyaretciler")}>
+          <span>Ziyaretçiler</span>
+        </Link>
         <Link className={styles.navLink} href="/panel/teslimat" aria-current={current("/panel/teslimat")}>
           <span>Teslimat ayarları</span>
         </Link>
@@ -82,7 +85,7 @@ export function PanelTabBar() {
       href: "/panel/diger",
       label: "Diğer",
       icon: DotsThree,
-      active: ["/panel/diger", "/panel/urunler", "/panel/yorumlar", "/panel/teslimat", "/panel/gorunum", "/panel/ayarlar", "/panel/yardim"].some((p) => pathname.startsWith(p)),
+      active: ["/panel/diger", "/panel/urunler", "/panel/yorumlar", "/panel/ziyaretciler", "/panel/teslimat", "/panel/gorunum", "/panel/ayarlar", "/panel/yardim"].some((p) => pathname.startsWith(p)),
     },
   ];
   return (

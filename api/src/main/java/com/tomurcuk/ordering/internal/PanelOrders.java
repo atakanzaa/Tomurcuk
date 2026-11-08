@@ -349,7 +349,7 @@ public class PanelOrders {
 						: z.neighborhood() + ", " + z.district(),
 				recipientName, recipientPhone.get(), address, null, cardNote.isEmpty() ? null : cardNote, null, false,
 				orderItems, subtotal, z.fee(), subtotal + z.fee(), null, now, Ids.token(16), customer.phone(), null,
-				List.of(new Order.Event(OrderStatus.NEW, now)));
+				List.of(new Order.Event(OrderStatus.NEW, now)), null);
 		orders.insert(order, null);
 		return orderId;
 	}
