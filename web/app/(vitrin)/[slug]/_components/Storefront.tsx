@@ -1,7 +1,7 @@
 import { notFound, permanentRedirect } from "next/navigation";
 import { Suspense } from "react";
 import { findShop, getBestseller, getCategories, getDeliveryZones, getProducts, getShopRatings } from "@/lib/api";
-import { ShopLookupKind, ShopStatus, type Category, type Product, type Shop } from "@/lib/api/types";
+import { ShopLayout, ShopLookupKind, ShopStatus, type Category, type Product, type Shop } from "@/lib/api/types";
 import { NO_SELECTION, parseCatalogSelection } from "@/lib/catalog";
 import { cx } from "@/lib/cx";
 import { shopPath } from "@/lib/routes";
@@ -10,6 +10,7 @@ import { Catalog } from "./Catalog";
 import { DeliveryBand } from "./DeliveryBand";
 import { FavoriteProduct } from "./FavoriteProduct";
 import { HeaderCategories, StoreHeader } from "./StoreHeader";
+import { ShopContact } from "./ShopContact";
 import { ShopHero } from "./ShopHero";
 import { ShopStory } from "./ShopStory";
 import { StoreFooter } from "./StoreFooter";
@@ -54,6 +55,32 @@ export async function Storefront({ params, searchParams }: StorefrontProps) {
   const bestIsFavorite = best !== null && best === favorite;
   const hasStory = shop.story.trim() !== "" || shop.storyPhotos.length > 0;
 
+  const layout = shop.layout;
+  // Hikâye önde düzeninde hikâye girişte; çiçekler önde düzeninde favori ve en çok gönderilen
+  // ürün kartlarında etiket olur, hikâye en alta iner.
+  const storyInSections = hasStory && layout === ShopLayout.Cover;
+  const showBest = best !== null && !bestIsFavorite;
+  const badges: Record<string, string> = {};
+  if (layout === ShopLayout.Products) {
+    if (best) badges[best.id] = "En çok gönderilen";
+    if (favorite) badges[favorite.id] = "Dükkânın favorisi";
+  }
+  const catalog = (
+    <Suspense
+      fallback={
+        <Catalog shop={shop} categories={categories} products={products} selection={NO_SELECTION} badges={badges} />
+      }
+    >
+      <SelectedCatalog
+        shop={shop}
+        categories={categories}
+        products={products}
+        searchParams={searchParams}
+        badges={badges}
+      />
+    </Suspense>
+  );
+
   return (
     <>
       <StoreHeader
@@ -66,14 +93,14 @@ export async function Storefront({ params, searchParams }: StorefrontProps) {
       />
       <main>
         <ShopHero shop={shop} rating={ratings.shop} />
-        {(favorite || (best && !bestIsFavorite) || hasStory) && (
+        {layout !== ShopLayout.Products && (favorite || showBest || storyInSections) && (
           <div className={cx(container.container, sections.sections)}>
             {favorite && (
               <FavoriteProduct shop={shop} product={favorite} sentCount={bestIsFavorite ? bestseller.orders : null} />
             )}
-            {((best && !bestIsFavorite) || hasStory) && (
+            {(showBest || storyInSections) && (
               <div className={sections.side}>
-                {best && !bestIsFavorite && (
+                {showBest && (
                   <BestsellerRow
                     shop={shop}
                     product={best}
@@ -81,16 +108,20 @@ export async function Storefront({ params, searchParams }: StorefrontProps) {
                     rating={ratings.products[best.id]}
                   />
                 )}
-                {hasStory && <ShopStory shop={shop} />}
+                {storyInSections && <ShopStory shop={shop} />}
               </div>
             )}
           </div>
         )}
-        <Suspense fallback={<Catalog shop={shop} categories={categories} products={products} selection={NO_SELECTION} />}>
-          <SelectedCatalog shop={shop} categories={categories} products={products} searchParams={searchParams} />
-        </Suspense>
+        {catalog}
+        {layout === ShopLayout.Products && hasStory && (
+          <div className={cx(container.container, sections.sections)}>
+            <ShopStory shop={shop} />
+          </div>
+        )}
+        <ShopContact shop={shop} zones={zones} />
       </main>
-      <StoreFooter shop={shop} zones={zones} />
+      <StoreFooter shop={shop} />
     </>
   );
 }
@@ -108,7 +139,7 @@ function SuspendedStorefront({ shop }: { shop: Shop }) {
           </div>
         </section>
       </main>
-      <StoreFooter shop={shop} zones={[]} />
+      <StoreFooter shop={shop} />
     </>
   );
 }
@@ -124,7 +155,10 @@ async function SelectedHeaderCategories({ searchParams, ...props }: SelectionPro
   return <HeaderCategories {...props} selection={selection} />;
 }
 
-async function SelectedCatalog({ searchParams, ...props }: SelectionProps & { products: Product[] }) {
+async function SelectedCatalog({
+  searchParams,
+  ...props
+}: SelectionProps & { products: Product[]; badges?: Record<string, string> }) {
   const selection = parseCatalogSelection(props.categories, await searchParams);
   return <Catalog {...props} selection={selection} />;
 }

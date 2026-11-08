@@ -21,12 +21,14 @@ interface CatalogProps {
   categories: Category[];
   products: Product[];
   selection: CatalogSelection;
+  /** "Çiçekler önde" düzeninde favori ve en çok gönderilen ürünün etiketi. */
+  badges?: Record<string, string>;
 }
 
 const PHOTO_SIZES = "(min-width: 1024px) 280px, (min-width: 640px) 33vw, 50vw";
 
 /** Ürün listesi ve süzgeçler. Seçim URL'de taşınır: ?kategori=buketler&filtre=vazolu */
-export function Catalog({ shop, categories, products, selection }: CatalogProps) {
+export function Catalog({ shop, categories, products, selection, badges }: CatalogProps) {
   const visible = selectProducts(products, selection);
   const href = (change: Partial<CatalogSelection>) => ({
     pathname: shopPath(shop.slug),
@@ -72,6 +74,7 @@ export function Catalog({ shop, categories, products, selection }: CatalogProps)
               summary={product.summary}
               price={productPriceLabel(product)}
               photo={renderProductPhoto(product, PHOTO_SIZES)}
+              badge={badges?.[product.id]}
             />
           ))}
         </div>

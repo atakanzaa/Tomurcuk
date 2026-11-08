@@ -13,6 +13,7 @@ import type {
   ShopMatch,
   ShopStatusDetail,
   ShopPageInput,
+  ShopAppearanceInput,
   Bestseller,
   ShopStatusInput,
   ShopPick,
@@ -160,6 +161,8 @@ export interface TomurcukApi {
   /** Ayarları yalnızca dükkân sahibi değiştirir (CATALOG_EDIT). */
   saveShopProfile(shopId: string, input: ShopProfileInput): Promise<Result<true, keyof ShopProfileInput>>;
   saveShopPage(shopId: string, input: ShopPageInput): Promise<Result<true, keyof ShopPageInput>>;
+  /** Tema kaynağı, düzen, Instagram, WhatsApp ve paylaşım açıklaması. */
+  saveShopAppearance(input: ShopAppearanceInput): Promise<Result<true, keyof ShopAppearanceInput>>;
   /** Kapak 3:2, logo ve atölye fotoğrafı kare kırpılır; adres sayfa kaydedilirken listeye girer. */
   uploadShopPhoto(shopId: string, kind: "cover" | "square", file: Blob): Promise<Result<{ url: string }, "photo">>;
   saveSameDayCutoff(shopId: string, cutoff: string): Promise<Result<true, "sameDayCutoff">>;

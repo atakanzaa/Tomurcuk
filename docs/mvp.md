@@ -53,6 +53,11 @@ Altı modül var; ilk üçü ürünün çekirdeği, geri kalanı onları tamaml�
 - Instagram bio ve WhatsApp'a koyulacak tek link; ürün bazlı paylaşım linki.
 - Mobil öncelikli tasarım; siparişin %90'ı telefondan gelir.
 - Her dükkânın kendi sayfası: kapak fotoğrafı ve logo, kuruluş yılı ve hikâyesi, en çok üç atölye fotoğrafı, "Dükkânın favorisi" (çiçekçinin notuyla) ve son üç ayın "En çok gönderilen" ürünü.
+- Dükkânın görünümü:
+  - Vitrinin rengi kapak fotoğrafından gelir; okunabilirlik her renkte korunur.
+  - Üç düzen var: kapak önde, hikâye önde, çiçekler önde.
+  - "Bize ulaşın" bölümü: telefon, WhatsApp, Instagram, adres ve harita, çalışma saatleri, teslim semtleri.
+  - Bağlantı paylaşılınca dükkânın kapağı ve açıklaması görünür; sekme ikonu dükkânın logosudur.
 - Ürün yorumları: siparişi teslim alan gönderen, takip sayfasından 30 gün içinde puan ve yorum yazar. Yorum ürün sayfasında ve alıcı ana sayfasında, hangi dükkândan teslim edildiğiyle görünür. Destek ekibi uygunsuz yorumu gerekçeyle gizler.
 
 ### 2. Ödeme

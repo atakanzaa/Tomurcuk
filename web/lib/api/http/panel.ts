@@ -27,6 +27,7 @@ export type PanelApi = Pick<
   | "getPanelSettings"
   | "saveShopProfile"
   | "saveShopPage"
+  | "saveShopAppearance"
   | "uploadShopPhoto"
   | "saveSameDayCutoff"
   | "saveTimeSlots"
@@ -84,6 +85,7 @@ export const httpPanelApi: PanelApi = {
   getPanelSettings: () => get<PanelSettings>("/api/panel/settings"),
   saveShopProfile: (_shopId, input) => send("PUT", "/api/panel/settings/profile", input),
   saveShopPage: (_shopId, input) => send("PUT", "/api/panel/settings/page", input),
+  saveShopAppearance: (input) => send("PUT", "/api/panel/settings/appearance", input),
   uploadShopPhoto: (_shopId, kind, file) => {
     const body = new FormData();
     body.set("file", file, "foto.jpg");

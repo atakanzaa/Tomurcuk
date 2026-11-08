@@ -35,6 +35,16 @@ public record ShopView(
 		String story,
 		Integer foundedYear,
 		List<String> storyPhotos,
+		/** `cover` (kapaktan) ya da `tomurcuk` (varsayılan renkler). */
+		String themeMode,
+		/** Vitrinin rengi; kapaktan renk yoksa ya da `tomurcuk` seçildiyse null. */
+		ShopTheme theme,
+		/** `cover`, `story` ya da `products`. */
+		String layout,
+		String instagram,
+		/** Boşsa vitrin dükkân telefonunu kullanır. */
+		String whatsapp,
+		String shareDescription,
 		String legalName,
 		String taxOffice,
 		String taxNumber,
@@ -67,6 +77,12 @@ public record ShopView(
 				shop.getStory(),
 				shop.getFoundedYear(),
 				shop.getStoryPhotos(),
+				shop.getThemeMode(),
+				"cover".equals(shop.getThemeMode()) ? ShopTheme.from(shop.getCoverColor()) : null,
+				shop.getLayout(),
+				shop.getInstagram(),
+				shop.getWhatsapp(),
+				shop.getShareDescription(),
 				shop.getLegalName(),
 				shop.getTaxOffice(),
 				shop.getTaxNumber(),

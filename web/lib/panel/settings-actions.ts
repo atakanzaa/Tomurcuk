@@ -6,12 +6,13 @@ import {
   removeClosedDay,
   saveDeliveryZones,
   saveSameDayCutoff,
+  saveShopAppearance,
   saveShopPage,
   saveShopProfile,
   uploadShopPhoto,
   saveTimeSlots,
 } from "@/lib/api";
-import type { FieldErrors, SlotSetting, ZoneSetting } from "@/lib/api/types";
+import { ShopLayout, ShopThemeMode, type FieldErrors, type SlotSetting, type ZoneSetting } from "@/lib/api/types";
 import { formatDayMonth } from "@/lib/dates";
 import { formValues, type FormState } from "@/lib/checkout/form-state";
 import { settingsErrorMessages } from "./settings";
@@ -164,4 +165,21 @@ export async function savePageForm(prev: SettingsFormState, formData: FormData):
   refreshShowcase(shop);
   refresh();
   return done(prev, "Sayfanız kaydedildi. Vitrininizde görünüyor.");
+}
+
+/** Görünüm: tema kaynağı, düzen, Instagram, WhatsApp ve paylaşım açıklaması. */
+export async function saveAppearanceForm(prev: SettingsFormState, formData: FormData): Promise<SettingsFormState> {
+  const { shop } = await loadPanel();
+  const values = formValues(formData);
+  const result = await saveShopAppearance({
+    themeMode: formData.get("useTomurcukColors") === "on" ? ShopThemeMode.Tomurcuk : ShopThemeMode.Cover,
+    layout: (str(formData, "layout") || ShopLayout.Cover) as ShopLayout,
+    instagram: str(formData, "instagram"),
+    whatsapp: str(formData, "whatsapp"),
+    shareDescription: str(formData, "shareDescription"),
+  });
+  if (!result.ok) return failed(prev, result.errors, values);
+  refreshShowcase(shop);
+  refresh();
+  return done(prev, "Görünüm kaydedildi. Vitrininizde görünüyor.");
 }

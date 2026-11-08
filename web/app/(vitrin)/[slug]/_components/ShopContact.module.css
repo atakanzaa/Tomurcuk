@@ -1,0 +1,114 @@
+/* Bize ulaşın: satırlar ince çizgiyle, kutu yok. Masaüstünde üç sütun. */
+.contact {
+  display: grid;
+  gap: var(--space-6);
+  padding-top: var(--space-8);
+}
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-5);
+}
+
+.headText {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.heading {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 23px;
+  line-height: 28px;
+}
+
+.lede,
+.muted {
+  margin: 0;
+  color: var(--ink-muted);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.lede {
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.columns {
+  display: grid;
+  gap: var(--space-6);
+}
+
+.column {
+  display: grid;
+  align-content: start;
+  gap: var(--space-2);
+}
+
+.title {
+  margin: 0;
+  font-size: 17px;
+  line-height: 24px;
+  font-weight: 600;
+}
+
+.address,
+.text {
+  margin: 0;
+  font-style: normal;
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.link {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-weight: 500;
+}
+
+.zones {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-bottom: 1px solid var(--line);
+}
+
+.zone {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding-block: 10px;
+  border-top: 1px solid var(--line);
+  font-size: 15px;
+  line-height: 22px;
+}
+
+.fee {
+  flex: none;
+  color: var(--ink-muted);
+}
+
+@media (min-width: 900px) {
+  .columns {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-7);
+  }
+
+  .heading {
+    font-size: 32px;
+    line-height: 38px;
+  }
+}

@@ -33,6 +33,17 @@ UPDATE shop SET
     favorite_note = 'Her pazartesi seradan yeni laleler geliyor; renkleri haftadan haftaya değişiyor. Hangisi gelirse en güzelini siz alıyorsunuz.'
 WHERE id = 'shop_nergis' AND story = '';
 
+-- Görünüm: her örnek dükkânın kapaktan gelmiş gibi bir rengi var (gerçek kapakta renk yükleme
+-- sırasında bulunur). Panelden değiştirildiyse dokunulmaz.
+UPDATE shop SET cover_color = c.color
+FROM (VALUES ('shop_nergis', '#c2456e'), ('shop_lale', '#e0a92c'), ('shop_begonvil', '#4f8f5c'),
+             ('shop_papatya', '#d6b52a'), ('shop_orkide', '#8e4cb0')) AS c(id, color)
+WHERE shop.id = c.id AND shop.cover_color IS NULL;
+
+UPDATE shop SET instagram = 'nergiscicek',
+    share_description = 'Buketleri her sabah halden gelen çiçeklerle hazırlıyoruz. Kadıköy, Üsküdar ve Ataşehir''e aynı gün.'
+WHERE id = 'shop_nergis' AND instagram = '' AND share_description = '';
+
 -- Askıdaki örnek dükkân. Destek ekibi durumu değiştirdiyse (status_changed_at dolu) dokunulmaz.
 UPDATE shop SET status = 'suspended', status_reason = 'Pilot süresi doldu; dükkân yeniden açılmayı bekliyor.'
 WHERE id = 'shop_orkide' AND status_changed_at IS NULL;

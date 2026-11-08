@@ -116,6 +116,7 @@ export const uploadProductPhoto = write("uploadProductPhoto");
 export const getPanelSettings = read("getPanelSettings");
 export const saveShopProfile = write("saveShopProfile");
 export const saveShopPage = write("saveShopPage");
+export const saveShopAppearance = write("saveShopAppearance");
 export const uploadShopPhoto = write("uploadShopPhoto");
 export const saveSameDayCutoff = write("saveSameDayCutoff");
 export const saveTimeSlots = write("saveTimeSlots");

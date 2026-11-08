@@ -132,6 +132,17 @@ export interface Shop {
   foundedYear: number | null;
   /** En çok üç kare atölye fotoğrafı. */
   storyPhotos: string[];
+  /** `cover`: renk kapak fotoğrafından; `tomurcuk`: varsayılan renkler. */
+  themeMode: ShopThemeMode;
+  /** Vitrinin rengi; kapaktan renk yoksa ya da `tomurcuk` seçildiyse null. */
+  theme: ShopTheme | null;
+  layout: ShopLayout;
+  /** Kullanıcı adı, @ olmadan; boşsa gösterilmez. */
+  instagram: string;
+  /** Boşsa dükkân telefonu. */
+  whatsapp: string | null;
+  /** Bağlantı önizlemesi ve aramalar; boşsa kısa tanıtım. */
+  shareDescription: string;
   /** Sözleşmelerde satıcı: unvan ya da ad soyad. Boşsa dükkân ayarlarından doldurulmamıştır. */
   legalName: string;
   taxOffice: string;
@@ -265,6 +276,31 @@ export interface ShopProfileInput {
 }
 
 /** Dükkânın sayfası; fotoğraflar panelden yüklenen adreslerdir. */
+export const ShopThemeMode = { Cover: "cover", Tomurcuk: "tomurcuk" } as const;
+export type ShopThemeMode = ValueOf<typeof ShopThemeMode>;
+
+export const ShopLayout = { Cover: "cover", Story: "story", Products: "products" } as const;
+export type ShopLayout = ValueOf<typeof ShopLayout>;
+
+/**
+ * Kapak fotoğrafının baskın renginden türetilen renkler (api ShopTheme). Anahtarlar tokens.css
+ * değişkenleri: paper, paper-raised, kraft, kraft-deep, line, line-strong, ink, ink-muted, stem,
+ * stem-hover, on-stem. Kontrast backend'de sağlanır.
+ */
+export interface ShopTheme {
+  source: string;
+  light: Record<string, string>;
+  dark: Record<string, string>;
+}
+
+export interface ShopAppearanceInput {
+  themeMode: ShopThemeMode;
+  layout: ShopLayout;
+  instagram: string;
+  whatsapp: string;
+  shareDescription: string;
+}
+
 export interface ShopPageInput {
   logoUrl: string | null;
   coverPhotoUrl: string | null;
