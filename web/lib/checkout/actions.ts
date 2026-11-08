@@ -10,6 +10,7 @@ import {
   saveDelivery,
 } from "@/lib/api";
 import { CheckoutError, ShopLookupKind, type FieldErrors } from "@/lib/api/types";
+import { isChannel } from "@/lib/channel";
 import { CheckoutStep, checkoutPath, trackingOrderPath } from "@/lib/routes";
 import { formValues, type FormState } from "./form-state";
 import { checkoutErrorMessage, toMessages } from "./messages";
@@ -40,7 +41,8 @@ export async function startOrder(slug: string, prev: FormState, formData: FormDa
   const shop = await requireShop(slug);
   const productId = str(formData, "productId");
   const optionIds = [str(formData, "size"), ...formData.getAll("addon").map(String)].filter(Boolean);
-  const result = await createDraft(shop.id, { productId, optionIds });
+  const channel = str(formData, "channel");
+  const result = await createDraft(shop.id, { productId, optionIds, channel: isChannel(channel) ? channel : null });
   if (!result.ok) return failed(prev, formData, result.errors);
   await writeDraftId(slug, result.value.id);
   redirect(checkoutPath(slug, CheckoutStep.Delivery));

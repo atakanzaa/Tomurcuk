@@ -29,32 +29,10 @@
   line-height: 20px;
 }
 
-.text {
-  margin: 0;
-}
-
-.title {
-  margin: 0;
-  font-size: 15px;
-  line-height: 22px;
-  font-weight: 600;
-}
-
 .address {
   display: grid;
   gap: var(--space-1);
   font-style: normal;
-}
-
-.zones,
-.contactTitle {
-  display: none;
-}
-
-.buttons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
 }
 
 /* Sözleşmeler: altbilgide küçük bağlantılar. */
@@ -108,18 +86,6 @@
   .muted {
     font-size: 15px;
     line-height: 22px;
-  }
-
-  .zones {
-    display: grid;
-  }
-
-  .contactTitle {
-    display: block;
-  }
-
-  .contact {
-    gap: var(--space-3);
   }
 }
 

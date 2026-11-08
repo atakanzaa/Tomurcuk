@@ -55,6 +55,8 @@ services:
         condition: service_healthy
     environment:
       TOMURCUK_API_URL: http://api:8080
+      # Bağlantı önizlemelerindeki (og:image) mutlak adresler için.
+      TOMURCUK_WEB_URL: https://${HOST}
       TZ: Europe/Istanbul
     networks:
       - default

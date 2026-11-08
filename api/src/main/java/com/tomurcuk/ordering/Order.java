@@ -8,7 +8,8 @@ import com.tomurcuk.catalog.OptionKind;
 
 /**
  * Sipariş; JSON'u web/lib/api/types.ts `Order`. Ürün adı, fiyat, bölge adı ve saat aralığı
- * sipariş anında kopyalanır. Saatler "HH:mm", para kuruş.
+ * sipariş anında kopyalanır. Saatler "HH:mm", para kuruş. `channel`: alıcı vitrine hangi kanaldan
+ * geldi; panelden girilen siparişte boş.
  */
 public record Order(String id, String number, String shopId, String customerId, OrderSource source,
 		OrderStatus status, PaymentStatus paymentStatus, PaymentMethod paymentMethod, LocalDate deliveryDate,
@@ -16,7 +17,7 @@ public record Order(String id, String number, String shopId, String customerId, 
 		String deliveryZoneId, String zoneName, String recipientName, String recipientPhone, String address,
 		String courierNote, String cardNote, String senderName, boolean anonymous, List<Item> items, long subtotal,
 		long deliveryFee, long total, String deliveryPhotoUrl, Instant createdAt, String trackingToken,
-		String senderPhone, String courierName, List<Event> events) {
+		String senderPhone, String courierName, List<Event> events, Channel channel) {
 
 	public record Item(String id, String orderId, String productId, String productName, long unitPrice,
 			int quantity, List<ItemOption> options) {

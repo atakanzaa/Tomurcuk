@@ -12,11 +12,13 @@ interface ProductItemProps {
   price: string;
   /** Dükkânın kendi fotoğrafı (4:5). Yoksa kraft zemin üzerinde ürün adı gösterilir. */
   photo?: ReactNode;
+  /** Fotoğrafın köşesinde kısa etiket: "Dükkânın favorisi", "En çok gönderilen". */
+  badge?: string;
   className?: string;
 }
 
 /** Vitrinde bir ürün: fotoğraf, ad, kısa bilgi ve fiyat. Kutusuz ve kenarlıksız. */
-export function ProductItem({ href, name, summary, price, photo, className }: ProductItemProps) {
+export function ProductItem({ href, name, summary, price, photo, badge, className }: ProductItemProps) {
   return (
     <Link href={href} className={cx("tm-product", className)}>
       <div className={cx("tm-product__photo", styles.photo)}>
@@ -25,6 +27,7 @@ export function ProductItem({ href, name, summary, price, photo, className }: Pr
             {name}
           </span>
         )}
+        {badge && <span className={styles.badge}>{badge}</span>}
       </div>
       <h3 className="tm-product__name">{name}</h3>
       <div className="tm-product__meta">

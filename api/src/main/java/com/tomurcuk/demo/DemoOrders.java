@@ -84,6 +84,8 @@ class DemoOrders implements ApplicationRunner {
 				.update();
 		}
 
+		insertVisits(shopId, today);
+
 		jdbc.sql("""
 				INSERT INTO shop_order_counter (shop_id, next_number) VALUES (:shopId, :next)
 				ON CONFLICT (shop_id) DO UPDATE SET next_number = GREATEST(shop_order_counter.next_number, :next)
@@ -113,12 +115,12 @@ class DemoOrders implements ApplicationRunner {
 				                    delivery_date, time_slot_id, slot_start, slot_end, delivery_time, exact_time,
 				                    delivery_zone_id, zone_name, recipient_name, recipient_phone, address, courier_note,
 				                    card_note, sender_name, anonymous, sender_phone, subtotal, delivery_fee, total,
-				                    delivery_photo_url, courier_name, tracking_token, created_at)
+				                    delivery_photo_url, courier_name, tracking_token, created_at, channel)
 				VALUES (:id, :shopId, :number, :customerId, :source, :status, :paymentStatus, :paymentMethod,
 				        :deliveryDate, :timeSlotId, :slotStart, :slotEnd, :deliveryTime, :exactTime,
 				        :deliveryZoneId, :zoneName, :recipientName, :recipientPhone, :address, :courierNote,
 				        :cardNote, :senderName, :anonymous, :senderPhone, :subtotal, :deliveryFee, :total,
-				        :deliveryPhotoUrl, :courierName, :trackingToken, :createdAt)
+				        :deliveryPhotoUrl, :courierName, :trackingToken, :createdAt, :channel)
 				""")
 			.param("id", id)
 			.param("shopId", text(o, "shopId"))
@@ -151,6 +153,7 @@ class DemoOrders implements ApplicationRunner {
 			.param("courierName", text(o, "courierName"))
 			.param("trackingToken", text(o, "trackingToken"))
 			.param("createdAt", Instants.sql(shifted(text(o, "createdAt"), shift)))
+			.param("channel", text(o, "channel"))
 			.update();
 		int position = 1;
 		for (JsonNode item : o.get("items")) {
@@ -174,6 +177,29 @@ class DemoOrders implements ApplicationRunner {
 				.param("status", text(event, "status"))
 				.param("at", Instants.sql(shifted(text(event, "at"), shift)))
 				.update();
+		}
+	}
+
+	/**
+	 * Ziyaretçiler ekranı için son 30 günün kanal sayıları; her gün sabit bir desenle. Var olan
+	 * gün yazılmaz, gün içinde gelen gerçek ziyaretler o güne eklenir.
+	 */
+	private void insertVisits(String shopId, LocalDate today) {
+		String[] channels = { "instagram", "whatsapp", "google", "tomurcuk", "direct", "qr" };
+		int[] base = { 28, 12, 5, 3, 6, 1 };
+		for (int d = 0; d < 30; d++) {
+			for (int c = 0; c < channels.length; c++) {
+				int visits = base[c] + (d * 7 + c * 3) % (base[c] / 2 + 2) - (d % 6 == 0 ? base[c] / 3 : 0);
+				jdbc.sql("""
+						INSERT INTO shop_visit (shop_id, day, channel, visits) VALUES (:shopId, :day, :channel, :visits)
+						ON CONFLICT DO NOTHING
+						""")
+					.param("shopId", shopId)
+					.param("day", today.minusDays(d))
+					.param("channel", channels[c])
+					.param("visits", Math.max(visits, 0))
+					.update();
+			}
 		}
 	}
 

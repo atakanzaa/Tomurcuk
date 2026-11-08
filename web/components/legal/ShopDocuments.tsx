@@ -315,6 +315,10 @@ export function BuyerPrivacy({ shop }: Pick<DocumentProps, "shop">) {
           <li>Kart notu, sipariş içeriği, tutar ve ödeme durumu. Kart numarası işlenmez.</li>
           <li>Siparişin verildiği IP adresi ve işlem kayıtları.</li>
           <li>
+            Vitrine hangi kanaldan geldiğiniz (ör. Instagram), siparişle birlikte. Ziyaretler kişi ya da cihaz bilgisi
+            olmadan, günlük toplam sayı olarak tutulur.
+          </li>
+          <li>
             Yorum yazarsanız: puanınız, yorumunuz, adınız ve soyadınızın baş harfi (ör. &quot;Elif Y.&quot;) ve teslim
             semti. &quot;Adım görünmesin&quot; seçilirse ad yerine &quot;Bir alıcı&quot; yazar.
           </li>

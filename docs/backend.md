@@ -127,6 +127,54 @@ Vitrin dükkânın kendi sayfasıdır; içeriğini dükkân sahibi panelde "Dük
 - En çok gönderilen (`GET /api/public/shops/{id}/bestseller`): son 90 günde teslim edilen siparişlerde en çok geçen ürün, sipariş sayısıyla. En az 3 sipariş yoksa `productId` boş döner ve vitrinde bölüm görünmez. Web saatlik önbellekler, `products:` etiketiyle yenilenir.
 - Vitrin sırası: kapak ve logo, ad, ilçe ve kuruluş yılı, tanıtım, teslimat bandı; "Dükkânın favorisi" (notu kart notu etiketinde), "En çok gönderilen" (favoriyle aynıysa sayı favorinin altına yazılır), "Hikâyemiz", "Bütün çiçekler". Alan boşsa bölümü görünmez.
 
+## Dükkânın görünümü
+
+Her dükkânın sayfası kendi rengi ve düzeniyle açılır (`V22`). Panelde "Dükkânınızın görünümü" sayfasından ayarlanır (`PUT /api/panel/settings/appearance`, `CATALOG_EDIT`).
+
+- **Renk kapak fotoğrafından gelir:**
+  - Kapak yüklenirken baskın renk bulunur (`media/internal/PhotoColors`). Gri, çok koyu ve çok açık pikseller sayılmaz; tonlar doygunluğa göre tartılır.
+  - Renk dosya adında taşınır (`<id>-c2456e.jpg`). Böylece ayrı bir kayıt gerekmez ve tarayıcının gönderdiği bir renge güvenilmez.
+  - Sayfa kaydedilince renk `shop.cover_color`'a yazılır.
+  - Renksiz kapakta (siyah beyaz) ve bu değişiklikten önce yüklenmiş kapaklarda tema varsayılan kalır. Kapak yeniden yüklenince renk gelir.
+- **Tema:**
+  - `ShopTheme`, renkten açık ve koyu iki tema türetir. Anahtarlar `tokens.css` değişkenleridir (`paper`, `kraft`, `stem`…); durum renkleri ve `peony` değişmez.
+  - Kontrast hesapla sağlanır: buton yazısı, buton/zemin ve ikincil metin 4.5:1 üstü, kenarlık 3:1 üstü. `ShopThemeTests` bütün tonları dener.
+  - `theme_mode = tomurcuk` seçilirse kapaktan renk alınmaz.
+- **Web'de tema:** `app/(vitrin)/[slug]/layout.tsx`, dükkânın bütün sayfalarına (vitrin, ürün, sipariş adımları, takip, sözleşmeler) `html[data-theme=…]` kuralları yazar (`lib/shop-theme.ts`). Panel ve destek Tomurcuk'un renklerinde kalır.
+- **Düzen (`layout`):**
+  - `cover`: kapak önde, bugünkü düzen.
+  - `story`: kapak yok; hikâye ve atölye fotoğrafları girişte.
+  - `products`: kapak ince şerit; ürünler hemen başlar, favori ve en çok gönderilen ürün kartlarda etiket olur, hikâye en altta.
+- **İletişim:**
+  - Vitrinin altında "Bize ulaşın" bölümü: arama, WhatsApp, Instagram ve adres (Google Haritalar'da arama bağlantısı, anahtar gerekmez).
+  - Çalışma saatleri dükkân ayarındaki metin olarak görünür.
+  - Teslim edilen semtler ücretleriyle listelenir.
+  - Instagram adresi ya da `@ad` yazılırsa kullanıcı adına indirgenir. WhatsApp boşsa dükkân telefonu kullanılır.
+- **Paylaşım:**
+  - Vitrin ve ürün sayfaları Open Graph etiketleri taşır. Başlık dükkânın ya da ürünün adı; açıklama `share_description`, boşsa kısa tanıtım; görsel kapak ya da ürün fotoğrafı.
+  - Mutlak adres `TOMURCUK_WEB_URL`'den gelir; compose bunu `https://${HOST}` olarak verir.
+  - Sekme ikonu dükkânın logosu. Logo yoksa `/<slug>/ikon` adresinden adın baş harfi, temanın buton renginde.
+
+## Ziyaretçiler ve paylaşım bağlantıları
+
+Çiçekçi, vitrinine hangi kanaldan gelindiğini ve kaçının sipariş verdiğini panelde "Ziyaretçiler" sayfasında görür (`V23`). Kişi, IP ya da cihaz bilgisi tutulmaz; ziyaretler günlük sayılardır.
+
+- **Kanal tarayıcıda bulunur** (`web/lib/channel.ts`):
+  - Önce paylaşım bağlantısındaki `?k=` (`instagram`, `whatsapp`, `google`, `qr`; `utm_source` da okunur).
+  - Yoksa yönlendiren site: Instagram, Facebook, WhatsApp, Google. Tomurcuk'un başka bir sayfası "Tomurcuk ana sayfası", başka bir site "Başka siteler" sayılır.
+  - Yoksa uygulama içi tarayıcının kimliği (Instagram, Facebook). Hiçbiri yoksa "Doğrudan".
+  - İlk geliş tarayıcı oturumunda (`sessionStorage`) durur. Ziyaret oturum başına bir kez sayılır, yalnızca vitrin ve ürün sayfalarında. Sipariş adımları, takip ve sözleşmeler sayılmaz.
+  - `?k=` adresten silinir; bağlantıyı kopyalayan başkası aynı kanaldan gelmiş sayılmaz.
+- **Uçlar:**
+  - `POST /api/public/shops/{shopId}/visits {channel}`: Next sunucusu iletir. Bilinmeyen kanal ve dükkân sessizce yok sayılır. Gün dükkânın saat dilimine göredir.
+  - `GET /api/panel/visits?days=7|30`: kanal başına ziyaret, sipariş ve ciro. Başka dönem `option_invalid` döner.
+- **Sipariş:**
+  - Ürün formu kanalı taslakla gönderir (`order_draft.channel`), sipariş oluşunca `orders.channel`'a geçer.
+  - Panelden girilen ve eski siparişlerde kanal boştur.
+  - Sipariş sayısına iptal edilenler ve kartla ödemesi tamamlanmayanlar girmez.
+  - Sipariş satırında ve detayında "Instagram'dan geldi" yazar.
+- **Paylaşım bağlantıları:** Instagram, WhatsApp ve Google Haritalar için `?k=` bağlantısı. Tabela ve kartvizit için QR kod `GET /panel/ziyaretciler/qr` adresinden PNG olarak iner (web, `qrcode` paketi).
+
 ## Yorumlar
 
 Ürün yorumları `review` modülündedir (`V20`: `review`, `review_product`).
@@ -235,6 +283,10 @@ Kapsam bilerek dar tutulur; geliştirme hızı önce gelir.
   - Başka dükkânın takip kodu 404 alır.
   - Gizlenen yorum ürün listesinden, puandan ve ana sayfadan düşer, panelde gerekçesiyle kalır ve kayda geçer.
   - Ana sayfa yorumlarında dükkân adı bulunur ve ilk sıralar farklı dükkânlardandır.
+- Görünüm:
+  - `ShopThemeTests`: her ton ve doygunlukta açık ve koyu tema kontrastı.
+  - `PanelSettingsTests`: pembe kapak yüklenince renk dosya adına ve temaya geçer; görünüm seçenekleri doğrulanır, Instagram adresi kullanıcı adına indirgenir.
+- Ziyaretçiler (`CheckoutTests`): kanal taslaktan siparişe geçer ve sayılır; ödemesi tamamlanmayan kart siparişi sayılmaz; bilinmeyen kanal, dükkân ve dönem kabul edilmez.
 - Dükkân açma (`OnboardingTests`): lider dükkân açar, sahip bağlantıyla şifre belirleyip girer; bağlantı ikinci kez ve süresi geçince çalışmaz, yeni bağlantı eskisini geçersiz kılar; temsilci açamaz (403); alınmış ya da ayrılmış slug ve başka hesaptaki e-posta reddedilir, hata olunca dükkân açılmaz; şifre bağlantısı sahibine e-postayla gider; şifremi unuttum kayıtsız adreste de 204 döner ve e-posta göndermez, 2 dakika içinde ikinci bağlantı gitmez, sıfırlama bağlantısı 1 saat sonra çalışmaz.
 - Ürün yönetimi (`PanelCatalogTests`): boyların tam fiyatı ürün fiyatı ve ek fiyata çevrilir, satıştan kalkan ürün vitrinde yok, fotoğraf 4:5 kırpılır ve yalnızca yüklenen adres kabul edilir, çalışan ürün değiştiremez (403), başka dükkânın ürünü bulunamaz.
 - Alıcı ana sayfası (`DiscoveryTests`): o gün teslim edebilen dükkânlar önce, ilk müsait aralığa göre; aynı gün son saati geçen dükkân sonda ve ilk müsait günüyle.

@@ -2,12 +2,17 @@ import { renderPhoto } from "@/components/ProductPhoto";
 import type { Shop } from "@/lib/api/types";
 import styles from "./ShopSections.module.css";
 
-/** Dükkânın kendi anlattığı tarihçe ve en çok üç atölye fotoğrafı. */
-export function ShopStory({ shop }: { shop: Shop }) {
-  const paragraphs = shop.story
+/** Boş satırla ayrılmış paragraflar. */
+export function storyParagraphs(story: string): string[] {
+  return story
     .split(/\n\s*\n/)
     .map((paragraph) => paragraph.trim())
     .filter(Boolean);
+}
+
+/** Dükkânın kendi anlattığı tarihçe ve en çok üç atölye fotoğrafı. */
+export function ShopStory({ shop }: { shop: Shop }) {
+  const paragraphs = storyParagraphs(shop.story);
   return (
     <section id="hikayemiz" aria-labelledby="hikaye" className={styles.block}>
       <h2 id="hikaye" className={styles.heading}>

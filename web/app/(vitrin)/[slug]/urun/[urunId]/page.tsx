@@ -5,7 +5,9 @@ import { findShop, getDeliveryZones, getProduct, getProductReviews } from "@/lib
 import { ShopLookupKind, ShopStatus, type Product } from "@/lib/api/types";
 import { joinWithAnd, withDativeSuffix, withTimeSuffix } from "@/lib/format";
 import { formatRating, reviewCountLabel } from "@/lib/reviews";
-import { SHELL_PRODUCT_ID, SHELL_SLUG, shopPath } from "@/lib/routes";
+import { productPath, SHELL_PRODUCT_ID, SHELL_SLUG, shopPath } from "@/lib/routes";
+import { productPriceLabel } from "@/lib/catalog";
+import { shopMetadata } from "@/lib/share";
 import { FlowHeader } from "@/components/flow/FlowHeader";
 import { renderProductPhoto } from "@/components/ProductPhoto";
 import { StarMark } from "@/components/ui/Stars";
@@ -33,7 +35,13 @@ async function load(params: Props["params"]) {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const data = await load(params);
   if (!data) return {};
-  return { title: `${data.product.name} · ${data.shop.name}`, description: data.product.description };
+  const { shop, product } = data;
+  return shopMetadata(shop, {
+    title: `${product.name} · ${shop.name}`,
+    description: `${productPriceLabel(product)}. ${product.description}`.trim(),
+    path: productPath(shop.slug, product.id),
+    image: product.photoUrl,
+  });
 }
 
 export default function ProductPage({ params }: Props) {

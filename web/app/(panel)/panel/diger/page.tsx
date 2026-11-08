@@ -22,7 +22,9 @@ export default function MorePage() {
         {[
           { href: "/panel/urunler", label: "Ürünler" },
           { href: "/panel/yorumlar", label: "Yorumlar" },
+          { href: "/panel/ziyaretciler", label: "Ziyaretçiler" },
           { href: "/panel/teslimat", label: "Teslimat ayarları" },
+          { href: "/panel/gorunum", label: "Dükkânınızın görünümü" },
           { href: "/panel/ayarlar", label: "Dükkân ayarları" },
           {
             href: "/panel/fisler?gun=bugun",

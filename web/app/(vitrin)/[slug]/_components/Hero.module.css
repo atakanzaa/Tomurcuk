@@ -108,6 +108,51 @@
   }
 }
 
+/* Çiçekler önde: kapak ince bir şerit. */
+.strip .cover {
+  aspect-ratio: auto;
+  height: 120px;
+}
+
+/* Hikâye önde: hikâyenin ilk paragrafı girişin cümlesi olur; atölye fotoğrafları altında. */
+.storyLead {
+  max-width: 60ch;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 19px;
+  line-height: 28px;
+}
+
+.storyText {
+  max-width: 60ch;
+  margin: 0;
+  color: var(--ink-muted);
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.storyPhotos {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-2);
+  padding-bottom: var(--space-5);
+}
+
+.storyPhoto {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  border-radius: var(--radius-l);
+  background: var(--kraft);
+  background-image: var(--kraft-fiber);
+}
+
+.storyPhoto > svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
 @media (min-width: 1024px) {
   .hero {
     flex-flow: row wrap;
@@ -166,5 +211,36 @@
 
   .intro .band {
     padding: var(--space-3) var(--space-4);
+  }
+
+  .strip {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-5);
+  }
+
+  .strip .cover {
+    order: 0;
+    flex: none;
+    height: 220px;
+  }
+
+  .strip .intro {
+    flex: none;
+  }
+
+  .storyFirst {
+    align-items: center;
+  }
+
+  .storyLead {
+    font-size: 22px;
+    line-height: 32px;
+  }
+
+  .storyPhotos {
+    flex: 1.2 1 480px;
+    gap: var(--space-3);
+    padding-bottom: 0;
   }
 }

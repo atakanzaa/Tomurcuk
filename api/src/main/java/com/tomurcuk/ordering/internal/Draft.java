@@ -5,30 +5,37 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tomurcuk.catalog.OptionKind;
+import com.tomurcuk.ordering.Channel;
 
 /**
  * Alıcının sipariş taslağı; JSON'u web/lib/api/types.ts `OrderDraft`. Ürün adı ve fiyatı
- * seçildiği andaki değerdir, ödemeden önce yeniden doğrulanır.
+ * seçildiği andaki değerdir, ödemeden önce yeniden doğrulanır. `channel` alıcının vitrine geldiği kanal;
+ * siparişe kopyalanır.
  */
 public record Draft(String id, String shopId, Item item, Delivery delivery, Card card, long subtotal,
-		long deliveryFee, long total, @JsonIgnore String orderId, @JsonIgnore Instant expiresAt) {
+		long deliveryFee, long total, @JsonIgnore String orderId, @JsonIgnore Instant expiresAt,
+		@JsonIgnore Channel channel) {
 
 	public Draft withItem(Item newItem) {
-		return new Draft(id, shopId, newItem, delivery, card, 0, 0, 0, orderId, expiresAt).withTotals();
+		return new Draft(id, shopId, newItem, delivery, card, 0, 0, 0, orderId, expiresAt, channel).withTotals();
 	}
 
 	public Draft withDelivery(Delivery newDelivery) {
-		return new Draft(id, shopId, item, newDelivery, card, 0, 0, 0, orderId, expiresAt).withTotals();
+		return new Draft(id, shopId, item, newDelivery, card, 0, 0, 0, orderId, expiresAt, channel).withTotals();
+	}
+
+	public Draft withOrder(String newOrderId) {
+		return new Draft(id, shopId, item, delivery, card, subtotal, deliveryFee, total, newOrderId, expiresAt, channel);
 	}
 
 	public Draft withCard(Card newCard) {
-		return new Draft(id, shopId, item, delivery, newCard, subtotal, deliveryFee, total, orderId, expiresAt);
+		return new Draft(id, shopId, item, delivery, newCard, subtotal, deliveryFee, total, orderId, expiresAt, channel);
 	}
 
 	public Draft withTotals() {
 		long fee = delivery == null ? 0 : delivery.fee();
 		return new Draft(id, shopId, item, delivery, card, item.lineTotal(), fee, item.lineTotal() + fee, orderId,
-				expiresAt);
+				expiresAt, channel);
 	}
 
 	public record Item(String productId, String productName, long unitPrice, List<Option> options, long lineTotal) {

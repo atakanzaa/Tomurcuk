@@ -1,5 +1,7 @@
 package com.tomurcuk.media;
 
+import java.util.Optional;
+
 
 import com.tomurcuk.media.internal.PhotoStorage;
 import com.tomurcuk.shared.FieldError;
@@ -31,6 +33,11 @@ public class Photos {
 
 	public String storeDeliveryPhoto(byte[] content) {
 		return store(PhotoKind.DELIVERY, content);
+	}
+
+	/** Kapak fotoğrafının baskın rengi ("#c2456e"); yüklenirken bulunur. Renksiz fotoğrafta boş. */
+	public Optional<String> coverColor(String url) {
+		return storage.coverColor(url);
 	}
 
 	/** Panelden gelen bir fotoğraf adresi yalnızca Tomurcuk'un deposundan olabilir. */

@@ -1,4 +1,6 @@
 import type {
+  Channel,
+  VisitStats,
   EmailCheckResult,
   Area,
   AuditEntry,
@@ -13,6 +15,7 @@ import type {
   ShopMatch,
   ShopStatusDetail,
   ShopPageInput,
+  ShopAppearanceInput,
   Bestseller,
   ShopStatusInput,
   ShopPick,
@@ -77,6 +80,8 @@ export interface TomurcukApi {
   getProducts(shopId: string): Promise<Product[]>;
   /** Son 90 günde en az 3 siparişte teslim edilen ürünlerin en çok gideni. */
   getBestseller(shopId: string): Promise<Bestseller>;
+  /** Vitrin, tarayıcı oturumu başına bir kez ziyaretin kanalını bildirir. */
+  recordVisit(shopId: string, channel: Channel): Promise<void>;
   getProduct(shopId: string, productId: string): Promise<Product | null>;
   /** Yalnızca aktif bölgeler. */
   getDeliveryZones(shopId: string): Promise<DeliveryZone[]>;
@@ -86,9 +91,10 @@ export interface TomurcukApi {
 
   // Alıcı sipariş akışı. Her adım backend'de, backend'in saatiyle doğrulanır;
   // "bugün" ve son sipariş saati hiçbir zaman çağırandan alınmaz.
+  /** `channel`: alıcının vitrine geldiği kanal; bilinmeyen kod backend'de yok sayılır. */
   createDraft(
     shopId: string,
-    input: { productId: string; optionIds: string[] },
+    input: { productId: string; optionIds: string[]; channel: Channel | null },
   ): Promise<Result<OrderDraft, "product" | "size" | "options">>;
   getDraft(shopId: string, draftId: string): Promise<OrderDraft | null>;
   /** Doğrularsa seçilen aralığı 10 dakikalığına ayırır. */
@@ -160,6 +166,10 @@ export interface TomurcukApi {
   /** Ayarları yalnızca dükkân sahibi değiştirir (CATALOG_EDIT). */
   saveShopProfile(shopId: string, input: ShopProfileInput): Promise<Result<true, keyof ShopProfileInput>>;
   saveShopPage(shopId: string, input: ShopPageInput): Promise<Result<true, keyof ShopPageInput>>;
+  /** Bugün dahil son 7 ya da 30 gün. */
+  getVisitStats(days: 7 | 30): Promise<VisitStats>;
+  /** Tema kaynağı, düzen, Instagram, WhatsApp ve paylaşım açıklaması. */
+  saveShopAppearance(input: ShopAppearanceInput): Promise<Result<true, keyof ShopAppearanceInput>>;
   /** Kapak 3:2, logo ve atölye fotoğrafı kare kırpılır; adres sayfa kaydedilirken listeye girer. */
   uploadShopPhoto(shopId: string, kind: "cover" | "square", file: Blob): Promise<Result<{ url: string }, "photo">>;
   saveSameDayCutoff(shopId: string, cutoff: string): Promise<Result<true, "sameDayCutoff">>;

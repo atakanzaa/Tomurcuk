@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
@@ -60,6 +61,18 @@ public class ShopSettings {
 
 	static final int MAX_STORY_PHOTOS = 3;
 
+	/** Vitrinin görünümü; panelde "Dükkânınızın görünümü". */
+	public record AppearanceInput(String themeMode, String layout, String instagram, String whatsapp,
+			String shareDescription) {
+	}
+
+	static final Set<String> THEME_MODES = Set.of("cover", "tomurcuk");
+
+	static final Set<String> LAYOUTS = Set.of("cover", "story", "products");
+
+	/** Instagram kullanıcı adı: harf, rakam, nokta ve alt çizgi; başındaki @ ve adres kısmı atılır. */
+	private static final Pattern INSTAGRAM = Pattern.compile("[A-Za-z0-9._]{1,30}");
+
 	public Profile profile(String shopId) {
 		Shop shop = shops.findById(shopId).orElseThrow();
 		return new Profile(ShopView.of(shop, clock.instant()), shop.getNotifyPhone(), shop.isNotifySms());
@@ -100,13 +113,55 @@ public class ShopSettings {
 	}
 
 	/**
+	 * Hatalar: `themeMode`, `layout` (`option_invalid`), `instagram` (`option_invalid`),
+	 * `whatsapp` (`phone_invalid`), `shareDescription` (`too_long`).
+	 */
+	@Transactional
+	public void updateAppearance(String shopId, AppearanceInput in) {
+		Map<String, FieldError> errors = new LinkedHashMap<>();
+		if (in.themeMode() == null || !THEME_MODES.contains(in.themeMode())) {
+			errors.put("themeMode", FieldError.of("option_invalid"));
+		}
+		if (in.layout() == null || !LAYOUTS.contains(in.layout())) {
+			errors.put("layout", FieldError.of("option_invalid"));
+		}
+		String instagram = instagramHandle(in.instagram());
+		if (!instagram.isEmpty() && !INSTAGRAM.matcher(instagram).matches()) {
+			errors.put("instagram", FieldError.of("option_invalid"));
+		}
+		String whatsapp = null;
+		if (in.whatsapp() != null && !in.whatsapp().isBlank()) {
+			whatsapp = Texts.phone(errors, "whatsapp", in.whatsapp());
+		}
+		String share = Texts.check(errors, "shareDescription", in.shareDescription(), 160, false);
+		if (!errors.isEmpty()) {
+			throw new ValidationException(errors);
+		}
+		shops.findById(shopId).orElseThrow().updateAppearance(in.themeMode(), in.layout(), instagram, whatsapp, share);
+	}
+
+	/** "@nergiscicek", "instagram.com/nergiscicek/" → "nergiscicek". */
+	static String instagramHandle(String value) {
+		if (value == null) {
+			return "";
+		}
+		String handle = value.strip().replaceFirst("(?i)^(https?://)?(www\\.)?instagram\\.com/", "")
+			.replaceFirst("^@", "");
+		int end = handle.indexOf('/');
+		return (end >= 0 ? handle.substring(0, end) : handle).split("\\?")[0];
+	}
+
+	/**
 	 * Hatalar: `story`, `favoriteNote` (`too_long`), `foundedYear` (`option_invalid`: 1900 ile bu yıl
 	 * arası), `storyPhotos` (`too_many`, `photo_invalid`), `coverPhotoUrl`, `logoUrl` (`photo_invalid`).
 	 * `ownPhoto`: adres Tomurcuk'un deposundan mı; kayıtlı adres her zaman kabul edilir. Öne çıkan
 	 * ürünün dükkâna ait olduğunu çağıran doğrular.
+	 * `coverColor`: depodaki kapak adresinden baskın renk. Kapak değişmediyse kayıtlı renk kalır
+	 * (örnek veride elle girilmiş renk de).
 	 */
 	@Transactional
-	public void updatePage(String shopId, PageInput in, Predicate<String> ownPhoto) {
+	public void updatePage(String shopId, PageInput in, Predicate<String> ownPhoto,
+			Function<String, Optional<String>> coverColor) {
 		Shop shop = shops.findById(shopId).orElseThrow();
 		Set<String> current = new HashSet<>(shop.getStoryPhotos());
 		Optional.ofNullable(shop.getCoverPhotoUrl()).ifPresent(current::add);
@@ -137,7 +192,10 @@ public class ShopSettings {
 		if (!errors.isEmpty()) {
 			throw new ValidationException(errors);
 		}
-		shop.updatePage(logo, cover, story, year, photos, blankToNull(in.featuredProductId()), note);
+		String color = cover == null ? null
+				: cover.equals(shop.getCoverPhotoUrl()) && shop.getCoverColor() != null ? shop.getCoverColor()
+						: coverColor.apply(cover).orElse(null);
+		shop.updatePage(logo, cover, color, story, year, photos, blankToNull(in.featuredProductId()), note);
 	}
 
 	private static String blankToNull(String value) {

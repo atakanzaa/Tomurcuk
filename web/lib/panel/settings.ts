@@ -19,6 +19,9 @@ const optionMessages: Record<string, string> = {
   featuredProductId: "Bu ürün artık satışta değil. Başka bir ürün seçin.",
   sameDayCutoff: "Saati 15:00 biçiminde yazın.",
   foundedYear: "Kuruluş yılını 1900 ile bu yıl arasında, 2009 gibi yazın.",
+  instagram: "Instagram kullanıcı adınızı yazın, ör. nergiscicek. Harf, rakam, nokta ve alt çizgi olabilir.",
+  layout: "Düzenlerden birini seçin.",
+  themeMode: "Renk seçimini yeniden yapın.",
 };
 
 export function settingsErrorMessages(errors: FieldErrors): Record<string, string> {

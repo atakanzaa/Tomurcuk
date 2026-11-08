@@ -72,6 +72,19 @@ public class Shop {
 
 	private String favoriteNote;
 
+	/** Görünüm: kapaktan gelen renk, tema kaynağı, düzen, iletişim ve paylaşım açıklaması (V22). */
+	private String coverColor;
+
+	private String themeMode;
+
+	private String layout;
+
+	private String instagram;
+
+	private String whatsapp;
+
+	private String shareDescription;
+
 	/** Sözleşmelerde satıcı: unvan ya da ad soyad, vergi dairesi ve numarası, e-posta. */
 	private String legalName;
 
@@ -118,6 +131,10 @@ public class Shop {
 		this.email = "";
 		this.story = "";
 		this.favoriteNote = "";
+		this.themeMode = "cover";
+		this.layout = "cover";
+		this.instagram = "";
+		this.shareDescription = "";
 		this.createdAt = createdAt;
 	}
 
@@ -228,10 +245,12 @@ public class Shop {
 		this.notifySms = notifySms;
 	}
 
-	public void updatePage(String logoUrl, String coverPhotoUrl, String story, Integer foundedYear,
+	/** `coverColor`: kapağın baskın rengi; kapak yoksa ya da renksizse null. */
+	public void updatePage(String logoUrl, String coverPhotoUrl, String coverColor, String story, Integer foundedYear,
 			List<String> storyPhotos, String featuredProductId, String favoriteNote) {
 		this.logoUrl = logoUrl;
 		this.coverPhotoUrl = coverPhotoUrl;
+		this.coverColor = coverColor;
 		this.story = story;
 		this.foundedYear = foundedYear;
 		this.storyPhotos = new ArrayList<>(storyPhotos);
@@ -257,6 +276,39 @@ public class Shop {
 
 	public String getFavoriteNote() {
 		return favoriteNote;
+	}
+
+	public void updateAppearance(String themeMode, String layout, String instagram, String whatsapp,
+			String shareDescription) {
+		this.themeMode = themeMode;
+		this.layout = layout;
+		this.instagram = instagram;
+		this.whatsapp = whatsapp;
+		this.shareDescription = shareDescription;
+	}
+
+	public String getCoverColor() {
+		return coverColor;
+	}
+
+	public String getThemeMode() {
+		return themeMode;
+	}
+
+	public String getLayout() {
+		return layout;
+	}
+
+	public String getInstagram() {
+		return instagram;
+	}
+
+	public String getWhatsapp() {
+		return whatsapp;
+	}
+
+	public String getShareDescription() {
+		return shareDescription;
 	}
 
 	public void updateSameDayCutoff(LocalTime cutoff) {

@@ -1,0 +1,269 @@
+/* Görünüm sayfası: solda form bölümleri, sağda vitrin önizlemesi (masaüstü). */
+.layout {
+  display: grid;
+  gap: var(--space-7);
+  padding: var(--space-5) var(--space-4) var(--space-8);
+}
+
+.form {
+  display: grid;
+  gap: var(--space-7);
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.swatch {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-1);
+}
+
+.chip {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-m);
+  border: 1px solid var(--line);
+}
+
+.chipName {
+  color: var(--ink-muted);
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.check {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  cursor: pointer;
+}
+
+.check input {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  margin: 2px 0 0;
+  accent-color: var(--stem);
+}
+
+.checkText {
+  display: grid;
+  gap: 2px;
+  font-size: 16px;
+  line-height: 22px;
+}
+
+.layouts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: var(--space-3);
+}
+
+.layoutOption {
+  display: grid;
+  align-content: start;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-m);
+  background: var(--paper-raised);
+  cursor: pointer;
+}
+
+.selected {
+  border: 2px solid var(--stem);
+  padding: calc(var(--space-3) - 1px);
+}
+
+.layoutOption:has(input:focus-visible) {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.layoutName {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 15px;
+  line-height: 22px;
+  font-weight: 600;
+}
+
+.layoutName input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--stem);
+}
+
+/* Düzenin küçük çizimi. */
+.thumb {
+  display: grid;
+  grid-template-rows: auto auto 1fr;
+  gap: 4px;
+  height: 96px;
+  padding: 6px;
+  border-radius: var(--radius-s);
+  background: var(--paper);
+}
+
+.thumbCover {
+  height: 34px;
+  border-radius: 4px;
+  background: var(--kraft-deep);
+}
+
+.thumb_story .thumbCover {
+  display: none;
+}
+
+.thumb_products .thumbCover {
+  height: 12px;
+}
+
+.thumbTitle {
+  width: 60%;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--ink);
+}
+
+.thumbGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.thumbGrid span {
+  border-radius: 4px;
+  background: var(--kraft);
+}
+
+.preview {
+  display: grid;
+  align-content: start;
+  gap: var(--space-3);
+}
+
+.previewLabel {
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 600;
+}
+
+/* Önizleme dükkânın renk değişkenleriyle çizilir (satır içi stil). */
+.previewCard {
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-l);
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.previewCover {
+  position: relative;
+  height: 120px;
+  background: var(--kraft);
+  background-image: var(--kraft-fiber);
+}
+
+.previewCover > svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.previewStrip {
+  height: 48px;
+}
+
+.previewBody {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-3);
+}
+
+.previewName {
+  font-family: var(--font-display);
+  font-size: 18px;
+  line-height: 24px;
+}
+
+.previewBand {
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-m);
+  background: var(--kraft);
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.previewProduct {
+  height: 96px;
+  border-radius: var(--radius-m);
+  background: var(--kraft);
+}
+
+.previewButton {
+  display: grid;
+  place-items: center;
+  min-height: 36px;
+  border-radius: var(--radius-m);
+  background: var(--stem);
+  color: var(--on-stem);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.previewLink {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.sharePreview {
+  display: grid;
+  gap: 2px;
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--line);
+}
+
+.shareTitle {
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 600;
+}
+
+.shareText {
+  color: var(--ink-muted);
+  font-size: 13px;
+  line-height: 18px;
+}
+
+@media (min-width: 640px) {
+  .layout {
+    padding-inline: var(--space-6);
+  }
+}
+
+@media (min-width: 1100px) {
+  .layout {
+    grid-template-columns: minmax(0, 760px) 300px;
+    align-items: start;
+  }
+
+  .preview {
+    position: sticky;
+    top: var(--space-5);
+  }
+}

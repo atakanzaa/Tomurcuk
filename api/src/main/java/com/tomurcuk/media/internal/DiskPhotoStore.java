@@ -15,7 +15,7 @@ class DiskPhotoStore implements PhotoStore {
 
 	static final String URL_PREFIX = "/foto/";
 
-	private static final Pattern NAME = Pattern.compile("[A-Za-z0-9]{10,40}\\.jpg");
+	private static final Pattern NAME = Pattern.compile("[A-Za-z0-9]{10,40}(-[0-9a-f]{6})?\\.jpg");
 
 	private final Path dir;
 

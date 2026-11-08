@@ -41,6 +41,26 @@ export const OrderSource = {
 } as const;
 export type OrderSource = ValueOf<typeof OrderSource>;
 
+/**
+ * Alıcının vitrine geldiği kanal (lib/channel.ts). Kişi bilgisi değildir; panelde yalnızca
+ * sayılar ve siparişte "Instagram'dan geldi" görünür.
+ */
+export const Channel = {
+  Instagram: "instagram",
+  WhatsApp: "whatsapp",
+  Google: "google",
+  Facebook: "facebook",
+  /** Dükkândaki tabela, kartvizit. */
+  Qr: "qr",
+  /** Tomurcuk ana sayfasından. */
+  Tomurcuk: "tomurcuk",
+  /** Başka bir siteden. */
+  Other: "other",
+  /** Kaynağı görünmeyen: bağlantı yazılarak, yer imiyle, kaynağı göstermeyen uygulamadan. */
+  Direct: "direct",
+} as const;
+export type Channel = ValueOf<typeof Channel>;
+
 export const OrderStatus = {
   New: "new",
   Preparing: "preparing",
@@ -132,6 +152,17 @@ export interface Shop {
   foundedYear: number | null;
   /** En çok üç kare atölye fotoğrafı. */
   storyPhotos: string[];
+  /** `cover`: renk kapak fotoğrafından; `tomurcuk`: varsayılan renkler. */
+  themeMode: ShopThemeMode;
+  /** Vitrinin rengi; kapaktan renk yoksa ya da `tomurcuk` seçildiyse null. */
+  theme: ShopTheme | null;
+  layout: ShopLayout;
+  /** Kullanıcı adı, @ olmadan; boşsa gösterilmez. */
+  instagram: string;
+  /** Boşsa dükkân telefonu. */
+  whatsapp: string | null;
+  /** Bağlantı önizlemesi ve aramalar; boşsa kısa tanıtım. */
+  shareDescription: string;
   /** Sözleşmelerde satıcı: unvan ya da ad soyad. Boşsa dükkân ayarlarından doldurulmamıştır. */
   legalName: string;
   taxOffice: string;
@@ -265,6 +296,31 @@ export interface ShopProfileInput {
 }
 
 /** Dükkânın sayfası; fotoğraflar panelden yüklenen adreslerdir. */
+export const ShopThemeMode = { Cover: "cover", Tomurcuk: "tomurcuk" } as const;
+export type ShopThemeMode = ValueOf<typeof ShopThemeMode>;
+
+export const ShopLayout = { Cover: "cover", Story: "story", Products: "products" } as const;
+export type ShopLayout = ValueOf<typeof ShopLayout>;
+
+/**
+ * Kapak fotoğrafının baskın renginden türetilen renkler (api ShopTheme). Anahtarlar tokens.css
+ * değişkenleri: paper, paper-raised, kraft, kraft-deep, line, line-strong, ink, ink-muted, stem,
+ * stem-hover, on-stem. Kontrast backend'de sağlanır.
+ */
+export interface ShopTheme {
+  source: string;
+  light: Record<string, string>;
+  dark: Record<string, string>;
+}
+
+export interface ShopAppearanceInput {
+  themeMode: ShopThemeMode;
+  layout: ShopLayout;
+  instagram: string;
+  whatsapp: string;
+  shareDescription: string;
+}
+
 export interface ShopPageInput {
   logoUrl: string | null;
   coverPhotoUrl: string | null;
@@ -276,6 +332,18 @@ export interface ShopPageInput {
 }
 
 /** Son 90 günde en az 3 siparişte teslim edilen ürünlerin en çok gideni; yoksa `productId` boş. */
+/**
+ * Panelde "Ziyaretçiler": bugün dahil son `days` gün. Sipariş sayısına iptal edilenler ve
+ * kartla ödemesi tamamlanmayanlar girmez. Kanallar ziyarete göre çoktan aza.
+ */
+export interface VisitStats {
+  days: number;
+  visits: number;
+  orders: number;
+  revenue: Kurus;
+  channels: { channel: Channel; visits: number; orders: number; revenue: Kurus }[];
+}
+
 export interface Bestseller {
   productId: string | null;
   orders: number;
@@ -397,6 +465,8 @@ export interface Order {
   courierName: string | null;
   /** order_event: durum geçmişi, eskiden yeniye. */
   events: { status: OrderStatus; at: string }[];
+  /** Alıcının vitrine geldiği kanal; panelden girilen ve eski siparişlerde boş. */
+  channel: Channel | null;
 }
 
 export const ShopLookupKind = {

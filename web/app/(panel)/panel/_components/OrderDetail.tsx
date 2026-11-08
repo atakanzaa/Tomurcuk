@@ -12,6 +12,7 @@ import { Permission, shopCan } from "@/lib/permissions";
 import { DeliveryPhotoButton } from "./DeliveryPhotoButton";
 import { OrderActions, OrderMenu } from "./OrderControls";
 import styles from "./order.module.css";
+import { channelArrival } from "@/lib/channel";
 
 interface OrderDetailProps {
   order: Order;
@@ -76,6 +77,7 @@ export function OrderDetail({ order, customer, today, timeZone, role, backHref, 
             <StatusTag tone={tag.tone}>{tag.label}</StatusTag>
             <span className={styles.metaText}>
               {orderSourceLabel[order.source]}, {createdText} {created.time}
+              {order.channel && channelArrival[order.channel] && `. ${channelArrival[order.channel]}`}
             </span>
           </div>
           <h1 id={`baslik-${order.id}`} className={styles.title}>

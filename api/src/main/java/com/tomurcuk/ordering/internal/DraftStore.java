@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.time.Clock;
 import java.util.Optional;
 
+import com.tomurcuk.ordering.Channel;
 import com.tomurcuk.shared.Instants;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
@@ -15,7 +16,7 @@ class DraftStore {
 
 	private static final String COLUMNS = """
 			id, shop_id, product_id, product_name, unit_price, options, line_total, delivery, card, order_id,
-			expires_at""";
+			expires_at, channel""";
 
 	private final JdbcClient jdbc;
 
@@ -32,9 +33,9 @@ class DraftStore {
 	void insert(Draft draft) {
 		jdbc.sql("""
 				INSERT INTO order_draft (id, shop_id, product_id, product_name, unit_price, options, line_total,
-				                         expires_at)
+				                         expires_at, channel)
 				VALUES (:id, :shopId, :productId, :productName, :unitPrice, CAST(:options AS jsonb), :lineTotal,
-				        :expiresAt)
+				        :expiresAt, :channel)
 				""")
 			.param("id", draft.id())
 			.param("shopId", draft.shopId())
@@ -44,6 +45,7 @@ class DraftStore {
 			.param("options", json.writeValueAsString(draft.item().options()))
 			.param("lineTotal", draft.item().lineTotal())
 			.param("expiresAt", Instants.sql(draft.expiresAt()))
+			.param("channel", draft.channel() == null ? null : draft.channel().code())
 			.update();
 	}
 
@@ -92,7 +94,7 @@ class DraftStore {
 		return new Draft(rs.getString("id"), rs.getString("shop_id"), item,
 				delivery == null ? null : json.readValue(delivery, Draft.Delivery.class),
 				card == null ? null : json.readValue(card, Draft.Card.class), 0, 0, 0, rs.getString("order_id"),
-				rs.getTimestamp("expires_at").toInstant())
+				rs.getTimestamp("expires_at").toInstant(), Channel.parse(rs.getString("channel")).orElse(null))
 			.withTotals();
 	}
 }

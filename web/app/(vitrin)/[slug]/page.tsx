@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { findShop } from "@/lib/api";
 import { ShopLookupKind } from "@/lib/api/types";
-import { SHELL_SLUG } from "@/lib/routes";
+import { SHELL_SLUG, shopPath } from "@/lib/routes";
+import { shareDescription, shopMetadata } from "@/lib/share";
 import { Storefront } from "./_components/Storefront";
 import styles from "./page.module.css";
 
@@ -17,7 +18,13 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: PageProps<"/[slug]">): Promise<Metadata> {
   const lookup = await findShop((await params).slug);
   if (lookup.kind !== ShopLookupKind.Found) return {};
-  return { title: lookup.shop.name, description: lookup.shop.descriptionShort };
+  const { shop } = lookup;
+  return shopMetadata(shop, {
+    title: shop.name,
+    description: shareDescription(shop),
+    path: shopPath(shop.slug),
+    image: shop.coverPhotoUrl,
+  });
 }
 
 export default function StorefrontPage({ params, searchParams }: PageProps<"/[slug]">) {

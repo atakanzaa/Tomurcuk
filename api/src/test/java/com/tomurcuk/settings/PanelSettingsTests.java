@@ -8,6 +8,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -32,7 +34,9 @@ import com.tomurcuk.shared.ValidationException;
 import com.tomurcuk.shop.ShopDirectory;
 import com.tomurcuk.shop.ShopInfo;
 import com.tomurcuk.shop.ShopSettings;
+import com.tomurcuk.shop.ShopSettings.AppearanceInput;
 import com.tomurcuk.shop.ShopSettings.PageInput;
+import com.tomurcuk.shop.ShopTheme;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -189,11 +193,16 @@ class PanelSettingsTests {
 	 */
 	@Test
 	void pageKeepsOnlyOwnPhotos() throws Exception {
-		String cover = photos.store(PhotoKind.COVER, png(1200, 1200));
+		// Pembe kapak: rengi dosya adında taşınır, tema ondan türetilir.
+		String cover = photos.store(PhotoKind.COVER, png(1200, 1200, new Color(194, 69, 110)));
 		String square = photos.store(PhotoKind.SQUARE, png(800, 600));
+		assertThat(photos.coverColor(cover)).hasValueSatisfying(c -> assertThat(ShopTheme.from(c)).isNotNull());
+		assertThat(photos.coverColor(square)).isEmpty();
 		shopSettings.updatePage(shopId, new PageInput(square, cover, "  2009'dan beri Moda'da.  ", 2009,
-				List.of(square), null, "Lalelerimiz pazartesi gelir."), photos::owns);
+				List.of(square), null, "Lalelerimiz pazartesi gelir."), photos::owns, photos::coverColor);
 		assertThat(shops.view(shopId)).hasValueSatisfying(view -> {
+			assertThat(view.theme()).isNotNull();
+			assertThat(view.theme().light()).containsKeys("paper", "stem", "on-stem", "ink-muted");
 			assertThat(view.coverPhotoUrl()).isEqualTo(cover);
 			assertThat(view.story()).isEqualTo("2009'dan beri Moda'da.");
 			assertThat(view.foundedYear()).isEqualTo(2009);
@@ -202,7 +211,7 @@ class PanelSettingsTests {
 
 		assertThatThrownBy(() -> shopSettings.updatePage(shopId, new PageInput(null,
 				"https://baska.site/kapak.jpg", "", 2030, List.of(square, square, square, square), null, ""),
-				photos::owns))
+				photos::owns, photos::coverColor))
 			.isInstanceOfSatisfying(ValidationException.class, ex -> {
 				assertThat(ex.getErrors().get("coverPhotoUrl").code()).isEqualTo("photo_invalid");
 				assertThat(ex.getErrors().get("foundedYear").code()).isEqualTo("option_invalid");
@@ -213,9 +222,39 @@ class PanelSettingsTests {
 				n -> assertThat(n).isGreaterThanOrEqualTo(3));
 	}
 
+	/**
+	 * Görünüm: düzen ve tema kaynağı seçilir, Instagram adresi kullanıcı adına indirgenir;
+	 * "tomurcuk" seçilince kapaktan renk alınmaz. Geçersiz seçenek ve numara reddedilir.
+	 */
+	@Test
+	void appearanceIsValidatedAndSwitchesTheTheme() {
+		shopSettings.updateAppearance(shopId, new AppearanceInput("tomurcuk", "story",
+				"https://www.instagram.com/nergiscicek/?hl=tr", "0532 412 88 19", "Kadıköy'de aynı gün çiçek."));
+		assertThat(shops.view(shopId)).hasValueSatisfying(view -> {
+			assertThat(view.theme()).isNull();
+			assertThat(view.layout()).isEqualTo("story");
+			assertThat(view.instagram()).isEqualTo("nergiscicek");
+			assertThat(view.whatsapp()).isEqualTo("0532 412 88 19");
+		});
+		assertThatThrownBy(() -> shopSettings.updateAppearance(shopId,
+				new AppearanceInput("mor", "grid", "kötü ad!", "123", "")))
+			.isInstanceOfSatisfying(ValidationException.class, ex -> assertThat(ex.getErrors()).containsKeys(
+					"themeMode", "layout", "instagram", "whatsapp"));
+		shopSettings.updateAppearance(shopId, new AppearanceInput("cover", "cover", "", "", ""));
+	}
+
 	private static byte[] png(int width, int height) throws IOException {
+		return png(width, height, Color.BLACK);
+	}
+
+	private static byte[] png(int width, int height, Color fill) throws IOException {
+		BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+		Graphics2D g = image.createGraphics();
+		g.setColor(fill);
+		g.fillRect(0, 0, width, height);
+		g.dispose();
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		ImageIO.write(new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB), "png", out);
+		ImageIO.write(image, "png", out);
 		return out.toByteArray();
 	}
 

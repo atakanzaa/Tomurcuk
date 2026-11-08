@@ -19,6 +19,7 @@ import com.tomurcuk.shared.ValidationException;
 import com.tomurcuk.shop.ShopSettings;
 import com.tomurcuk.shop.ShopSettings.Profile;
 import com.tomurcuk.shop.ShopSettings.PageInput;
+import com.tomurcuk.shop.ShopSettings.AppearanceInput;
 import com.tomurcuk.shop.ShopSettings.ProfileInput;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -87,7 +88,15 @@ class PanelSettingsController {
 		if (featured != null && !featured.isBlank() && catalog.findActiveProduct(user.shopId(), featured).isEmpty()) {
 			throw ValidationException.of("featuredProductId", FieldError.of("option_invalid"));
 		}
-		shop.updatePage(user.shopId(), body, photos::owns);
+		shop.updatePage(user.shopId(), body, photos::owns, photos::coverColor);
+	}
+
+	/** Vitrinin görünümü: tema kaynağı, düzen, Instagram, WhatsApp ve paylaşım açıklaması. */
+	@PutMapping("/appearance")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	void appearance(@AuthenticationPrincipal ShopPrincipal user, @RequestBody AppearanceInput body) {
+		requireEdit(user);
+		shop.updateAppearance(user.shopId(), body);
 	}
 
 	/**
